@@ -1,0 +1,21 @@
+# Force Unix (LF) line endings for text formats. No conversion for anything else.
+*.md text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+
+# Explicit binary: no line-ending conversion, no text diff.
+*.pdf binary
+*.jpg binary
+*.jpeg binary
+*.tif binary
+*.tiff binary
+*.png binary
+*.gif binary
+*.webp binary
+*.zip binary
+*.tgz binary
+*.tar binary
+*.tar.gz binary
+*.gz binary
