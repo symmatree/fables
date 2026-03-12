@@ -44,7 +44,7 @@ Repeat for each imageset preview PNG (and any other generated binaries).
 
 ## 4. If HEAD is already bad
 
-If you had already committed with the bad .gitattributes, HEAD’s blobs are corrupted. Find the last good commit (before the .gitattributes change) and restore from it:
+If you had already committed with the bad .gitattributes, HEAD's blobs are corrupted. Find the last good commit (before the .gitattributes change) and restore from it:
 
 ```bash
 git log -1 -p -- .gitattributes   # find the commit that added * text eol=lf
@@ -62,4 +62,4 @@ Then fix `.gitattributes` again (only `*.md` and `*.txt` as text) and commit.
 *.txt text eol=lf
 ```
 
-All other files (including every binary) are left untouched by Git’s line-ending logic.
+All other files (including every binary) are left untouched by Git's line-ending logic.
