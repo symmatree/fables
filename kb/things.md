@@ -85,7 +85,7 @@ Entities created or updated by the [[data-collection|data collection procedures]
 ### Other devices with network docs
 
 - [[Synology/Raconteur]]
-- [[SmartHome/homeassistant.local]]
+- [[homeassistant]]
 - [[Devices/ReoBondBell]]
 
 ---

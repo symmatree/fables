@@ -33,6 +33,17 @@ Directly hosts
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
+## Port and cabling
+
+*Link/speed/PoE from UniFi Integration API (ports with link UP only). Refresh with `UNIFI_API_KEY=... python3 polisher/unifi/fetch_device_interfaces.py facts/unifi_devices_interfaces.json`. Add cable/device notes as you trace.*
+
+| Port | Connector | Speed (Mbps) | PoE |
+|------|-----------|--------------|-----|
+| 1 | RJ45 | 1000 | UP |
+| 3 | RJ45 | 100 | UP |
+| 9 | RJ45 | 1000 | n/a |
+| 11 | SFP+ | 10000 | n/a |
+
 ## Product Info
 
 *Product information for the UniFi Dream Machine SE (UDM SE) gateway device. Model code "UDMPROSE" retrieved from UniFi MCP API via `mcp_unifi_get_device_details` with site_id="default" and device_id="63360e240b970d164b255e34".*

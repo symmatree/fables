@@ -25,32 +25,29 @@
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
-## Ethernet cabling
+## Port and cabling
 
-*Recorded 2026-03-15. Confirmed broken signal lines in the attic.*
+*Cabling notes recorded 2026-03-15. Confirmed broken signal lines in the attic. Link/speed/PoE from UniFi Integration API; refresh with `UNIFI_API_KEY=... python3 polisher/unifi/fetch_device_interfaces.py facts/unifi_devices_interfaces.json`.*
 
 All 24 switch ports are PoE+ (see Product Info), so any port can power cameras, APs, or other PoE devices.
 
 **Punchdown column:** Tripp = Triplitte mini (block ports 1-12). Mono = Monoprice 24 (block ports 13-15). Blank = no punchdown (direct run or jack only).
 
-| Switch port | Punchdown | Notes |
-|-------------|-----------|--------|
-| 1 | Mono 15 | laundry camera. New punchdown looks okay. |
-| 2 | - | long brown wire, jack only (no punchdown), into attic floor. |
-| 3 | Tripp 3 | study front low blue. Blue maybe not broken. |
-| 4 | Tripp 4 | study front low green. Green broken. |
-| 5 | Tripp 5 | study front high blue. Looks okay visually. |
-| 6 | - | (not in use) |
-| 7 | Tripp 11 | garage camera (eaves).  insulation nicks. |
-| 8 | Tripp 8 | study rear blue. Looks okay. |
-| 9 | Tripp 9 | study rear green. Actively broken. |
-| 10 | Tripp 6 | study front high green. Looks okay visually. |
-| 11 | Tripp 12 | lower attic access point.  nicks. |
-| 12 | Tripp 10 | front door camera (eaves).  nicks. |
-| 13 | Mono 14 | basement blue. New punchdown looks okay (repunched). |
-| 14-16 | - | (not in use) |
-| 17 | - | ace base. |
-| 18-24 | - | (not in use) |
+| Port | Punchdown | Notes | Link | Speed (Mbps) | PoE |
+|------|-----------|--------|------|--------------|-----|
+| 1 | Mono 15 | [[cameras/laundry]]. New punchdown looks okay. | UP | 100 | UP |
+| 2 | - | long brown wire, jack only (no punchdown), into attic floor. | UP | 1000 | UP |
+| 3 | Tripp 3 | [[physical/study-front-low]] blue. Blue maybe not broken. | UP | 10 | DOWN |
+| 4 | Tripp 4 | [[physical/study-front-low]] green. Green broken. | DOWN | - | DOWN |
+| 5 | Tripp 5 | [[physical/study-front-high]] blue; [[cameras/samsung-white-camera]]. Looks okay visually. | UP | 1000 | LIMITED |
+| 7 | Tripp 11 | [[cameras/foscam-driveway]]. Insulation nicks. | UP | 100 | UP |
+| 8 | Tripp 8 | [[physical/study-rear]] blue. Looks okay. | UP | 1000 | DOWN |
+| 9 | Tripp 9 | [[physical/study-rear]] green. Actively broken. | DOWN | - | DOWN |
+| 10 | Tripp 6 | [[physical/study-front-high]] green. Looks okay visually. | DOWN | - | DOWN |
+| 11 | Tripp 12 | [[lower-attic-uap-ac-pro]]. nicks. | UP | 1000 | UP |
+| 12 | Tripp 10 | [[cameras/foscam-front]]. nicks. | UP | 100 | UP |
+| 13 | Mono 14 | basement blue. New punchdown looks okay (repunched). | UP | 1000 | DOWN |
+| 17 | - | [[Computers/AceBase]]. | UP | 1000 | DOWN |
 
 ## Product Info
 

@@ -25,16 +25,16 @@
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
-## Ethernet cabling
+## Port and cabling
 
-| Port | Device / link | Notes |
-|------|----------------|--------|
-| 1 | spa-in-eaves AP | AP at spa/eaves |
-| 2 | Amcrest bullet cam | Spa-eaves camera |
-| 3 | ESP32 PoE unit | Temporary; temp/humidity test |
-| 16 | Uplink to basement | Main uplink |
+*Cabling notes recorded 2026-03-15. Link/speed/PoE from UniFi Integration API; refresh with `UNIFI_API_KEY=... python3 polisher/unifi/fetch_device_interfaces.py facts/unifi_devices_interfaces.json`.*
 
-*Recorded 2026-03-15.*
+| Port | Device / link | Notes | Link | Speed (Mbps) | PoE |
+|------|----------------|--------|------|--------------|-----|
+| 1 | [[spa-eaves-uap-ac-pro]] | AP at spa/eaves | UP | 1000 | UP |
+| 2 | [[cameras/eaves-AMC046556F32C6A153]] | Spa-eaves camera | UP | 100 | UP |
+| 3 | ESP32 PoE unit | Temporary; temp/humidity test | UP | 100 | UP |
+| 16 | Uplink to basement | Main uplink | UP | 1000 | n/a |
 
 ### Maintenance / cabling
 

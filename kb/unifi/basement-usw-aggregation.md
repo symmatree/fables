@@ -25,6 +25,16 @@
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
+## Port and cabling
+
+*Link/speed from UniFi Integration API (ports with link UP only). Refresh with `UNIFI_API_KEY=... python3 polisher/unifi/fetch_device_interfaces.py facts/unifi_devices_interfaces.json`. Add cable/device notes as you trace.*
+
+| Port | Connector | Speed (Mbps) | Device / link |
+|------|-----------|---------------|----------------|
+| 1 | SFP+ | 10000 | [[morpheus.local.symmatree.com]] (UDM) |
+| 2 | SFP+ | 10000 | [[basement-us-48-g1]] port 49 |
+| 4 | SFP+ | 10000 | [[Synology/Raconteur]] |
+
 ## Product Info
 
 | Field | Value |

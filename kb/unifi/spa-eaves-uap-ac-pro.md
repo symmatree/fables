@@ -25,6 +25,12 @@
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
+## Port and cabling
+
+Uplink on port 1 (1000 Mbps). Radios: 2.4 GHz 802.11n ch 6, 20 MHz; 5 GHz 802.11ac ch 100, 80 MHz.
+
+*From UniFi Integration API. Refresh with `UNIFI_API_KEY=... python3 polisher/unifi/fetch_device_interfaces.py facts/unifi_devices_interfaces.json`.*
+
 ## Product Info
 
 | Field | Value |

@@ -15,7 +15,7 @@ Quick-reference sheet for all compute, RAM, storage, GPU, and network resources 
 | [[Raconteur]] | NAS / Domain Controller | Intel Xeon D-1527 | 4C/8T | 32 GB DDR4 ECC | — | 45.5 TB (2 pools) + SSD cache | 10 GbE SFP+ | — | — | — |
 | nuc-g3p-1 / nuc-g3p-2 | Proxmox hosts (Tiles VMs) | Intel N150 (Twin Lake) | 4C/4T | 16 GB | Intel UHD 730 | 512 GB NVMe | 2.5 GbE wired | ~1257 | ~3007 | — |
 | nuc-g2p-1 / nuc-g2p-2 | Proxmox hosts (Tiles VMs) | Intel N150 (Twin Lake) | 4C/4T | 12 GB | Intel UHD 730 | 512 GB NVMe | 1 GbE wired | ~1257 | ~3007 | — |
-| [[AceBase N95 8GB\|AceBase]] | Spare / attic node | Intel N95 (Alder Lake-N) | 4C/4T | 8 GB DDR4-2667 | Intel UHD (24 EU) | 256 GB SATA SSD | 1 GbE wired | ~1100 | ~2800 | — |
+| [[AceBase\|AceBase]] | Spare / attic node | Intel N95 (Alder Lake-N) | 4C/4T | 8 GB DDR4-2667 | Intel UHD (24 EU) | 256 GB SATA SSD | 1 GbE wired | ~1100 | ~2800 | — |
 
 ## Geekbench 6 Results Comparison
 

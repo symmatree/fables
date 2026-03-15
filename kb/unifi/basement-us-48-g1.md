@@ -25,6 +25,30 @@
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
+## Port and cabling
+
+*Link/speed from UniFi Integration API (ports with link UP only). Refresh with `UNIFI_API_KEY=... python3 polisher/unifi/fetch_device_interfaces.py facts/unifi_devices_interfaces.json`. Add cable/device notes to the table as you trace.*
+
+| Port | Connector | Speed (Mbps) | Device / link |
+|------|-----------|---------------|----------------|
+| 3 | RJ45 | 1000 | |
+| 5 | RJ45 | 1000 | |
+| 10 | RJ45 | 1000 | |
+| 13 | RJ45 | 1000 | |
+| 14 | RJ45 | 1000 | |
+| 16 | RJ45 | 1000 | |
+| 18 | RJ45 | 1000 | |
+| 20 | RJ45 | 1000 | |
+| 21 | RJ45 | 1000 | |
+| 28 | RJ45 | - | [[nuc-g2p-1]] |
+| 29 | RJ45 | 1000 | |
+| 33 | RJ45 | 1000 | [[homeassistant]] |
+| 37 | RJ45 | 100 | |
+| 39 | RJ45 | 100 | |
+| 41 | RJ45 | 100 | [[Devices/Hubitat]] |
+| 47 | RJ45 | 100 | |
+| 49 | SFP+ | 10000 | [[basement-usw-aggregation]] port 2 |
+
 ## Product Info
 
 | Field | Value |

@@ -65,9 +65,9 @@ When building the full table (locally) or updating enriched documents, each clie
 - **OUI**: `oui` field (manufacturer from MAC address)
 - **OS Name**: `os_name` field (operating system identifier)
 - **Connected To**: `ap_mac` (access point) or `sw_mac` (switch) or `gw_mac` (gateway)
-- **Uptime**: `uptime` field (in seconds)
-- **Last Seen**: `last_seen` field (Unix timestamp)
-- **First Seen**: `first_seen` field (Unix timestamp)
+- **Uptime**: `uptime` field (in seconds). **Convert to human-readable time intervals** (e.g. "3d 5h", "2 days", "45m") before writing to documents.
+- **Last Seen**: `last_seen` field (Unix timestamp). **Convert to a human-readable date/time** (e.g. ISO date or "2026-03-15 14:30") before writing to documents.
+- **First Seen**: `first_seen` field (Unix timestamp). **Convert to a human-readable date/time** before writing to documents.
 
 ### From `get_client_details`:
 - Additional details that may not be in the list response
@@ -98,7 +98,7 @@ When building the full table (locally) or updating enriched documents, each UniF
 - **State**: `state` field (1 = online, 0 = offline)
 - **Adopted**: `adopted` field (true/false)
 - **Version**: `version` field (firmware version)
-- **Uptime**: `uptime` field (in seconds)
+- **Uptime**: `uptime` field (in seconds). **Convert to human-readable time intervals** before writing to documents.
 - **Serial Number**: `serial` field
 - **Uplink Depth**: `uplink_depth` field (network topology depth)
 - **Bytes**: `bytes` field (total bytes transferred)
@@ -113,7 +113,7 @@ When building the full table (locally) or updating enriched documents, each UniF
 - **TX Bytes**: `tx_bytes` - Total bytes transmitted (current)
 - **RX Bytes**: `rx_bytes` - Total bytes received (current)
 - **Bytes**: `bytes` - Total bytes transferred (current)
-- **Uptime**: `uptime` - Current uptime in seconds
+- **Uptime**: `uptime` - Current uptime in seconds; convert to human-readable time intervals for documents
 - **CPU**: `cpu` - CPU usage percentage (if available)
 - **Memory**: `mem` - Memory usage percentage (if available)
 - **State**: `state` - Current device state
@@ -175,7 +175,7 @@ When a client matches an existing document, the following information is added (
 - First Seen / Last Seen timestamps - for clients only
 - Device Type (UAP/USW/UGW) - for UniFi devices only
 - Uplink Depth - for UniFi devices only
-- Statistics availability note (if all statistics are zero, include a single line: "**Statistics**: Unavailable (all values are zero)" instead of creating a Statistics section)
+- Do not add a "Statistics: unavailable" line; if all statistics are zero, omit statistics from the document.
 
 **Statistics Section** (only if statistics contain non-zero values):
 - Total bytes transferred (TX/RX)
@@ -183,7 +183,7 @@ When a client matches an existing document, the following information is added (
 - Current connection rates (for wireless)
 - Signal strength metrics (for wireless)
 
-**Note on Statistics**: If all statistics values are zero (TX/RX bytes and packets all zero), do not create a separate Statistics section. Instead, add a single line in the Network Information section: "**Statistics**: Unavailable (all values are zero)". This avoids cluttering documents with empty statistics sections.
+**Note on Statistics**: If all statistics values are zero (TX/RX bytes and packets all zero), do not create a Statistics section and do not add any "Statistics: unavailable" line; omit statistics entirely.
 
 All data is footnoted with: `*Network data collected via UniFi MCP API on [date]. See [Client Data Collection Process](./client-data-collection.md) for update instructions.*`
 
@@ -198,7 +198,7 @@ All data is footnoted with: `*Network data collected via UniFi MCP API on [date]
    - Removed or renamed docs: remove or update the index row
    - The index shows which clients/UniFi devices already have documentation
 4. **Update statistics**: For each active client/UniFi device, call `mcp_unifi_get_client_statistics`/`mcp_unifi_get_device_statistics` to update bandwidth/connection data
-5. **Update enriched documents**: For clients/UniFi devices with existing documents (identified by the `device-by-ip.md` index), update the Network Information section with latest data. If statistics are all zero, update the "Statistics: Unavailable" line; if statistics have non-zero values, update or create the Statistics section accordingly.
+5. **Update enriched documents**: For clients/UniFi devices with existing documents (identified by the `device-by-ip.md` index), update the Network Information section with latest data. If statistics have non-zero values, update or create the Statistics section; if all statistics are zero, omit statistics (do not add a "Statistics: unavailable" line).
 6. **Update timestamps**: Update "Last Seen" and "Uptime" fields
 7. **Cross-check index**: Review `device-by-ip.md` and verify that every index row has a corresponding document that was updated in this run (if applicable), and that every document you updated is listed in the index. Add any missing index rows for new docs; remove rows for docs that no longer exist.
 
@@ -210,6 +210,35 @@ When updating `device-by-ip.md` (the index):
 1. **Include UniFi devices that have docs**: Every device in `kb/unifi/` that has a document should have a row in the index (Entity + Document link)
 2. **Use existing UniFi device data**: Reference the Network Information sections in UniFi device documents rather than making additional MCP calls when updating those docs
 3. **Keep index in sync**: When you add or remove a device document, add or remove the corresponding index row. Do not add IP/MAC/hostname columns to the published file
+
+## Port and cabling (UniFi devices)
+
+Port-level data (link state, speed, PoE) for switches and access points is **not** provided by the UniFi MCP; it comes from the **UniFi Integration API** (local controller). Use the following process to refresh and apply it.
+
+### 1. Fetch raw port and radio data
+
+- **Script**: `polisher/unifi/fetch_device_interfaces.py`
+- **Usage**: `UNIFI_API_KEY=<key> python3 polisher/unifi/fetch_device_interfaces.py [output.json]`
+- **Default output**: `unifi_devices_interfaces.json` (script prints the path to stderr). The repo keeps this file under `facts/` (or the workspace that contains `facts`); the script does not need to live in facts.
+- **What it does**: Requests `GET https://10.0.0.1/proxy/network/integration/v1/sites/{site_uuid}/devices` (site UUID is in the script), then for each device `GET .../devices/{device_id}`. From each device detail it extracts `interfaces.ports` and `interfaces.radios` and writes a JSON array of `{ id, name, macAddress, model, state, interfaces: { ports, radios } }`.
+- **IDs**: The Integration API uses **UUIDs** for site and device IDs, not the hex IDs used by the UniFi MCP. The script uses the UUIDs; match devices to kb docs by **name** (e.g. `attic-us-24-250w`) or MAC if needed.
+
+### 2. Port and radio structure in the JSON
+
+- **ports**: Array of objects. Each has `idx` (port index, 1-based), `state` ("UP" / "DOWN"), `connector` (e.g. "RJ45", "SFP+"), `maxSpeedMbps`, `speedMbps`, `poe` (e.g. "UP", "DOWN", "LIMITED" or absent/non-PoE).
+- **radios**: Array of objects (for APs). Typically `wlanStandard`, `frequencyGHz`, `channelWidthMHz`, `channel`. Use for uplink and radio summary in AP docs.
+
+### 3. Updating device documents
+
+- **Switches** (e.g. `kb/unifi/attic-us-24-250w.md`, `balcony-usw-lite-16-poe.md`): If the doc already has a "Port and cabling" (or "Ethernet cabling") table with manual notes (punchdown, which device/jack), **merge** API data into that table: add columns **Link** (state), **Speed (Mbps)** (speedMbps or "-" when DOWN), **PoE** (poe or "n/a" for non-PoE). Do **not** list every unused port; only include rows for ports that have notes or link UP (or that the user explicitly keeps). Preserve user-written Notes/Device columns and add wiki links to other kb docs where appropriate.
+- **Switches with no existing table**: Add a "Port and cabling" section with a table listing only ports with link **UP** (columns e.g. Port, Connector, Speed (Mbps), PoE), plus a footnote that cable/device notes can be added when traced.
+- **Access points**: One uplink port and radios. In "Port and cabling", state uplink speed (e.g. "Uplink on port 1 (1000 Mbps)") and radio summary (e.g. "2.4 GHz 802.11n ch 6, 20 MHz; 5 GHz 802.11ac ch 36, 80 MHz"). Keep the refresh footnote.
+- **Footnote**: In every updated doc, add or keep an italic footnote: *Link/speed/PoE from UniFi Integration API. Refresh with `UNIFI_API_KEY=... python3 polisher/unifi/fetch_device_interfaces.py facts/unifi_devices_interfaces.json`.* (Adjust path to the JSON if stored elsewhere.)
+
+### 4. What not to do
+
+- Do **not** infer which client is on a port from topology or guesses; only record factual API fields (link, speed, PoE). Use manual notes or tracing for "what is plugged in here."
+- Do **not** create a separate port table when the doc already has one; merge into the existing table.
 
 ## Data Source
 
