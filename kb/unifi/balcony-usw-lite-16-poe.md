@@ -25,7 +25,7 @@
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
-### Port assignments (physical)
+## Ethernet cabling
 
 | Port | Device / link | Notes |
 |------|----------------|--------|

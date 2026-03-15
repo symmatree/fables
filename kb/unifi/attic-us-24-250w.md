@@ -25,6 +25,33 @@
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
+## Ethernet cabling
+
+*Recorded 2026-03-15. Confirmed broken signal lines in the attic.*
+
+All 24 switch ports are PoE+ (see Product Info), so any port can power cameras, APs, or other PoE devices.
+
+**Punchdown column:** Tripp = Triplitte mini (block ports 1-12). Mono = Monoprice 24 (block ports 13-15). Blank = no punchdown (direct run or jack only).
+
+| Switch port | Punchdown | Notes |
+|-------------|-----------|--------|
+| 1 | Mono 15 | laundry camera. New punchdown looks okay. |
+| 2 | - | long brown wire, jack only (no punchdown), into attic floor. |
+| 3 | Tripp 3 | study front low blue. Blue maybe not broken. |
+| 4 | Tripp 4 | study front low green. Green broken. |
+| 5 | Tripp 5 | study front high blue. Looks okay visually. |
+| 6 | - | (not in use) |
+| 7 | Tripp 11 | garage camera (eaves).  insulation nicks. |
+| 8 | Tripp 8 | study rear blue. Looks okay. |
+| 9 | Tripp 9 | study rear green. Actively broken. |
+| 10 | Tripp 6 | study front high green. Looks okay visually. |
+| 11 | Tripp 12 | lower attic access point.  nicks. |
+| 12 | Tripp 10 | front door camera (eaves).  nicks. |
+| 13 | Mono 14 | basement blue. New punchdown looks okay (repunched). |
+| 14-16 | - | (not in use) |
+| 17 | - | ace base. |
+| 18-24 | - | (not in use) |
+
 ## Product Info
 
 | Field | Value |
@@ -35,6 +62,7 @@
 | **SKU** | US-24-250W |
 | **Type** | Switch (USW) |
 | **Features** | PoE Support, Always-On Fan |
+| **PoE ports** | All 24 RJ45 ports (PoE+, 250W total budget). Per [UI Tech Specs](https://techspecs.ui.com/unifi/switching/us-24-250w): 24 x PoE+ (max 34W per port). |
 
 **Links:**
 - [UniFi Store Page](https://store.ui.com/us/en/products/us-24-250w)
