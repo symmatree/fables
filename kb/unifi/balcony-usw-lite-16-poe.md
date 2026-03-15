@@ -25,6 +25,22 @@
 - **CPU Usage**: N/A (not reported by device)
 - **Memory Usage**: N/A (not reported by device)
 
+### Port assignments (physical)
+
+| Port | Device / link | Notes |
+|------|----------------|--------|
+| 1 | spa-in-eaves AP | AP at spa/eaves |
+| 2 | Amcrest bullet cam | Spa-eaves camera |
+| 3 | ESP32 PoE unit | Temporary; temp/humidity test |
+| 16 | Uplink to basement | Main uplink |
+
+*Recorded 2026-03-15.*
+
+### Maintenance / cabling
+
+- **2026-03-15:** Re-punched only the **spa-in-eaves AP** end (port 1 link) at the balcony end--that drop had a visible insulation nick. Did not redo the uplink to basement or the spa-eaves camera (Foscam/Amcrest on port 2); camera could be repunched later if needed. The cable to this switch had been suspected of one or more broken pairs, which could have been pulling the segment down.
+- Uplink (port 16) runs to basement; spa-in-eaves link serves the AP (port 1) and camera (port 2).
+
 ## Product Info
 
 | Field | Value |
