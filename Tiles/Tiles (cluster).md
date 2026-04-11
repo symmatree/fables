@@ -14,7 +14,7 @@ To change / improve:
 * Host on Proxmox on a farm of SFF servers (N95 and N150 machines)
 * 3 control-plane nodes for actual rolling upgrades
 * No nodes (? maybe just a worker) on Raconteur, leave it to be a NAS
-* Figure out how to upgrade Talos and k8s on a regular basis
+* Talos / Kubernetes version bumps: in [[Tiles-Repo]], `docs/talos.md` and README "Recreating cluster"; use `talosctl upgrade-k8s` when you intentionally move Kubernetes (separate from Talos OS pin in Terraform)
 * Push the diffs back to the PR (steal Google terraform-example code for this)
 * Terraform to manage external stuff
 	* External DNS
