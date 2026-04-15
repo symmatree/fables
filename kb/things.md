@@ -87,6 +87,7 @@ Entities created or updated by the [[data-collection|data collection procedures]
 - [[Synology/Raconteur]]
 - [[homeassistant]]
 - [[Devices/ReoBondBell]]
+- [[rekon-rx]]
 
 ---
 

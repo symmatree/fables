@@ -2,7 +2,7 @@
 
 *This file lists only entities that have their own kb document. The full device-by-IP table (IPs, MACs, hostnames) is not published; it can be regenerated from the entities list when needed.*
 
-*Last updated: 2026-03-15*
+*Last updated: 2026-04-15*
 
 | Entity | Document |
 |--------|----------|
@@ -30,6 +30,7 @@
 | Raconteur | [[Synology/Raconteur]] |
 | ReoBondBell | [[Devices/ReoBondBell]] |
 | Rising | [[Rising]] |
+| rekon-rx | [[rekon-rx]] |
 | samsung-white-camera (camera) | [[cameras/samsung-white-camera]] |
 | spa-eaves-uap-ac-pro | [[spa-eaves-uap-ac-pro]] |
 | tiles-cp-1 | [[tiles-cp-1]] |
