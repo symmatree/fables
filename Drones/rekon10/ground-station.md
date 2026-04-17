@@ -164,17 +164,19 @@ Rekon10 **FC** parameters that must match this layout (`FLTMODE*`, `RCx_OPTION`,
 |--------|--------------------|-----------------------|------------|---------|
 | SA (2-pos) | VTX off (low, ~1000 us) | VTX on (high, ~2000 us) | -100 | CH9 |
 | SB (3-pos) | ANGLE (low), HORIZON (mid) | ACRO (high) | -100 | CH6 |
-| SD (2-pos) | Airmode off / LAND (low) | Airmode on / normal (high) | -100 | CH7 |
+| SD (2-pos) | Airmode off / **Land** on **CH7** (low) | Airmode on / normal (high) | -100 | CH7 |
 | SE (2-pos shoulder) | Disarmed (used by arm gate) | Armed (used by arm gate) | -- | via L1-L3 |
 | SF (momentary shoulder) | Released | Held (gate + buzzer) | 100 | CH8 |
 | SC (3-pos) | Unmapped (reserved) | -- | -- | -- |
 | P3 (6-pos) | Unmapped (reserved) | -- | -- | -- |
 
+**SD and RTL:** **CH7** is **Land** for tight / canopy flying where **RTL** would be unsafe; see [ardupilot.md](ardupilot.md) (**Why Land on SD, not RTL**).
+
 Toward = safe applies to all switches, including SA: VTX off (toward)
 prevents overheating on the bench. The arm gate overrides CH9 to force VTX
 on while armed, so SA only controls VTX power when disarmed.
 
-**Arm safety gate:** SF is configured as truly momentary (2POS in [`config/RADIO/radio.yml`](config/RADIO/radio.yml)). Three logical switches (L1=AND(SE down, SF held), L2=AND(SE up, SF held), L3=Sticky(L1,L2)) implement a gated latch: arming or disarming requires holding SF while flipping SE. Bumping SE without SF has no effect. The drone buzzes while SF is held (CH8), warning bystanders before state change. VTX power (CH9) is forced on while armed to prevent accidental mid-flight video loss.
+**Arm safety gate:** SF is configured as truly momentary (2POS in [`config/RADIO/radio.yml`](config/RADIO/radio.yml)). Three logical switches (L1=AND(SE down, SF held), L2=AND(SE up, SF held), L3=Sticky(L1,L2)) implement a gated latch: arming or disarming requires holding SF while flipping SE. Bumping SE without SF has no effect. While SF is held, **EdgeTX** plays a short **Bp1** blip on the **handset** (`customFn` on **SF2** in [`config/MODELS/model01.yml`](config/MODELS/model01.yml)); **CH8** carries SF to the FC but **`RC8_OPTION`** stays **0** in [ardupilot.md](ardupilot.md), so that cue is radio-side, not the aircraft buzzer repeating from an aux. The **GEPRC** buzzer on the craft still sounds for ArduPilot events (**NTF_***: arm, disarm, errors, etc.). VTX power (CH9) is forced on while armed to prevent accidental mid-flight video loss.
 
 **Switch warnings:** EdgeTX alerts at model load if SA, SB, SD, or SE are not in their safe positions.
 

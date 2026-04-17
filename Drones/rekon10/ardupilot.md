@@ -33,7 +33,7 @@ Values from **`rekon10-ardupilot.param`**. Wiring: [flight-platform.md](flight-p
 
 ### RTCM / RTK
 
-Rekon10 ELRS profile is currently **333 Hz Full** with telemetry ratio **1:2** ([ground-station.md](ground-station.md)), which reports about **13211 baud** telemetry throughput budget on the handset. Final RTCM message mix and resulting traffic volume are not designed yet; practical target is to keep RTCM in a low-single-digit kilobaud envelope so MAVLink has comfortable margin on the same link. [rekon-design.md](rekon-design.md), [gps-mount.md](gps-mount.md).
+RTCM over the ELRS link is not finalized. Profile and headroom: [ground-station.md](ground-station.md), [rekon-design.md](rekon-design.md), [gps-mount.md](gps-mount.md).
 
 ## RC, switches, remaining FC work
 
@@ -41,35 +41,29 @@ Rekon10 ELRS profile is currently **333 Hz Full** with telemetry ratio **1:2** (
 
 Authoritative EdgeTX layout: **[`config/MODELS/model01.yml`](config/MODELS/model01.yml)**. In that file, **`mixData[].destCh`** is **zero-based output index** (**0** = **CH1** on the wire). Sticks are **I0..I3** on `destCh` **0..3**. Aux mixes:
 
+**Why Land on SD, not RTL:** much of this flying is **under canopy** and near **structure**. **RTL** means climb-then-go-home and is **actively dangerous** in that environment unless you have planned for **open sky**, a **safe home**, and **clearance above obstacles**. **SD** / **CH7** is **Land** only (**`RC7_OPTION = 18`**). Use **RTL** only when you have explicitly chosen that path (for example open-field work or a failsafe policy you have deliberately set and tested), not as the default "get out" on this switch.
+
 | `destCh` | Channel | `model01.yml` (mix names / logic) | FC action |
 |----------|---------|-----------------------------------|-------------|
-| 4 | CH5 | **Arm Lo** (`MAX` ADD `weight: -100`) then **Arm Hi** (`MAX` REPL `weight: 100`, **`swtch: "L3"`**) | Set **`RC5_OPTION = 153`** (Arm/Disarm). **`L3`** is the sticky latch from the third `logicalSw` entry (see below). |
-| 5 | CH6 | **FltMod**: **SB**, `weight: -100` | Set **`FLTMODE_CH = 6`**. SB low / mid / high map to **`FLTMODE1` / `FLTMODE4` / `FLTMODE6`** (ArduPilot six-band PWM convention for a 3-pos switch). Current export: **Loiter (5) / AltHold (2) / Sport (13)** toward-to-away to match safe-to-manual semantics (not the Betaflight ANGLE/HORIZON/ACRO labels on the switch silk). Human-readable switch labels are in [ground-station.md](ground-station.md) (SB row). |
-| 6 | CH7 | **Land**: **SD**, `weight: -100` | Set **`RC7_OPTION`** to **RTL** or **Land** (or another return option) using the **dropdown** in Mission Planner for that parameter -- **CH7** is **SD**; pick one behavior and stick with it ([ground-station.md](ground-station.md) SD row). |
-| 7 | CH8 | **Buzzer**: **SF**, `weight: +100` | Mostly radio-side: `customFn` plays **Bp1** on **SF2**, **L3**, and **!L3** in the same YAML. Add an FC option only if you need ArduPilot to react on CH8. |
-| 8 | CH9 | **VTX** (**SA**) plus **VTX On** (`MAX` REPL when **`L3`**) | Set **`RC9_OPTION`** to **Relay4** in the MP dropdown (numeric is **36** in Copter **4.6.3**; confirm in your build). Matches **`RELAY4_PIN = 83`**. |
+| 4 | CH5 | **Arm Lo** / **Arm Hi** (**`L3`**) | **`RC5_OPTION`** for arm/disarm -- see **Arm / disarm on CH5** below. |
+| 5 | CH6 | **FltMod**: **SB**, `weight: -100` | **`FLTMODE_CH = 6`**. SB low / mid / high map to **`FLTMODE1` / `FLTMODE4` / `FLTMODE6`**. Export: **Loiter (5) / AltHold (2) / Sport (13)** (toward-to-away). Switch labels: [ground-station.md](ground-station.md). |
+| 6 | CH7 | **Land**: **SD**, `weight: -100` | **`RC7_OPTION = 18`** (**LAND Mode** in Mission Planner; [aux functions](https://ardupilot.org/copter/docs/common-auxiliary-functions.html)). SD low selects Land on this channel ([ground-station.md](ground-station.md) SD row). |
+| 7 | CH8 | **Buzzer** (PWM): **SF**, `weight: +100` | **Handset blip:** `customFn` in **`model01.yml`** plays **Bp1** on **SF2** (momentary pressed), **L3**, and **!L3** -- short sound when you start the arm gate and when armed state toggles. **FC:** leave **`RC8_OPTION = 0`** here; ArduPilot still uses the aircraft buzzer for its own tones (**NTF_***). Do **not** map **30** (Lost vehicle sound) to SF -- that alarm runs while the channel stays high. |
+| 8 | CH9 | **VTX** (**SA**) plus **VTX On** (`MAX` REPL when **`L3`**) | **`RC9_OPTION`** = **Relay4** (numeric **36** in Copter **4.6.3**; confirm in MP). Matches **`RELAY4_PIN = 83`**. |
+
+### Arm / disarm on CH5
+
+Mission Planner **Arm/Disarm** options: **41** (legacy), **153** (Copter 4.2+, no [AirMode](https://ardupilot.org/copter/docs/airmode.html) coupling from the arm switch), **154** (with AirMode on the arm switch in ACRO/Stabilize). For **Copter 4.6.3** this build uses **`RC5_OPTION = 153`** unless you deliberately want **154**. **`L3`** is the sticky latch from **`logicalSw`** in **`model01.yml`** (see table note above).
 
 **Arm gate in YAML (`logicalSw`):** first entry **AND** `SE2,SF2`; second **AND** `SE0,SF2`; third **STICKY** with `def: "L1,L2"` (feeds **`L3`** to mixes). **`switchWarning`** at end of file: SA up, SB down, SD up, SE up.
 
 **Relay (already in param):** `RELAY4_PIN = 83`, `RELAY4_FUNCTION = 1` (Lucid HD VTX BEC).
 
-**Still default in `rekon10-ardupilot.param`:** `RC5_OPTION` through `RC9_OPTION` are **0**. Apply the table above in **Full Parameter List**: **`RC5_OPTION = 153`** (Arm), **`RC7_OPTION`** = RTL or Land (your choice from dropdown), **`RC9_OPTION`** = Relay4 (see row above). **`FLTMODE_CH`** and **`FLTMODE1` / `FLTMODE4` / `FLTMODE6`** are already set for **SB**; **SB** is flight modes only -- **SD** on **CH7** is **`RC7_OPTION`** only. Re-export **`rekon10-ardupilot.param`** after changes. Repo **`.gitattributes`** forces **`text eol=crlf`** for this file so Windows Mission Planner exports do not create line-ending-only diffs.
+**Still default in `rekon10-ardupilot.param`:** `RC5_OPTION` through `RC9_OPTION` are **0**. In **Full Parameter List** set **`RC5_OPTION = 153`**, **`RC7_OPTION = 18`** (Land on **SD** / **CH7**), **`RC9_OPTION = 36`** (Relay4). **`FLTMODE_*`** for **SB** is already in the export. Re-export **`rekon10-ardupilot.param`** after **Write Params**. Repo **`.gitattributes`** uses **`text eol=crlf`** for this file so Mission Planner exports on Windows do not create line-ending-only diffs.
 
-### ELRS telemetry fields on the radio (`model01.yml`)
+### ELRS telemetry on the radio
 
-Telemetry entries currently present in the Rekon10 EdgeTX model, with matching telemetry screens:
-
-- `1RSS`: Receiver antenna/path 1 RSSI, reported in dBm.
-- `2RSS`: Receiver antenna/path 2 RSSI, reported in dBm.
-- `RQly`: Receiver-side link quality (percent).
-- `RSNR`: Receiver-side signal-to-noise estimate (dB-class SNR metric).
-- `TRSS`: Transmitter-side RSSI (radio module view), reported in dBm.
-- `TSNR`: Transmitter-side signal-to-noise estimate (TX side view).
-- `TQly`: Transmitter-side link quality (percent).
-- `TPWR`: Current transmitter output power level.
-- `ANT`: Active/selected antenna or diversity state indicator.
-- `RFMD`: RF mode / packet-rate mode indicator currently in use.
-- `FM`: Reported flight mode value exposed through telemetry.
+Telemetry keys and screens live in **`model01.yml`** (e.g. **RSNR**, **FM**, RSSI/LQ fields). [ground-station.md](ground-station.md) describes the ELRS profile and handset setup.
 
 ## Compass and GPS (M100)
 
