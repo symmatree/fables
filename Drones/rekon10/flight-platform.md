@@ -44,25 +44,20 @@ Pending:
 | UART | SERIAL | Device | Protocol (ArduPilot) | Baud | Notes |
 |------|--------|--------|----------------------|------|-------|
 | USB | SERIAL0 | -- | MAVLink2 (2) | 115200 | Unused (coordinator) |
-| 2 | SERIAL2 | HGLRC M100 Pro GPS | GPS (5) | 115200 | Direct to FC pads; verified indoor 3D + compass on USB bench |
+| 2 | SERIAL2 | HGLRC M100 Pro GPS | GPS (5) | 115200 | Direct to FC pads; 3D fix + compass cal (see build log) |
 | 3 | SERIAL3 | Walksnail VTX | MSP DisplayPort (42) | 115200 | JST to **TX3/RX3** for data only; VTX power on other FC pads |
 | 4 | SERIAL4 | -- | Rangefinder (9) | 115200 | Unused |
 | 6 | SERIAL6 | Matek ELRS R24-TD | MAVLink2 (2) | 460800 | Boxer MAVLink; [ground-station.md](ground-station.md) |
 | 7 | SERIAL7 | -- | GPS (5) | 460800 | Unused |
 | 8 | SERIAL8 | ESC | ESC telemetry (16) | auto | FC ribbon |
 
-### Integration status (honest)
-
-| Path | Status |
-|------|--------|
-| M100 GPS + compass on SERIAL2 / I2C1 | **Bench verified** (USB, indoor weak sky); outdoor validation still recommended |
-| Walksnail MSP / video | **Soldered as designed**; in-flight OSD / link quality **not fully validated** in docs yet |
-| ELRS SERIAL6 MAVLink | **Matek R24-TD:** bound to Boxer (binding phrase); **MAVLink** RC + telemetry verified on bench. Param export matches Boxer **Link Mode MAVLink**; **match TX Link Mode** always. **ExpressLRS model match** intentionally **off**. Receiver firmware **3.6.3**; on **house WiFi** for ELRS Web UI with DHCP reservation **10.0.4.65**, DNS **rekon-rx.local.symmatree.com** ([ardupilot.md](ardupilot.md); kb: [rekon-rx](../../kb/rekon-rx.md)). |
-| SERIAL0 coordinator | Unused |
-| SERIAL7 F9P | Unused |
-| Lucid DJI pigtail | Unused (see build log) |
+**Bring-up (cross-subsystem):** **M100** on SERIAL2 / I2C1: **3D fix**, compass cal, UART path (see build log). **Walksnail** UART + power **wired**; **VTX never powered**; **goggles** firmware current (expect VTX FW via goggles when linked). **ELRS** on SERIAL6: **MAVLink**, **R24-TD** **3.6.3**, bound to Boxer; link + telemetry OK; WiFi **10.0.4.65** / **rekon-rx.local.symmatree.com** ([rekon-rx](../../kb/rekon-rx.md)). **Model match:** [ELRS model match](#elrs-model-match). Per-subsystem detail: sections below and [ardupilot.md](ardupilot.md).
 
 **Mission Planner param export:** Full list in git as **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**. This repo's **`.gitattributes`** marks that path **`text eol=crlf`** (alongside EdgeTX YAML under `Drones/rekon10/config/`) so CRLF exports from Mission Planner on Windows do not produce whole-file diffs against LF-only clones. A **facts** superproject checkout also sets the same behavior for the submodule path `fables/Drones/rekon10/config/` via **facts** `.gitattributes`.
+
+### ELRS model match
+
+**R24-TD** + **Boxer** use **Receiver Number 10** with **model match** so the Rekon ELRS profile (**MAVLink** on **SERIAL6**) cannot arm against the wrong EdgeTX model. Details: [Receiver](#receiver-matek-elrs-r24-td), **[ground-station.md](ground-station.md)**.
 
 ## ESC
 
@@ -112,6 +107,27 @@ Connected to FC via 1.25mm JST pigtail to allow easier reflashing. On 5V (FC BEC
 
 **ArduPilot / ELRS:** [ardupilot.md](ardupilot.md). **Ground radio:** [ground-station.md](ground-station.md).
 
+3.6.3 Firmware flashed with Serial, w/ receiver baud override to 460800 in Compatibility Options.
+
+In WebUI, checked Enabled Model Match, set id 10.
+
+From LUA:
+
+`RM RP4TD 2400`
+
+* Protocol MAVLink
+* Target SysId: 1
+* Source SysId: 255
+* Rx Mode: Diversity
+* Tlm power: MatchTX
+* 3.6.3 288efe
+
+From WebUI:
+
+* Serial protocol: MAVLINK
+* Model match: enabled, id 10
+* Force telemetry off: unchecked
+
 ## FPV (Walksnail Avatar HD Pro Kit)
 
 **Caddx / Walksnail Avatar HD Pro Kit - 32GB w/ Dual Antennas** -- [product page](https://www.caddxfpv.com/products/walksnail-avatar-hd-pro-kit-dual-antenna). Local docs: [attachments/walksnail-vtx.webp](attachments/walksnail-vtx.webp), [attachments/Avatar_V2_DUAL_kit_Quickstart_Guide.pdf](attachments/Avatar_V2_DUAL_kit_Quickstart_Guide.pdf), [attachments/Goggles_X_User_Manual_EN_V1.2.pdf](attachments/Goggles_X_User_Manual_EN_V1.2.pdf).
@@ -139,7 +155,7 @@ Connection path (to deal with tricky, small-pitch surface-mount interface):
 
 ## Buzzer and power accessories
 
-**GEPRC Super Buzzer** -- two wires + GND to FC buzzer pads via provided plug pigtail. **Port** frame side, mirror of RX placement, VHB, button reachable.
+**GEPRC Super Buzzer** -- FC buzzer pads to the buzzer through the **provided plug pigtail** (connectorized, not bare splice). **Port** frame side, mirror of RX placement, VHB, button reachable. **Working** (audible when the radio/FC path triggers it).
 
 ## Batteries
 

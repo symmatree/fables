@@ -45,7 +45,7 @@ NO: Option 2: Don't drill holes. Hmm. ESC long-axis fore-and-aft. Remove nut spa
 
 ## Practical build log
 
-**Bring-up safety:** Keep **props off** until outdoor validation with GPS is done (then mount props for hover). Keep a **smoke stopper** in the battery path through bench work unless a step explicitly needs full current. Phased execution and params: Cursor plan `rekon_flight_stack_bring-up_b564811b.plan.md` (not duplicated in a second checklist file in this repo).
+**Bring-up safety:** Keep **props off** until the bring-up plan calls for props (hover). Phased execution and params: Cursor plan `rekon_flight_stack_bring-up_b564811b.plan.md` (not duplicated in a second checklist file in this repo).
 
 ### Gorilla holes (curse you TBS)
 
