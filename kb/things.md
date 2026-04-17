@@ -49,6 +49,14 @@ Entities created or updated by the [[data-collection|data collection procedures]
 
 ---
 
+## UniFi networks and WLANs
+
+*Manually maintained notes for UniFi network and SSID configuration.*
+
+- [[unifi/things-ssid]]
+
+---
+
 ## UniFi clients and device-by-IP
 
 *Maintained by [[client-data-collection]]. Includes an index of documented entities and any client-linked entity docs. See [[device-by-ip]] for the index.*

@@ -1,5 +1,7 @@
 # Network Logical Design
 
+See also: [[things-ssid]] for current `things` SSID status and IoT flag state.
+
 ## Current Physical Infrastructure
 
 ### Network Topology
