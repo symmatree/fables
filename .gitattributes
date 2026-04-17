@@ -22,3 +22,7 @@
 *.tar binary
 *.tar.gz binary
 *.gz binary
+
+# EdgeTX YAML and Mission Planner param exports (USB mass storage / Windows): keep CRLF in working tree.
+Drones/rekon10/config/**/*.yml text eol=crlf
+Drones/rekon10/config/rekon10-ardupilot.param text eol=crlf

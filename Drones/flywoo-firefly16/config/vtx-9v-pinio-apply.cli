@@ -1,0 +1,17 @@
+# Betaflight CLI snippet
+# FLYWOOF405S_AIO: free PC8 from Motor 8 so PINIO 2 can drive the 9V rail enable.
+# Matches EdgeTX USER2 on AUX5 (pinio_box USER1=40, USER2=41).
+# Recorded on the vehicle in config/BTFL_cli_FIREFLY-WH16_FLYWOOF405S_AIO.txt (# resources).
+#
+# Paste into Configurator CLI, check for errors, reboot, then `resource show all`.
+# If the rail still does not cut, revise after bench verification (see firefly16.md).
+
+batch start
+
+resource MOTOR 8 NONE
+resource PINIO 2 C08
+set pinio_box = 40,41,255,255
+
+batch end
+
+save
