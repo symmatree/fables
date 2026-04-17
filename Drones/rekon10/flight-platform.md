@@ -62,7 +62,7 @@ Pending:
 | SERIAL7 F9P | Unused |
 | Lucid DJI pigtail | Unused (see build log) |
 
-**Mission Planner param export:** Full list in git as **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**. In the **facts** repo, **`.gitattributes`** marks that path **`text eol=crlf`** (alongside EdgeTX YAML under `fables/Drones/rekon10/config/`) so CRLF exports from Mission Planner on Windows do not produce whole-file diffs against LF-only clones.
+**Mission Planner param export:** Full list in git as **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**. This repo's **`.gitattributes`** marks that path **`text eol=crlf`** (alongside EdgeTX YAML under `Drones/rekon10/config/`) so CRLF exports from Mission Planner on Windows do not produce whole-file diffs against LF-only clones. A **facts** superproject checkout also sets the same behavior for the submodule path `fables/Drones/rekon10/config/` via **facts** `.gitattributes`.
 
 ## ESC
 
