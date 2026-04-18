@@ -1,13 +1,13 @@
 # Postgres Operator UI
 
-Web UI for the Zalando Postgres Operator. Deployed via Helm from the same chart repo as the operator.
+Web UI for the Zalando Postgres Operator. Deployed via Helm using the **`postgres-operator-ui`** chart index (a sibling of the main operator chart URL, not the same `index.yaml`).
 
 ## Configuration
 
-- **Short summary**: Postgres Operator UI; web interface for managing Postgres clusters. Deployed via Helm from opensource.zalando.com/postgres-operator (same repo as operator).
+- **Short summary**: Postgres Operator UI; web interface for managing Postgres clusters. Deployed via Helm from the dedicated UI chart repository (see below).
 - **application.yaml type**: helm
-- **Where loaded from**: Helm chart `postgres-operator-ui` from https://opensource.zalando.com/postgres-operator/charts/postgres-operator
-- **Version deployed**: v1.15.1
+- **Where loaded from**: Helm chart `postgres-operator-ui` from https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui
+- **Version deployed**: 1.15.1 (Helm chart version string; not prefixed with `v`)
 - **Links**:
   - Application: [postgres-operator-ui-application.yaml](https://github.com/symmatree/tiles/blob/main/charts/argocd-applications/templates/postgres-operator-ui-application.yaml)
   - (No values.yaml in repo; values in Application valuesObject.)
