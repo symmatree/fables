@@ -66,13 +66,8 @@ Pending:
 * [AM32 Online Configurator](https://am32.ca/)
 * [AM32 Firmware](https://github.com/am32-firmware/AM32)
 
-Capacitor guidance (TBS): **>= 1000 µF** on ESC for **>= 30 mm** motors; **>= 220 µF** on FC VBatt.
-
-Connections:
-
 * XT60 input from harness
 * **1000 µF** Rubycon YXJ across input; motor leads; FC ribbon.
-
 
 ## Motors and props
 
