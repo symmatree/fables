@@ -14,6 +14,7 @@ Prometheus monitoring mixin for CoreDNS; generates dashboards and alerts. Deploy
   - [spec.json](https://github.com/symmatree/tiles/blob/main/tanka/environments/coredns-mixin/spec.json)
 - **TF / bootstrap values**: Yes. Variables used: cluster_name, vault_name, project_id (via plugin parameters). No dedicated .tf; values from app-of-apps. TF: [k8s-cluster](https://github.com/symmatree/tiles/blob/main/tf/modules/k8s-cluster).
 - **Tanka**: Environment `tanka/environments/coredns-mixin`. Links above.
+- **Selector override**: `main.jsonnet` sets `_config.corednsSelector` to `job="integrations/kubernetes/kube-dns"` so alerts/dashboards match how Alloy (k8s-monitoring Helm) labels CoreDNS scrapes; the mixin default `job="kube-dns"` does not match and would fire **CoreDNSDown** spuriously.
 - **Varies between prod and test**: Yes. Configuration varies by environment (cluster_name, vault_name, project_id).
 
 *Configuration section updated by tiles-software-data-collection on 2026-02-15. See [[tiles-software-data-collection]] for update instructions.*
