@@ -63,8 +63,22 @@ Pending:
 
 **TBS Lucid 60A 3-6S AM32 4-in-1 ESC - Gorilla 39x16** -- [TBS](https://www.team-blacksheep.com/products/prod:lucid_4in1), [GetFPV 22303](https://www.getfpv.com/tbs-lucid-60a-3-6s-am-32-4-in-1-esc-gorilla-39x16.html). **AM32** firmware, target: `tbslu6s4in1`
 
+### Firmware
+
 * [AM32 Online Configurator](https://am32.ca/)
 * [AM32 Firmware](https://github.com/am32-firmware/AM32)
+
+initial: self report as F421, EEPROM v2, TBS_6S_4IN1_F421, version 2.16.
+
+Flashed v2.20 using web configurator, pushed default config: EEPROM v3. 
+
+Settings (non-default):
+
+* 900 KV, 14 poles
+* Beeper volume 3
+* Running brake level 9 for all that propeller inertia
+
+### Hardware
 
 * XT60 input from harness
 * **1000 µF** Rubycon YXJ across input; motor leads; FC ribbon.
@@ -88,7 +102,7 @@ The table below is from the **Helion 3110 / 900KV** datasheet for **HQ 10 x 5 x 
 | 90 | 22.58 | 46.85 | 2768 | 1057.9 | 2.62 |
 | 100 | 21.86 | 49.85 | 2906 | 1089.7 | 2.67 |
 
-**Battery for planning:** Main pack is **GAONENG GNB 6S 22.2V 8000mAh 10C XT60 Li-ion** (Samsung 21700), model **GNB80006S10R** -- [manufacturer page](https://www.gaoneng.shop/products/gaoneng-gnb-6s-22-2v-8000mah-10c-xt60-li-ion-battery-made-with-samsung-21700). Continuous label **80 A**; current limiting in ArduPilot is still important (see [ardupilot.md](ardupilot.md)). Long design notes on C-rate and alternate packs live in the [build log](flight-platform-build-log.md).
+**Battery:** **GAONENG GNB 6S 22.2V 8000mAh 10C XT60 Li-ion** (Samsung 21700), model **GNB80006S10R** -- [manufacturer page](https://www.gaoneng.shop/products/gaoneng-gnb-6s-22-2v-8000mah-10c-xt60-li-ion-battery-made-with-samsung-21700). Continuous label **80 A**; current limiting in ArduPilot is still important (see [ardupilot.md](ardupilot.md)). Long design notes on C-rate and alternate packs live in the [build log](flight-platform-build-log.md).
 
 ## Receiver (Matek ELRS R24-TD)
 
