@@ -10,7 +10,7 @@
 
 - **Goal:** Capture data and produce a 3D model of the house with a high overall success rate.
 - **Geo-referencing:** GCPs established via RTK-corrected GPS or a total-station chain from the reference GPS antenna in the attic down to each GCP.
-- **Success:** Iterate until empirically acceptable to you (you don't see anything wrong) — qualitative, by your judgment. No pre-committed checklist; declare Stage 1 done when it looks right, then expand.
+- **Success:** Iterate until empirically acceptable to you (you don't see anything wrong) -- qualitative, by your judgment. No pre-committed checklist; declare Stage 1 done when it looks right, then expand.
 
 ### Stage 2: Yard/driveway surface height field
 
@@ -24,7 +24,7 @@
 
 - **Products:**
   - **House, garden, yard:** Textured 3D model (same style as Stage 1).
-  - **Woods:** (1) Conservative height field — the ODM product that does *not* rely on point classification by a model — to detect downed trees; (2) Point cloud → naive canopy representation, e.g. DEM using something like 95th percentile z within each cell.
+  - **Woods:** (1) Conservative height field -- the ODM product that does *not* rely on point classification by a model -- to detect downed trees; (2) Point cloud → naive canopy representation, e.g. DEM using something like 95th percentile z within each cell.
 - **Geo-referencing:** Same GCP approach; scale may require more GCPs or different placement.
 - **Success:** Define what "good enough" is for woods (e.g. downed-tree detection rate, canopy height sanity checks).
 
@@ -47,7 +47,7 @@ At each stage:
 
 - **Collection:** DroneLink (machine-controlled flightpaths) + DJI Mini 3 Pro. Primary missions so far: lawnmower grid at -70° gimbal, orbit around house with house as POI; optional manual "close orbit" to fill gaps.
 - **Processing:** ODM / WebODM (e.g. on [[Lancer]]).
-- **Documentation and data:** Facts repo — [[data-collection]], [[imagesets-data-collection]], [[odm-maps-data-collection]]. Datasets live under `Datasets/`; imageset and ODM map docs link to NAS paths and to each other.
+- **Documentation and data:** Facts repo -- [[data-collection]], [[imagesets-data-collection]], [[odm-maps-data-collection]]. Datasets live under `Datasets/`; imageset and ODM map docs link to NAS paths and to each other.
 
 ---
 

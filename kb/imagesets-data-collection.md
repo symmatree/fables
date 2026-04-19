@@ -24,7 +24,7 @@ This document describes the process for collecting and maintaining metadata abou
 - **Goal: one summary per imageset folder.** Every subfolder under `{NAS_MOUNT}/imagesets/{site}/` that contains drone images is an imageset and should have a corresponding doc in `Datasets/`. Do not restrict to a particular naming pattern (e.g. `YYYY-MM-DD-variant`). Folder names are human-typed and will be inconsistent; the benefit of using an LLM is to recognize all of them, create or update docs with sensible filenames, and surface naming ambiguities so the human can fix instructions or rename folders if desired.
 - **From NAS**: List **all** subfolders under `{NAS_MOUNT}/imagesets/{site}/` for each site. Each subfolder that looks like an imageset (contains image files, e.g. `.JPG`/`.jpg`) is one imageset. Skip only obvious non-folders (e.g. loose files like `Thumbs.db`, `odm_orthophoto.tif`) or archive files (e.g. `.zip`) if they appear as entries in the directory listing.
 - **From existing docs**: Check `Datasets/` and the Datasets section in `kb/things.md` to see which sets are already tracked and to avoid duplicate links when adding new docs.
-- **Create new docs for every imageset folder that has no doc.** If a NAS folder has no corresponding document, create one. Normalize the folder name to a safe doc filename (e.g. `imagesets-{site}-{normalized-folder-name}.md`—lowercase, hyphens, no spaces). If the folder name doesn't match a strict `date-variant` pattern, derive a sensible doc name and note the mismatch in your run summary so the human can update instructions or rename as needed. Add the new doc and link it in `kb/things.md` (see Update Process step 6).
+- **Create new docs for every imageset folder that has no doc.** If a NAS folder has no corresponding document, create one. Normalize the folder name to a safe doc filename (e.g. `imagesets-{site}-{normalized-folder-name}.md`--lowercase, hyphens, no spaces). If the folder name doesn't match a strict `date-variant` pattern, derive a sensible doc name and note the mismatch in your run summary so the human can update instructions or rename as needed. Add the new doc and link it in `kb/things.md` (see Update Process step 6).
 
 ### 2. For each imageset folder
 
@@ -34,13 +34,13 @@ For each chosen imageset (e.g. `bond_ave/2026-02-16-grid`):
 2. **Read EXIF** (via Pillow or a small script using it):
    - **Altitude**: From GPS IFD (tag 6) only. The script does this. If the script reports no altitude, ask the user how to proceed or investigate why it is missing (e.g. check whether GPS altitude is absent in the files, camera/firmware behaviour, or a script bug); do not assume it will "randomly" be missing and document that without resolving or escalating.
    - **GPS**: Use all images to compute the bounding box (min/max lat, min/max lon). The script does this.
-3. **Aggregate**: Image count; altitude range (min–max m); bounding box (lon_min, lat_min) .. (lon_max, lat_max). All three are required.
+3. **Aggregate**: Image count; altitude range (min-max m); bounding box (lon_min, lat_min) .. (lon_max, lat_max). All three are required.
 
 ### 3. Update or create the Datasets doc
 
 - **Filename**: `Datasets/imagesets-{site}-{normalized-name}.md`. When the folder name is already like `YYYY-MM-DD-variant` (e.g. `2026-02-16-grid`), use it as-is for the doc name (e.g. `imagesets-bond_ave-2026-02-16-grid.md`). When the folder name uses other conventions (e.g. `Bond-2024-04-22`, `bond-snow-2026-01-01`), normalize to a safe, consistent filename (lowercase, hyphens) so the doc name uniquely matches that folder (e.g. `imagesets-bond_ave-2024-04-22.md`, `imagesets-bond_ave-2026-01-01-snow.md`). One doc per folder; the doc name must identify the folder unambiguously.
 - **Path on NAS**: Use the **exact** folder path for this imageset: `\\raconteur\datasets\imagesets\{site}\{folder_name}` (e.g. `...\2026-02-16-grid` or `...\Bond-2024-04-22`). Do not substitute a different variant or name.
-- **Content**: Add or update a "From EXIF" (or "Dataset summary") section with: image count; altitude range (min–max, in m); bounding box (lon, lat) as in Document Structure. All three are required.
+- **Content**: Add or update a "From EXIF" (or "Dataset summary") section with: image count; altitude range (min-max, in m); bounding box (lon, lat) as in Document Structure. All three are required.
 
 **Do not update user-written content.** Preserve any existing content in the file (mission params, DroneLink link, processing notes, etc.). Only add or update the sections this process owns: Path on NAS, From EXIF (dataset summary), map preview embed, and the collection footnote. Do not edit, "fix," or rewrite links, wording, or other content that the user wrote.
 
@@ -51,7 +51,7 @@ Fields derived from EXIF for the Datasets doc:
 | EXIF / source        | Doc use                          |
 |----------------------|-----------------------------------|
 | Number of image files| Image count                       |
-| GPS altitude (all imgs)| Altitude range (min–max, m)     |
+| GPS altitude (all imgs)| Altitude range (min-max, m)     |
 | GPS lat/lon          | Bounding box (required)          |
 
 *Exact tag names (e.g. GPSAltitude, GPSLatitude, GPSLongitude) depend on Pillow's EXIF IFD layout; the collection script should document which tags it uses.*
@@ -72,7 +72,7 @@ Each imageset file in `Datasets/` should include:
 - **Mission/processing notes**: Preserve existing content (DroneLink link, altitude, overlap, pattern, processing flags, etc.).
 - **From EXIF (dataset summary)**:
   - **Image count**: Total number of images.
-  - **Altitude range**: Min–max altitude in m (from EXIF).
+  - **Altitude range**: Min-max altitude in m (from EXIF).
   - **Bounding box**: (lon_min, lat_min) .. (lon_max, lat_max) from EXIF.
 
 Add a footnote with collection date and pointer to this process:
@@ -86,7 +86,7 @@ Add a footnote with collection date and pointer to this process:
 3. **Cross-check:** For each imageset folder, determine the doc filename you will use (normalize folder name to `imagesets-{site}-{normalized-name}.md`). Check whether that doc already exists; if not, check `kb/things.md` so you can add a new link without duplicating.
 4. **For each imageset folder:**
    - Run: `polisher/.venv/bin/python polisher/facts/collect_imageset_exif.py <folder_path>` (e.g. `/mnt/d/imagesets/bond_ave/2026-02-21-grid`). If the command fails or required EXIF fields (e.g. altitude) are missing, report to the user and either resolve (e.g. fix script, identify cause) or get direction; do not silently skip or document "no altitude" and move on.
-   - Use the KEY=value output to fill the "From EXIF" section. Format: `* Image count: <N>`; `* Altitude range (GPS, approx MSL): <ALT_MIN>–<ALT_MAX> m`; `* Bounding box (lon, lat): (<LON_MIN>, <LAT_MIN>) .. (<LON_MAX>, <LAT_MAX>)`. Footnote: `*Imageset summary from EXIF on YYYY-MM-DD. See [[imagesets-data-collection]] for update instructions.*` (use today's date).
+   - Use the KEY=value output to fill the "From EXIF" section. Format: `* Image count: <N>`; `* Altitude range (GPS, approx MSL): <ALT_MIN>-<ALT_MAX> m`; `* Bounding box (lon, lat): (<LON_MIN>, <LAT_MIN>) .. (<LON_MAX>, <LAT_MAX>)`. Footnote: `*Imageset summary from EXIF on YYYY-MM-DD. See [[imagesets-data-collection]] for update instructions.*` (use today's date).
    - Run the map preview script and embed the PNG: `polisher/.venv/bin/python polisher/facts/render_imageset_map_preview.py <folder_path> <output_png>` with `output_png` in the facts repo (e.g. `Datasets/imageset_preview-{site}-{normalized-name}.png`). Add `--ortho <path>` if you have an ortho for this flight. In the imageset doc, embed the image (e.g. `![[imageset_preview-{site}-{normalized-name}.png]]`).
    - Target file: `Datasets/imagesets-{site}-{normalized-name}.md`. Update or create: add or refresh the "From EXIF" block and footnote only. Do not edit or fix user-written content (mission, DroneLink link, processing notes, etc.); preserve it exactly.
 5. **New imagesets:** If you created any new imageset doc in step 4, add it to `kb/things.md` (step 6).

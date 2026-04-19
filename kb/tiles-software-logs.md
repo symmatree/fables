@@ -85,7 +85,7 @@ Each `Tiles/Software/<component>.md` file can have a **Logs** section that:
 2. **kubectl**: Gives the exact `kubectl logs` command(s) for that component (namespace, label, and any `--tail` or other flags).
 3. **Trailing lines summary** (optional): A short prose summary of what the last ~50 lines typically show (e.g. "Controller idle, no renewals; webhook serving; no errors"). This is filled in when someone runs the commands during the logs collection process.
 
-Style: same as other data-collection footnotes—e.g. "Logs section updated by tiles-software-logs on YYYY-MM-DD. See [[tiles-software-logs]] for how to run queries and kubectl commands."
+Style: same as other data-collection footnotes--e.g. "Logs section updated by tiles-software-logs on YYYY-MM-DD. See [[tiles-software-logs]] for how to run queries and kubectl commands."
 
 **Do not update user-written content.** Only add or replace the **Logs** section and its footnote. Do not edit, "fix," or rewrite any other content in the file (e.g. Configuration, Overview, Architecture). Preserve it exactly.
 

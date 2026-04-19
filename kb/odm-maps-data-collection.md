@@ -32,8 +32,8 @@ To fill or refresh the "ODM run record" section in a map doc:
 
 ## Data and Doc Locations
 
-- **On NAS:** `{NAS_MOUNT}/odm-maps/{map_name}` — the ODM run output (e.g. `odm_orthophoto.tif`, report, etc.). Typical WSL path: `/mnt/d/odm-maps/bond_ave-2026-02-16`.
-- **In facts repo:** `Datasets/odm-maps-{map_name}/` — one directory per map. Inside it: `odm-maps-{map_name}.md` (the doc) and optionally `map_preview.png` (or another name you embed).
+- **On NAS:** `{NAS_MOUNT}/odm-maps/{map_name}` -- the ODM run output (e.g. `odm_orthophoto.tif`, report, etc.). Typical WSL path: `/mnt/d/odm-maps/bond_ave-2026-02-16`.
+- **In facts repo:** `Datasets/odm-maps-{map_name}/` -- one directory per map. Inside it: `odm-maps-{map_name}.md` (the doc) and optionally `map_preview.png` (or another name you embed).
 
 ## Document Structure
 
@@ -61,7 +61,7 @@ Run from WSL (or wherever the NAS path is available). Use absolute paths to the 
 - **&lt;map_output_dir&gt;**: Path to the ODM output on the NAS (e.g. `/mnt/d/odm-maps/bond_ave-2026-02-21-house`) or a copy of it. The script looks for `odm_orthophoto.tif` (or `odm_orthophoto/odm_orthophoto.tif`) and, for a boundary overlay, a GeoJSON file (see below).
 - **&lt;output_png&gt;**: Path in the facts repo, typically the same directory as the map doc (e.g. `Datasets/odm-maps-bond_ave-2026-02-21-house/map_preview.png`). Embed in the doc with `![[map_preview.png]]` and add the preview footnote (see Document Structure).
 
-**ODM output layout (fixed):** ODM does not write GeoJSON in the map root. It writes `odm_georeferencing/odm_georeferenced_model.bounds.geojson` (model bounds, same CRS as the ortho) and `odm_report/shots.geojson` (camera positions). The preview script uses the bounds file when present to draw the boundary overlay; no need to "check" each run—the layout is the same for every ODM run. If you ever add a `boundary.geojson` or `footprint.geojson` in the map root (e.g. from a different pipeline), the script will prefer that over the ODM bounds.
+**ODM output layout (fixed):** ODM does not write GeoJSON in the map root. It writes `odm_georeferencing/odm_georeferenced_model.bounds.geojson` (model bounds, same CRS as the ortho) and `odm_report/shots.geojson` (camera positions). The preview script uses the bounds file when present to draw the boundary overlay; no need to "check" each run--the layout is the same for every ODM run. If you ever add a `boundary.geojson` or `footprint.geojson` in the map root (e.g. from a different pipeline), the script will prefer that over the ODM bounds.
 
 Requires: rasterio, matplotlib. When running headless, set `MPLCONFIGDIR` to a writable path if needed (e.g. `export MPLCONFIGDIR=/tmp`). Index: [[data-collection]].
 
@@ -90,7 +90,7 @@ If polisher is not a sibling of your current directory, use the full path to the
 ### New maps
 
 1. **Discover maps:** List ODM map output directories on the NAS (e.g. `ls /mnt/d/odm-maps`) and/or existing doc dirs in the facts repo (`Datasets/odm-maps-*`). Identify any new map that does not yet have a doc.
-2. **For each new ODM map:** One doc per map; map names are arbitrary (e.g. bond_ave-2026-02-16, house-try-3). Do not update an existing map doc when adding another—each run is its own artifact.
+2. **For each new ODM map:** One doc per map; map names are arbitrary (e.g. bond_ave-2026-02-16, house-try-3). Do not update an existing map doc when adding another--each run is its own artifact.
    - Create `Datasets/odm-maps-{map_name}/odm-maps-{map_name}.md` with the structure above (heading, Path on NAS, Input imagesets, Map preview + footnote, and leave Commentary for the user or minimal placeholders). Do not edit existing commentary.
    - Run the map preview script (see Map Preview Script). Embed the image and add the preview footnote.
    - Run the ODM run record script (see Quick reference and ODM run record script). Paste the full output under `## ODM run record` in the map doc.

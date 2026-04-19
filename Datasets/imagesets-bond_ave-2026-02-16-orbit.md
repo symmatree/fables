@@ -15,7 +15,7 @@ Centered on house, point of interest set at center of orbit.
 
 **From EXIF**
 * Image count: 43
-* Altitude range (GPS, approx MSL): 333.3–333.5 m
+* Altitude range (GPS, approx MSL): 333.3-333.5 m
 * Bounding box (lon, lat): (-80.042245, 40.531991) .. (-80.041383, 40.532648)
 
 *Imageset summary from EXIF on 2026-02-22. See [[imagesets-data-collection]] for update instructions.*

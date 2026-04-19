@@ -1,6 +1,6 @@
 # UniFi Client and Device Data Collection Process
 
-**When following this process:** **Always use the real current date** whenever the procedure calls for a date (e.g. collection-date footnote, "Last updated", Last Seen for active clients). Determine today's date from the system or another authoritative source—do not assume the date from user context, session metadata, or training data, which may be stale or wrong. If you cannot determine the current date, ask the user. If you encounter a value that seems unlikely or impossible, ask the user rather than changing it. Do not "fix" or correct source/API values because they look wrong—record them as given. Unambiguous display formatting (e.g. turning a Unix timestamp into a readable date string) is fine.
+**When following this process:** **Always use the real current date** whenever the procedure calls for a date (e.g. collection-date footnote, "Last updated", Last Seen for active clients). Determine today's date from the system or another authoritative source--do not assume the date from user context, session metadata, or training data, which may be stale or wrong. If you cannot determine the current date, ask the user. If you encounter a value that seems unlikely or impossible, ask the user rather than changing it. Do not "fix" or correct source/API values because they look wrong--record them as given. Unambiguous display formatting (e.g. turning a Unix timestamp into a readable date string) is fine.
 
 ## Overview
 
@@ -148,7 +148,7 @@ When a match is found:
 
 ### `device-by-ip.md` (published)
 
-**What is in the repo:** An **index only**—entities that have their own kb document, with columns **Entity** and **Document** (link). No IP addresses, MACs, hostnames, or OUI are published. The full device-by-IP table (with IPs, MACs, etc.) is not written to the repo; it can be regenerated from the entities list and API when needed.
+**What is in the repo:** An **index only**--entities that have their own kb document, with columns **Entity** and **Document** (link). No IP addresses, MACs, hostnames, or OUI are published. The full device-by-IP table (with IPs, MACs, etc.) is not written to the repo; it can be regenerated from the entities list and API when needed.
 
 **Index structure:**
 - One row per entity that has a kb document

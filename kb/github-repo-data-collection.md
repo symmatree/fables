@@ -4,7 +4,7 @@
 
 This document describes the process for collecting and maintaining "baseball card" metadata about GitHub repositories under the Symmatree account (GitHub user, not an organization). Data is collected using the GitHub REST API via the `gh` CLI. Output files live in `GithubRepos/`.
 
-**When following this process:** Use the actual current date whenever the procedure calls for a date (e.g. collection-date footnote). If you encounter a value that seems unlikely, ask the user rather than changing it. Do not "fix" or correct source/API values—record them as given.
+**When following this process:** Use the actual current date whenever the procedure calls for a date (e.g. collection-date footnote). If you encounter a value that seems unlikely, ask the user rather than changing it. Do not "fix" or correct source/API values--record them as given.
 
 ## Prerequisites
 
@@ -92,7 +92,7 @@ Each repo file in `GithubRepos/` should include a **GitHub Repo** section (or eq
 - **Created**: Creation date (human-readable, from `created_at`)
 - **Last pushed**: Last push to default branch (from `pushed_at`)
 - **Size**: Repo size (from `size` KB; show e.g. "X MB" or "Y KB")
-- **Primary language**: `language` or "—" if null
+- **Primary language**: `language` or "--" if null
 - **Default branch**: `default_branch`
 - **Stars / Forks / Open issues**: From `stargazers_count`, `forks_count`, `open_issues_count`
 - **Visibility**: Public or Private
@@ -128,7 +128,7 @@ All data is from the [GitHub REST API](https://docs.github.com/en/rest) via `gh 
 
 ## Procedure notes (from run)
 
-- **2026-02-15 run:** Authenticated as Symmatree with `repo` scope. `gh api user/repos --paginate --jq '.[] | select(.owner.login == "symmatree") | .name'` returned 22 repos, including `facts` and `ha-config`. No fallback (adding names from existing files) was needed—the list was complete.
+- **2026-02-15 run:** Authenticated as Symmatree with `repo` scope. `gh api user/repos --paginate --jq '.[] | select(.owner.login == "symmatree") | .name'` returned 22 repos, including `facts` and `ha-config`. No fallback (adding names from existing files) was needed--the list was complete.
 - **Size in API:** GitHub returns `size` in **KB**. For the card, use "X KB" when &lt; 1024, or "X.X MB" when ≥ 1024 (e.g. size/1024 with one decimal).
 - **Null description:** Some repos have `description: null`. Use "No description" in the card.
 - **Existing filenames:** Repos with existing docs use those filenames (e.g. `facts.md`, `ha-config.md`, `tales.md`, `Tiles-Repo.md`); new repos get `{reponame}-repo.md`. Matching is by repo name, not filename.

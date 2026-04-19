@@ -74,9 +74,9 @@
 
 ### Hardware
 
-- **Power Method**: Universal input, 100—240V AC, 50/60 Hz
+- **Power Method**: Universal input, 100--240V AC, 50/60 Hz
 - **Power Input Method**: AC input
-- **Supported Voltage Range**: 100—240V AC
+- **Supported Voltage Range**: 100--240V AC
 - **Mount Material**: SGCC steel
 - **Supported Rack Depth**: 400~1200 mm (15.7-47.2")
 - **NDAA Compliant**: Yes

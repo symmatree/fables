@@ -106,7 +106,7 @@ Summary of the official OpenMower documentation (from [openmower.de](https://ope
 
 ### 4.3 Monitoring and debugging
 
-- **OpenMower app (web):** `http://openmower.local:8080` or `http://<IP>:8080` — GPS quality, map, recording, joystick, start/stop mowing.
+- **OpenMower app (web):** `http://openmower.local:8080` or `http://<IP>:8080` -- GPS quality, map, recording, joystick, start/stop mowing.
 - **Browser terminal:** [http://openmower.local:7681](http://openmower.local:7681) (no credentials).
 - **SSH:** `ssh openmower@openmower.local` (see docs for credentials).
 - **openmower tool:** Start/stop ROS, show ROS logs, enter ROS shell for debugging.
@@ -127,9 +127,9 @@ Summary of the official OpenMower documentation (from [openmower.de](https://ope
 - **v1 legacy docs:** For v1 hardware (full-size Raspberry Pi, mainboard v0.xx), use legacy docs: [https://openmower.de/archive/v1.0.2/docs](https://openmower.de/archive/v1.0.2/docs). v1 also requires modifying the docking station; current step-by-step is v2-only for YardForce.
 - **v1 hardware redirect:** [YardForce Classic 500(B) v1 Hardware](https://openmower.de/archive/v1.0.2/docs) linked from `robot-specific-guides/YardForce-Classic-500-B-v1-Hardware/index.md`.
 - **Errata (v1, referenced in hardware-versions):**
-  - **Outdated Firmware:** Kits shipped before May'23 — [openmower.de/archive/v1.0.2/docs/versions/errata/outdated-firmware/](https://openmower.de/archive/v1.0.2/docs/versions/errata/outdated-firmware/).
-  - **IC2 chip wrong:** Kits shipped before May'23 — [openmower.de/archive/v1.0.2/docs/versions/errata/ic2-is-wrong/](https://openmower.de/archive/v1.0.2/docs/versions/errata/ic2-is-wrong/).
-  - **Rain sensor cable:** Female but needs male — [wrong-rain-sensor-cable](https://openmower.de/archive/v1.0.2/docs/versions/errata/wrong-rain-sensor-cable/).
+  - **Outdated Firmware:** Kits shipped before May'23 -- [openmower.de/archive/v1.0.2/docs/versions/errata/outdated-firmware/](https://openmower.de/archive/v1.0.2/docs/versions/errata/outdated-firmware/).
+  - **IC2 chip wrong:** Kits shipped before May'23 -- [openmower.de/archive/v1.0.2/docs/versions/errata/ic2-is-wrong/](https://openmower.de/archive/v1.0.2/docs/versions/errata/ic2-is-wrong/).
+  - **Rain sensor cable:** Female but needs male -- [wrong-rain-sensor-cable](https://openmower.de/archive/v1.0.2/docs/versions/errata/wrong-rain-sensor-cable/).
 - **v2 recommended:** New builds should use v2 hardware; v1 remains supported for existing owners.
 
 ---

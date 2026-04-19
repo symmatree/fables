@@ -86,10 +86,10 @@ All 24 switch ports are PoE+ (see Product Info), so any port can power cameras, 
 ### Hardware
 
 - **Max. Power Consumption**: 30W (Excluding PoE Output)
-- **Power Method**: Universal input, 100—240V AC, 50/60 Hz
+- **Power Method**: Universal input, 100--240V AC, 50/60 Hz
 - **Power Input Method**: AC input
 - **Power Supply**: AC/DC, internal, 250W
-- **Supported Voltage Range**: 100—240V AC
+- **Supported Voltage Range**: 100--240V AC
 - **Management**: Ethernet
 - **Weight**: 4.7 kg (10.4 lb)
 - **Enclosure Material**: SGCC steel

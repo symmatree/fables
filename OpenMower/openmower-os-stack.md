@@ -73,10 +73,10 @@ There are also **50-extras**, **99-cleanup**, and **EXPORT_IMAGE** in the tree; 
 
 ### Paths
 
-- **`/home/openmower/params`** – User-editable parameters. Contains at least `mower_params.yaml` (datum, NTRIP, mower_logic, etc.). For CUSTOM mower, `custom_params.yaml` is loaded from here. Mounted into the container as `/data/params` and exposed as `PARAMS_PATH`.
-- **`/home/openmower/ros`** – ROS state: maps, bag files, and other runtime data. Mounted as `/data/ros`; `ROS_HOME` is set to `/data/ros`.
-- **`/home/openmower/recordings`** – Recording output (e.g. rosbag). Mounted as `/data/recordings`; `RECORDINGS_PATH` set in compose.
-- **`/opt/stacks/openmower/`** – Stack definition: `compose.yaml`, `.env`, `mosquitto.conf`. Edited via Dockge UI or directly; dockge.service updates `HOSTNAME` in `.env` on start.
+- **`/home/openmower/params`** - User-editable parameters. Contains at least `mower_params.yaml` (datum, NTRIP, mower_logic, etc.). For CUSTOM mower, `custom_params.yaml` is loaded from here. Mounted into the container as `/data/params` and exposed as `PARAMS_PATH`.
+- **`/home/openmower/ros`** - ROS state: maps, bag files, and other runtime data. Mounted as `/data/ros`; `ROS_HOME` is set to `/data/ros`.
+- **`/home/openmower/recordings`** - Recording output (e.g. rosbag). Mounted as `/data/recordings`; `RECORDINGS_PATH` set in compose.
+- **`/opt/stacks/openmower/`** - Stack definition: `compose.yaml`, `.env`, `mosquitto.conf`. Edited via Dockge UI or directly; dockge.service updates `HOSTNAME` in `.env` on start.
 
 ### Boot-Time / First-Run Creation
 
@@ -96,7 +96,7 @@ There are also **50-extras**, **99-cleanup**, and **EXPORT_IMAGE** in the tree; 
 
 - **Unit:** Installed under `/etc/systemd/system/dockge.service` by stage 32-dockge.
 - **ExecStartPre:** Updates `HOSTNAME` in `/opt/stacks/openmower/.env` from `hostname -f` (or hostname / /etc/hostname).
-- **ExecStart:** `/usr/bin/docker compose up -d` (in `/opt/dockge` – i.e. starts Dockge, not the openmower stack).
+- **ExecStart:** `/usr/bin/docker compose up -d` (in `/opt/dockge` - i.e. starts Dockge, not the openmower stack).
 - **ExecStop:** `/usr/bin/docker compose down`.
 - **Wants/After:** network-online, docker, docker-preload-images, time-sync.
 
@@ -114,10 +114,10 @@ There are also **50-extras**, **99-cleanup**, and **EXPORT_IMAGE** in the tree; 
 
 Written by stage **05-version-info** (outside chroot, using Git env and pi-gen.config):
 
-- **version.json** – Machine-readable: name, display_version, release, arch, git (hash, hash_full, describe, branch), build_time_utc.
-- **version.yaml** – Same fields in YAML.
-- **version.sh** – Sourced to set `OPENMOWEROS_*` variables (name, display_version, release, arch, git.*, build_time_utc).
-- **version.txt** – Human-readable one-line summary plus Git and build time.
+- **version.json** - Machine-readable: name, display_version, release, arch, git (hash, hash_full, describe, branch), build_time_utc.
+- **version.yaml** - Same fields in YAML.
+- **version.sh** - Sourced to set `OPENMOWEROS_*` variables (name, display_version, release, arch, git.*, build_time_utc).
+- **version.txt** - Human-readable one-line summary plus Git and build time.
 
 So **OS version** is the OpenMowerOS image build identity (PI_GEN_RELEASE, Git describe, build time). It is fixed at image build and does not change when the container image is updated.
 
@@ -139,7 +139,7 @@ So **OS version** is the OpenMowerOS image build identity (PI_GEN_RELEASE, Git d
 
 ## Repositories Referenced
 
-- **OpenMowerOS** – pi-gen image build, stage-openmower stages, compose and .env in `stage-openmower/40-openmower/files/opt/stacks/openmower/`.
-- **open_mower_ros** – ROS workspace: params, launch files (e.g. `_params.launch`, `_comms.launch`), config schema, services.
-- **OpenMower** – Main hardware repo; v1 firmware under Firmware/, Hardware/.
-- **openmower-cli** – CLI that drives the stack (pull, start, stop, status, shell, logs, etc.) using `/opt/stacks/openmower/compose.yaml`.
+- **OpenMowerOS** - pi-gen image build, stage-openmower stages, compose and .env in `stage-openmower/40-openmower/files/opt/stacks/openmower/`.
+- **open_mower_ros** - ROS workspace: params, launch files (e.g. `_params.launch`, `_comms.launch`), config schema, services.
+- **OpenMower** - Main hardware repo; v1 firmware under Firmware/, Hardware/.
+- **openmower-cli** - CLI that drives the stack (pull, start, stop, status, shell, logs, etc.) using `/opt/stacks/openmower/compose.yaml`.

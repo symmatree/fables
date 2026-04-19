@@ -70,10 +70,10 @@
 ### Hardware
 
 - **Max. Power Consumption**: 36W (Including SFP modules)
-- **Power Method**: Universal input, 100—240V AC, 50/60 Hz
+- **Power Method**: Universal input, 100--240V AC, 50/60 Hz
 - **Power Input Method**: AC input
 - **Power Supply**: AC/DC, internal, 36W
-- **Supported Voltage Range**: 100—240V AC
+- **Supported Voltage Range**: 100--240V AC
 - **Management**: Ethernet AR
 - **Heat Dissipation**: 102 BTU/hr
 - **Weight**: Without mounting brackets: 2.6 kg (5.8 lb) With mounting brackets: 2.7 kg (6 lb)

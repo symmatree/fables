@@ -67,10 +67,10 @@ Multiple implementations out there
 
 skirby:
 * https://github.com/sirkirby/unifi-network-mcp
->  Every capability is exposed via standard MCP **tools** prefixed with `unifi_`, so any LLM or agent that speaks MCP (e.g. Claude Desktop, `mcp-cli`, LangChain, etc.) can query, analyze **and** – when explicitly authorized – modify your network. These tools must have local access to your UniFi Network Controller, by either running locally or in the cloud connected via a secure reverse proxy.
->  - Full catalog of UniFi controller operations – firewall, traffic-routes, port-forwards, QoS, VPN, WLANs, stats, devices, clients **and more**.
+>  Every capability is exposed via standard MCP **tools** prefixed with `unifi_`, so any LLM or agent that speaks MCP (e.g. Claude Desktop, `mcp-cli`, LangChain, etc.) can query, analyze **and** - when explicitly authorized - modify your network. These tools must have local access to your UniFi Network Controller, by either running locally or in the cloud connected via a secure reverse proxy.
+>  - Full catalog of UniFi controller operations - firewall, traffic-routes, port-forwards, QoS, VPN, WLANs, stats, devices, clients **and more**.
 > - All mutating tools require `confirm=true` so nothing can change your network by accident.
-> - **Workflow automation friendly** – set `UNIFI_AUTO_CONFIRM=true` to skip confirmation prompts (ideal for n8n, Make, Zapier).
+> - **Workflow automation friendly** - set `UNIFI_AUTO_CONFIRM=true` to skip confirmation prompts (ideal for n8n, Make, Zapier).
 > - Works over **stdio** (FastMCP). Optional SSE HTTP endpoint can be enabled via config.
  > - **Code execution mode** with tool index, async operations, and TypeScript examples.
  > - One-liner launch via the console-script **`unifi-network-mcp`**.

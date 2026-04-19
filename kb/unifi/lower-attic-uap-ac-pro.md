@@ -83,7 +83,7 @@
 
 - **Max. Power Consumption**: 9W
 - **Includes PoE Adapter**: Yes
-- **Supported Voltage Range**: 44—57V DC
+- **Supported Voltage Range**: 44--57V DC
 - **Networking Interface**: (2) GbE RJ45 ports
 - **Weight**: Device: 350 g (12.4 oz) With mount: 450 g (15.9 oz)
 - **Management**: Ethernet

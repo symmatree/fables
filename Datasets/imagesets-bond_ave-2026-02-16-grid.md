@@ -19,7 +19,7 @@ DroneLink [mission](https://app.dronelink.com/seth-porter/my-first-project/plan/
 
 **From EXIF**
 * Image count: 337
-* Altitude range (GPS, approx MSL): 333.2–333.8 m
+* Altitude range (GPS, approx MSL): 333.2-333.8 m
 * Bounding box (lon, lat): (-80.042631, 40.531850) .. (-80.040988, 40.532887)
 
 

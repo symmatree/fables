@@ -44,7 +44,7 @@ flowchart TB
 
 | Layer | Components | Notes |
 |-------|------------|------|
-| **Hardware** | Raspberry Pi (or CM4), mainboard PCB, xESCs, GPS module, motors, sensors | v1 = full-size Pi + YardForce-style mainboard (0.9.x–0.13.x). |
+| **Hardware** | Raspberry Pi (or CM4), mainboard PCB, xESCs, GPS module, motors, sensors | v1 = full-size Pi + YardForce-style mainboard (0.9.x-0.13.x). |
 | **Firmware** | Mainboard (v1: OpenMower repo `Firmware/`), xESC (VESC config only; no separate "firmware update" in docs), GPS (e.g. ZED-F9P HPG 1.51, u-center config) | Mainboard firmware selected by `.env` FIRMWARE (e.g. 0_13_X). xESC: configure via VESC Tool. |
 | **OS** | OpenMowerOS image (pi-gen, Debian Trixie arm64), Dockge, openmower-cli, web terminal, comitup hotspot, Docker | Identity in `/usr/share/openmoweros/version.*`. |
 | **Application** | open_mower_ros (Docker image), Mosquitto, OpenMowerApp | ROS image tag from `.env` VERSION; started via Dockge or `openmower start`. |
@@ -108,7 +108,7 @@ You had an older OS/software mix and replaced some Docker images with your own f
 
 | Area | What to inspect | What "indeterminate" means here |
 |------|------------------|----------------------------------|
-| **OS vs docs** | `/usr/share/openmoweros/version.*` (display_version, git describe). | Old image (e.g. pre–v2.x or CustomPiOS-era) vs current OpenMowerOS v2.x; different stage layout and no Dockge/openmower CLI. |
+| **OS vs docs** | `/usr/share/openmoweros/version.*` (display_version, git describe). | Old image (e.g. pre-v2.x or CustomPiOS-era) vs current OpenMowerOS v2.x; different stage layout and no Dockge/openmower CLI. |
 | **.env** | `/opt/stacks/openmower/.env`: VERSION, HARDWARE_PLATFORM, MOWER, FIRMWARE, ESC_TYPE. | VERSION pointing to a custom or old tag; HARDWARE_PLATFORM or FIRMWARE mismatch with actual hardware. |
 | **Running ROS image** | `docker ps` / `docker inspect` for `open_mower_ros`; image tag and digest. | Container from a different registry or tag than `.env` (e.g. your own image for debugging). |
 | **Params** | `/home/openmower/params/mower_params.yaml`; optional custom_params. | Params from an older schema or from a different mower type; GPS/NTRIP settings for a different setup. |
@@ -118,10 +118,10 @@ You had an older OS/software mix and replaced some Docker images with your own f
 
 **Suggested inspection order (on device via SSH or browser terminal):**
 
-1. `cat /usr/share/openmoweros/version.txt` (or version.json) — OS identity.
-2. `cat /opt/stacks/openmower/.env` — VERSION, HARDWARE_PLATFORM, MOWER, FIRMWARE, ESC_TYPE.
-3. `docker ps -a` and `docker images | grep open_mower` — which ROS image is actually used.
-4. `openmower status` (if CLI present) — stack state.
+1. `cat /usr/share/openmoweros/version.txt` (or version.json) -- OS identity.
+2. `cat /opt/stacks/openmower/.env` -- VERSION, HARDWARE_PLATFORM, MOWER, FIRMWARE, ESC_TYPE.
+3. `docker ps -a` and `docker images | grep open_mower` -- which ROS image is actually used.
+4. `openmower status` (if CLI present) -- stack state.
 5. Params: `ls -la /home/openmower/params` and spot-check `mower_params.yaml` (gps, ntrip_client, datum).
 6. If GPS is the issue: follow [openmower-docs-summary.md](openmower-docs-summary.md) GPS-RTK troubleshooting (u-center, NTRIP, rostopic, map.json path).
 

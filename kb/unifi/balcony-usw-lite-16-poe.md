@@ -79,10 +79,10 @@
 ### Hardware
 
 - **Max. Power Consumption**: 15W (Excluding PoE Output) 60W (Including PoE Output)
-- **Power Method**: Universal input, 100—240V AC, 50/60 Hz
+- **Power Method**: Universal input, 100--240V AC, 50/60 Hz
 - **Power Input Method**: AC input
 - **Power Supply**: AC/DC, internal, 60W
-- **Supported Voltage Range**: 100—240V AC
+- **Supported Voltage Range**: 100--240V AC
 - **Management**: Ethernet
 - **Heat Dissipation**: 51.2 (Excluding PoE Output)
 - **Weight**: 1.2 kg (2.6 lb)

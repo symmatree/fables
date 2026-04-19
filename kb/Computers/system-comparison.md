@@ -10,12 +10,12 @@ Quick-reference sheet for all compute, RAM, storage, GPU, and network resources 
 |--------|------|-----|---------------|-----|-----|---------|---------|----------------|----------------|--------------------------|
 | [[Lancer]] | Workstation (Win+WSL) | AMD Ryzen AI Max+ 395 (Strix Halo) | 16C/32T | 128 GB LPDDR5x | Radeon 8060S (40 CU, RDNA 3.5) | 1 TB NVMe | 1 GbE wired | **2975** | **16767** | **96289** |
 | [[Rising]] | Tiles cluster worker (Talos) | AMD Ryzen 9 7940HS | 8C/16T | 32 GB DDR5-5600 | Radeon 780M (12 CU, RDNA 3) | 1 TB NVMe | 1 GbE wired | **2727** | **13169** | **34061** |
-| [[bifrost]] | Desktop workstation (Windows) | Intel Core i7-8700K (Coffee Lake) | 6C/12T | 64 GB DDR4-3200 | NVIDIA GTX 1070 Ti (8 GB) | — | 1 GbE wired | **1749** | **7387** | **59640** |
-| [[namaste]] | Laptop daily driver (Win+WSL) | Intel Core i5-8350U (Kaby Lake-R) | 4C/8T | 16 GB DDR4-2400 | Intel UHD 620 | — | Wi-Fi 5 (802.11ac) | ~1300 est. | ~4500 est. | — |
-| [[Raconteur]] | NAS / Domain Controller | Intel Xeon D-1527 | 4C/8T | 32 GB DDR4 ECC | — | 45.5 TB (2 pools) + SSD cache | 10 GbE SFP+ | — | — | — |
-| nuc-g3p-1 / nuc-g3p-2 | Proxmox hosts (Tiles VMs) | Intel N150 (Twin Lake) | 4C/4T | 16 GB | Intel UHD 730 | 512 GB NVMe | 2.5 GbE wired | ~1257 | ~3007 | — |
-| nuc-g2p-1 / nuc-g2p-2 | Proxmox hosts (Tiles VMs) | Intel N150 (Twin Lake) | 4C/4T | 12 GB | Intel UHD 730 | 512 GB NVMe | 1 GbE wired | ~1257 | ~3007 | — |
-| [[AceBase\|AceBase]] | Spare / attic node | Intel N95 (Alder Lake-N) | 4C/4T | 8 GB DDR4-2667 | Intel UHD (24 EU) | 256 GB SATA SSD | 1 GbE wired | ~1100 | ~2800 | — |
+| [[bifrost]] | Desktop workstation (Windows) | Intel Core i7-8700K (Coffee Lake) | 6C/12T | 64 GB DDR4-3200 | NVIDIA GTX 1070 Ti (8 GB) | -- | 1 GbE wired | **1749** | **7387** | **59640** |
+| [[namaste]] | Laptop daily driver (Win+WSL) | Intel Core i5-8350U (Kaby Lake-R) | 4C/8T | 16 GB DDR4-2400 | Intel UHD 620 | -- | Wi-Fi 5 (802.11ac) | ~1300 est. | ~4500 est. | -- |
+| [[Raconteur]] | NAS / Domain Controller | Intel Xeon D-1527 | 4C/8T | 32 GB DDR4 ECC | -- | 45.5 TB (2 pools) + SSD cache | 10 GbE SFP+ | -- | -- | -- |
+| nuc-g3p-1 / nuc-g3p-2 | Proxmox hosts (Tiles VMs) | Intel N150 (Twin Lake) | 4C/4T | 16 GB | Intel UHD 730 | 512 GB NVMe | 2.5 GbE wired | ~1257 | ~3007 | -- |
+| nuc-g2p-1 / nuc-g2p-2 | Proxmox hosts (Tiles VMs) | Intel N150 (Twin Lake) | 4C/4T | 12 GB | Intel UHD 730 | 512 GB NVMe | 1 GbE wired | ~1257 | ~3007 | -- |
+| [[AceBase\|AceBase]] | Spare / attic node | Intel N95 (Alder Lake-N) | 4C/4T | 8 GB DDR4-2667 | Intel UHD (24 EU) | 256 GB SATA SSD | 1 GbE wired | ~1100 | ~2800 | -- |
 
 ## Geekbench 6 Results Comparison
 
@@ -42,25 +42,25 @@ Lancer's integrated Radeon 8060S outperforms Bifrost's discrete GTX 1070 Ti by 6
 
 ## Compute Tiers
 
-### Tier 1 — Heavy Workloads
+### Tier 1 -- Heavy Workloads
 **Lancer** and **Rising** are the modern AMD-powered machines.
 
 - **Lancer** is the clear performance leader. Use it for: large photogrammetry jobs ([[OpenDroneMap]] with large image sets), ML model inference, heavy compilation, anything needing >32 GB RAM, or GPU-accelerated compute (ROCm). Its 128 GB unified memory is unique in the fleet.
 - **Rising** is the second-strongest CPU. Currently dedicated to Talos/Kubernetes as the most capable Tiles worker. Could also serve heavy batch workloads if freed from cluster duty. 32 GB DDR5 is adequate for most single-job scenarios.
 
-### Tier 2 — Legacy Workstation
+### Tier 2 -- Legacy Workstation
 **Bifrost** has the only discrete NVIDIA GPU (GTX 1070 Ti, 8 GB VRAM), which makes it the only system with mature CUDA support. Still useful for: CUDA-dependent tools, moderate gaming, CAD, and as a Windows Remote Desktop target. The 64 GB of RAM lets it handle large datasets. CPU is now the weakest of the three workstations.
 
-### Tier 3 — Mobile / Light Duty
+### Tier 3 -- Mobile / Light Duty
 **Namaste** is the daily-driver laptop. Use for: Obsidian vault editing, light coding via Cursor/WSL, web browsing, email, meetings. Offload any heavy work to Lancer or Bifrost via remote desktop or SSH.
 
-### Tier 4 — Infrastructure Nodes
+### Tier 4 -- Infrastructure Nodes
 The **Proxmox cluster** (4x Intel N150 mini PCs) provides lightweight Kubernetes hosting for the Tiles cluster. Per-node compute is roughly equivalent to the Xeon in Raconteur. Not suitable for heavy workloads but excellent for always-on services, monitoring, and control-plane duties at very low power (~15 W each).
 
 **AceBase** (Intel N95, 8 GB) is the weakest and oldest node. Currently in the attic as a spare.
 
 ### Storage Tier
-**Raconteur** (Synology RS1619xs+) is the centralized NAS with 45.5 TB across two storage pools, SSD read/write caches, 10 GbE SFP+ uplink, and 32 GB ECC RAM. It also runs Active Directory domain services, Surveillance Station, backups, and Cloud Sync. Its Xeon D-1527 (4C/8T, 2.2 GHz) is comparable in CPU throughput to a single N150 node. Primary role is storage serving, backup, and directory services — not general compute.
+**Raconteur** (Synology RS1619xs+) is the centralized NAS with 45.5 TB across two storage pools, SSD read/write caches, 10 GbE SFP+ uplink, and 32 GB ECC RAM. It also runs Active Directory domain services, Surveillance Station, backups, and Cloud Sync. Its Xeon D-1527 (4C/8T, 2.2 GHz) is comparable in CPU throughput to a single N150 node. Primary role is storage serving, backup, and directory services -- not general compute.
 
 ## Network Topology
 

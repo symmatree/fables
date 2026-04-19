@@ -122,9 +122,9 @@ Directly hosts
 - **PoE Budget**: 180W
 - **Voltage Range PoE Mode**: PoE: 44-57V PoE+: 50-57V
 - **Max. Power Consumption**: 50W (Excluding PoE Output)
-- **Power Method**: (1) Universal AC input, 100—240V AC, 4.4A Max., 50/60 Hz (1) USP-RPS DC input, 52V DC, 3.94A
+- **Power Method**: (1) Universal AC input, 100--240V AC, 4.4A Max., 50/60 Hz (1) USP-RPS DC input, 52V DC, 3.94A
 - **Power Supply**: AC/DC, internal, 240W
-- **Supported Voltage Range**: 100—240V AC
+- **Supported Voltage Range**: 100--240V AC
 - **Heat Dissipation**: 170 BTU/hr (Excluding PoE Output)
 - **Processor**: Quad-core ARM® Cortex®-A57 at 1.7 GHz
 - **System Memory**: 4 GB

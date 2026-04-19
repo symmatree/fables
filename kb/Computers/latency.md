@@ -8,8 +8,8 @@ Measurements use [Microsoft's Latte tool](https://learn.microsoft.com/en-us/azur
 
 | Machine | Connection | Date | Down (Mbps) | Up (Mbps) | Latency (ms) | Jitter (ms) | Link |
 |--------|------------|------|-------------|-----------|--------------|-------------|------|
-| Bifrost | Wired (onboard) | — | 866 | 946 | 8 | 0 | GbE |
-| Namaste | Wi-Fi | — | 237.5–283 | 283–347.5 | 15–17 | 1 | WiFi 5 |
+| Bifrost | Wired (onboard) | -- | 866 | 946 | 8 | 0 | GbE |
+| Namaste | Wi-Fi | -- | 237.5-283 | 283-347.5 | 15-17 | 1 | WiFi 5 |
 | Namaste | Wired (Anker dongle) | 2026-03-13 | 508.3 | 910.7 | 13 | 2 | GbE |
 | Lancer | Wired | 2026-03-13 | 793.1 | 978.6 | 11 | 1 | 10GbE |
 
@@ -22,7 +22,7 @@ All tests: TCP, 4-byte message, blocking send/receive, default socket buffers; r
 | Initiator | Connection | Latency (µs) | Latency (ms) | Iterations |
 |-----------|------------|--------------|--------------|------------|
 | Bifrost | Wired (onboard, attic-us-24-250w) | ~132 | **0.13** | 65,000 |
-| Namaste | Wired (Anker USB dongle, Cat5 breakfast nook) | ~1310–1338 | **~1.31–1.34** | 65,100 |
+| Namaste | Wired (Anker USB dongle, Cat5 breakfast nook) | ~1310-1338 | **~1.31-1.34** | 65,100 |
 | Namaste | Wi-Fi (UAP-AC-Pro) | ~2921 | **~2.92** | 65,000 |
 
 So: wired onboard (Bifrost) is **~0.13 ms**; wired via USB dongle (Namaste) is **~1.3 ms** (~10× higher); Wi-Fi (Namaste) is **~2.9 ms** (~22× higher than Bifrost). Still fine for RDP, but the gap is meaningful for smoothness and interactivity.
@@ -39,14 +39,14 @@ So: wired onboard (Bifrost) is **~0.13 ms**; wired via USB dongle (Namaste) is *
 
 3. **Namaste Wi-Fi is ~2.2× worse than Namaste wired (dongle)** (~2.9 ms vs ~1.3 ms). That matches the usual Wi-Fi vs wired penalty (extra buffering, retransmits, and protocol overhead).
 
-4. **Throughput (WiFiMan)** is consistent with link types: Bifrost and Lancer near 1 Gbps; Namaste wired (dongle) ~500–910 Mbps (often limited by USB bus or dongle); Namaste Wi-Fi ~240–350 Mbps (WiFi 5, 5 GHz). Lancer's 10 GbE port is effectively capped by the 1 GbE path to the rest of the LAN.
+4. **Throughput (WiFiMan)** is consistent with link types: Bifrost and Lancer near 1 Gbps; Namaste wired (dongle) ~500-910 Mbps (often limited by USB bus or dongle); Namaste Wi-Fi ~240-350 Mbps (WiFi 5, 5 GHz). Lancer's 10 GbE port is effectively capped by the 1 GbE path to the rest of the LAN.
 
 ### Are the differences due to hardware aging or to configuration?
 
 **Conclusion: the large latency differences are due to *connection type and adapter* (USB dongle, Wi-Fi), not to hardware aging.**
 
 - **Bifrost**: Oldest of the three (2018) but **onboard GbE** on a desktop motherboard (PCIe-attached NIC). That gives the best latency. No sign of "aging" in the numbers.
-- **Namaste**: Same era (2018 laptop) but when "wired" it's **USB Ethernet**. Public benchmarks and Q&A (e.g. Super User, XDA) show that USB Ethernet dongles often add **~1–2 ms** RTT vs onboard NICs (e.g. 0.47 ms onboard vs 1.9 ms for a TP-Link USB-C dongle in one test). Your ~1.3 ms on Namaste wired fits that pattern. So the ~10× gap vs Bifrost is **configuration** (dongle + possibly USB host), not the laptop's age.
+- **Namaste**: Same era (2018 laptop) but when "wired" it's **USB Ethernet**. Public benchmarks and Q&A (e.g. Super User, XDA) show that USB Ethernet dongles often add **~1-2 ms** RTT vs onboard NICs (e.g. 0.47 ms onboard vs 1.9 ms for a TP-Link USB-C dongle in one test). Your ~1.3 ms on Namaste wired fits that pattern. So the ~10× gap vs Bifrost is **configuration** (dongle + possibly USB host), not the laptop's age.
 - **Lancer**: Newest (2025), 10 GbE, basement. It's the fixed receiver in these tests; its latency is not in question. Its throughput is limited by the 1 GbE network path.
 
 So: **Bifrost's "amazing" network stack is simply onboard Ethernet vs USB and Wi-Fi.** No need to attribute it to driver magic or newer silicon; the main factor is the absence of USB and wireless in the path.
@@ -221,6 +221,6 @@ Interrupt/sec 62430     (8.24/iteration)
 
 ### WiFiMan / speed-test notes (raw)
 
-- **Namaste Wi-Fi (WiFiMan)**: Signal -45 dBm; PHY WiFi 5, MIMO 3x3; 5 GHz 40 MHz; connected to lower-attic-UAP-AC-PRO. WiFiMan reported 10–40 ms latency to 8.8.8.8.
+- **Namaste Wi-Fi (WiFiMan)**: Signal -45 dBm; PHY WiFi 5, MIMO 3x3; 5 GHz 40 MHz; connected to lower-attic-UAP-AC-PRO. WiFiMan reported 10-40 ms latency to 8.8.8.8.
 - **Namaste wired (Anker dongle), WiFiMan 2026-03-13**: down 508.3 Mbps, up 910.7 Mbps, latency 13 ms, jitter 2 ms, link speed GbE.
 - **Lancer wired, WiFiMan 2026-03-13**: down 793.1 Mbps, up 978.6 Mbps, latency 11 ms, jitter 1 ms, link speed 10GbE.

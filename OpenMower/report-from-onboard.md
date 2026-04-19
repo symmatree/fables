@@ -1,4 +1,4 @@
-# OpenMower kikuyu – current state snapshot
+# OpenMower kikuyu - current state snapshot
 
 Gathered on device per onboard-instructions.md. No changes were made; this is inspection only.
 
@@ -27,16 +27,16 @@ Gathered on device per onboard-instructions.md. No changes were made; this is in
 
 ---
 
-## 3. Docker / Podman – what is actually running
+## 3. Docker / Podman - what is actually running
 
 - **Runtime:** **Podman** only (`/usr/bin/podman`). Docker is not used.
 - **Containers:**
   - **openmower** (from openmower.service): Starts then exits in ~1 s; systemd restarts it every 15 s. Restart counter in the thousands (e.g. 5407). So **no stable running openmower container**.
   - **openmower-debug:** One container with image `ghcr.io/clemenselflein/open_mower_ros:releases-beta`, status **Created** (not running), ~18 months old.
 - **Images (relevant):**
-  - `docker.local.symmatree.com/open_mower_ros:latest-arm64` – used by both service files (openmower + openmower-debug), ~21 months old.
-  - `docker.local.symmatree.com/open_mower_ros:kikuyu-latest` – same age.
-  - `ghcr.io/clemenselflein/open_mower_ros:releases-beta` – ~2 years old.
+  - `docker.local.symmatree.com/open_mower_ros:latest-arm64` - used by both service files (openmower + openmower-debug), ~21 months old.
+  - `docker.local.symmatree.com/open_mower_ros:kikuyu-latest` - same age.
+  - `ghcr.io/clemenselflein/open_mower_ros:releases-beta` - ~2 years old.
 - **Cause of exit:** The container entrypoint runs ROS Noetic setup then `roslaunch open_mower open_mower.launch`. The launch fails with: **`ROS_MASTER_URI: unbound variable`**. So the script uses strict mode and expects `ROS_MASTER_URI` to be set; it is not set in the service or container env, so the process exits and the container dies.
 
 ---
@@ -51,8 +51,8 @@ Gathered on device per onboard-instructions.md. No changes were made; this is in
 ## 5. Params and map
 
 - **Paths:** No `/home/openmower/params/` in the doc's sense. Config and ROS home live under:
-  - **`/root/ros_home/`** – used as container's `$HOME` (mount `-v /root/ros_home:/root`). Contains bag files, `.ros/`, `.config/`, README; no `mower_params.yaml` or `map.json` in the listing.
-  - **`/boot/openmower/mower_config.txt`** – the main config (see section 2). Params are effectively driven by this file and the image's hardware-specific YAMLs.
+  - **`/root/ros_home/`** - used as container's `$HOME` (mount `-v /root/ros_home:/root`). Contains bag files, `.ros/`, `.config/`, README; no `mower_params.yaml` or `map.json` in the listing.
+  - **`/boot/openmower/mower_config.txt`** - the main config (see section 2). Params are effectively driven by this file and the image's hardware-specific YAMLs.
 - **Repo params (from /home/pi/open_mower_ros):** YardForce500 GPS uses **`/dev/ttyAMA1`**, low-level on ttyAMA0; ESCs on ttyAMA2/3/4. So **GPS serial = ttyAMA1**, 921600 in config comments.
 - **map.json:** Not found under `/root/ros_home` or `/home/openmower` in the checks; may be created at runtime or live inside a different path.
 

@@ -11,8 +11,8 @@ This document summarizes what was reviewed in `Datasets/`, what is likely fine t
 You've indicated:
 
 - Your ownership of this address is already searchable (county website, credit report), and your name is publicly associated with this repo.
-- You prefer to treat this as a **single set of books**—a blog of ongoing experiments—rather than maintaining separate "public" vs "private" versions.
-- You want to share the **worked example** with people who might benefit—friends and family are one such audience; the value is a particular homestead and mapping effort, what did and didn't work, and the troubles along the way.
+- You prefer to treat this as a **single set of books**--a blog of ongoing experiments--rather than maintaining separate "public" vs "private" versions.
+- You want to share the **worked example** with people who might benefit--friends and family are one such audience; the value is a particular homestead and mapping effort, what did and didn't work, and the troubles along the way.
 - You don't discuss family or share personal photos; content is descriptions and maps. Overhead imagery is already available (e.g. Google) for any location.
 
 **Broader context (for this and other directory reviews):**
@@ -20,8 +20,8 @@ You've indicated:
 - The **tiles** repo is fully public and built on the model that **security is delivered by crypto and keys, not obscurity**. So hiding hostnames or internal paths for "security" is not a goal; you're not relying on obscurity.
 - You'd rather **share possibly useful setup** with people who might benefit (including AI scrapes) than marginally harden a homelab network against attackers who would ultimately be targeting things like a game account anyway.
 - **This review applies only to this directory** (`Datasets/`). You intend to do the same kind of review for other directories; each gets its own scope and red lines.
-- **Real red lines:** Passwords, private keys, medical data, names of family—things on that order. Not "stay anonymous." You're not trying to hide who you are or where you live.
-- **Positive goal:** You want this to be **helpful professionally** as a shareable resource into your thinking and problem-solving—something you *can* share, which is true of none of your actual professional work.
+- **Real red lines:** Passwords, private keys, medical data, names of family--things on that order. Not "stay anonymous." You're not trying to hide who you are or where you live.
+- **Positive goal:** You want this to be **helpful professionally** as a shareable resource into your thinking and problem-solving--something you *can* share, which is true of none of your actual professional work.
 
 **Context:** This repo will be public (indexed, permanent). The review scanned for keys and identifiers that might concern you. One file should be excluded; everything else in this directory is fine to include as-is.
 
@@ -49,7 +49,7 @@ You've indicated:
 
 ## Exclude from repo
 
-**DroneLink/dronelink-missions.tsv** — Contains identifiers you asked to screen for: drone serial number, user ID, exact lat/lon, device model/OS, and DroneLink URLs. We won't include this file.
+**DroneLink/dronelink-missions.tsv** -- Contains identifiers you asked to screen for: drone serial number, user ID, exact lat/lon, device model/OS, and DroneLink URLs. We won't include this file.
 
 ---
 

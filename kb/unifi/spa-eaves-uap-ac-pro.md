@@ -89,7 +89,7 @@ Uplink on port 1 (1000 Mbps). Radios: 2.4 GHz 802.11n ch 6, 20 MHz; 5 GHz 802.11
 
 - **Max. Power Consumption**: 9W
 - **Includes PoE Adapter**: Yes
-- **Supported Voltage Range**: 44—57V DC
+- **Supported Voltage Range**: 44--57V DC
 - **Networking Interface**: (2) GbE RJ45 ports
 - **Weight**: Device: 350 g (12.4 oz) With mount: 450 g (15.9 oz)
 - **Management**: Ethernet

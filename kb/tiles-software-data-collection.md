@@ -4,7 +4,7 @@
 
 This document describes the process for collecting and maintaining a **Configuration** section in the facts knowledge base for each piece of software deployed in the Tiles Kubernetes cluster. The source of truth is the **tiles** GitOps repository (symmatree/tiles): ArgoCD Application manifests, Helm charts, Terraform under `tf/modules/k8s-cluster`, and Tanka/Jsonnet under `tanka/environments`. Output files live in `Tiles/Software/` (one file per component, e.g. `nfs-csi-driver.md`, `grafana.md`). The procedure also updates the **Tiles/Software** section in `kb/things.md` with a list of links to those files.
 
-**When following this process:** Use the actual current date whenever the procedure calls for a date (e.g. collection-date footnote). Do not invent steps or data—if the tiles repo structure or a manifest doesn't match what is described here, stop and ask the user rather than guessing. Only add or replace the `## Configuration` section in each file; preserve all other content. **Do not update user-written content:** do not edit, "fix," or rewrite any content outside the Configuration section (e.g. Overview, Architecture, notes). Only replace the `## Configuration` block and its footnote.
+**When following this process:** Use the actual current date whenever the procedure calls for a date (e.g. collection-date footnote). Do not invent steps or data--if the tiles repo structure or a manifest doesn't match what is described here, stop and ask the user rather than guessing. Only add or replace the `## Configuration` section in each file; preserve all other content. **Do not update user-written content:** do not edit, "fix," or rewrite any content outside the Configuration section (e.g. Overview, Architecture, notes). Only replace the `## Configuration` block and its footnote.
 
 Please execute this procedure carefully, noting any concerns or ambiguities. If anything doesn't work, please stop to consult rather than inventing a new procedure. Similarly if you have better ideas, please make a list of suggestions. This is still a new process, we expect
 to have improvements and simply things we got wrong, please help us find them and make this
@@ -83,15 +83,15 @@ Each file in `Tiles/Software/` may contain other sections (Overview, Architectur
 
 That section runs from that heading until the **next** `##` heading or the end of the file. Content must include (in order):
 
-1. **Short summary** – One or two sentences.
-2. **application.yaml type** – One of: `helm`, `bunch-of-files`, `jsonnet-via-tanka`.
-3. **Where loaded from** – One line (repo/path/chart).
-4. **Version deployed** – e.g. `4.12.1` or `main`.
-5. **Links** – GitHub links only (`https://github.com/symmatree/tiles/blob/main/<path>`). List application manifest; if applicable values.yaml; if applicable .tf file(s); for Tanka, environment application.yaml, main.jsonnet, spec.json.
-6. **If hosted in our repo** – Only if the component is an in-repo chart; one line on what the chart installs (upstream name/version).
-7. **TF / bootstrap values** – Yes or No. If Yes: link to .tf file(s) and list variables used (e.g. cluster_name, vault_name, nfs_server).
-8. **Tanka** – Only for jsonnet-via-tanka: environment path and links to environment files.
-9. **Varies between prod and test** – Yes with brief note, or No.
+1. **Short summary** - One or two sentences.
+2. **application.yaml type** - One of: `helm`, `bunch-of-files`, `jsonnet-via-tanka`.
+3. **Where loaded from** - One line (repo/path/chart).
+4. **Version deployed** - e.g. `4.12.1` or `main`.
+5. **Links** - GitHub links only (`https://github.com/symmatree/tiles/blob/main/<path>`). List application manifest; if applicable values.yaml; if applicable .tf file(s); for Tanka, environment application.yaml, main.jsonnet, spec.json.
+6. **If hosted in our repo** - Only if the component is an in-repo chart; one line on what the chart installs (upstream name/version).
+7. **TF / bootstrap values** - Yes or No. If Yes: link to .tf file(s) and list variables used (e.g. cluster_name, vault_name, nfs_server).
+8. **Tanka** - Only for jsonnet-via-tanka: environment path and links to environment files.
+9. **Varies between prod and test** - Yes with brief note, or No.
 
 After the Configuration section content, add a **footnote** (on the same day you run the procedure):
 

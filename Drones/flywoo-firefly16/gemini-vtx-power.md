@@ -5,7 +5,7 @@ You have the correct end goal in mind, but there is a three-way communication br
 Here is the technical breakdown of your hardware and exactly why the switch is failing to cut the VTX power.
 
 1. Hardware Misidentification
-You have an F405 flight controller, not an F411. The firmware dump explicitly declares board_name FLYWOOF405S_AIO. This is a hardware advantage—the F405 processor has more UARTs and flash memory—but it means F411 pinout documentation will lead you astray.
+You have an F405 flight controller, not an F411. The firmware dump explicitly declares board_name FLYWOOF405S_AIO. This is a hardware advantage--the F405 processor has more UARTs and flash memory--but it means F411 pinout documentation will lead you astray.
 
 The configuration resource PINIO 2 C08 is the correct, factory-designated physical pin for the 9V BEC switch on the Flywoo F405 AIO.
 
