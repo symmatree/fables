@@ -22,6 +22,8 @@ Long-form telemetry topology, bench validation, and task notes for the Rekon10. 
 
 **Regenerate plots:** from repo root, `cd fables/Drones/rekon10/scripts && .venv/bin/python plot_first_flight_roll_ekf_desroll.py` (after `python3 -m venv .venv && .venv/bin/pip install -r requirements-p1-plot.txt`). Pass **`--bin`** if the `.bin` is not at the default WSL path.
 
+**Decode `XKF4` `SS`/`TS`:** `scripts/decode_xkf4_ss_ts.py --bin ../attachments/logs/rekon10-first-flight_1980-01-12_14-29-50.bin --core 0`
+
 ### PreArm and boot `MSG` text before first ARM (verbatim)
 
 These **`MSG`** strings appear **in time order before** the first **`ARM` `ArmState` 1** at **`TimeUS` 148683236**:
@@ -47,9 +49,32 @@ These **`MSG`** strings appear **in time order before** the first **`ARM` `ArmSt
 - **Pilot roll/pitch input:** **Ruled out** for the sharp bank -- **`RCIN.C1`** and **`C2`** stay on trim while **`DesRoll`** spikes and **`Roll`** later diverges.
 - **Mode oddity:** **Ruled out** for this hop -- **`MODE` `ModeNum` 0 (Stabilize)** for the armed segment, **no change** in flight.
 - **Motor saturation alone:** **Not** the lead explanation -- see **`RCOU`** plot; the **attitude / EKF** story leads.
-- **External disturbance vs estimator / GNSS path:** **Inconclusive between those two alone**, with **strong timing evidence** that **`XKF4` `GPS` (core 0) steps off (8 -> 0)** in the **same era** as the large **`DesRoll`** spike and **`SV`** rising. **Not** a clean pilot over-reacted-on-roll story.
+- **External disturbance vs estimator / GNSS path:** **Inconclusive between those two alone**, with **strong timing evidence** that the **`XKF4` `GPS` scalar** (filter GPS status, not **`SS`**) and **`SV`** move in the **same era** as the large **`DesRoll`** spike. **Decoded `SS`** is richer; see **next subsection**. **Not** a clean pilot over-reacted-on-roll story.
 
 Full narrative (DVR, **`VIBE`**, multi-axis **`Des`**, GNSS **`NSats` / `HDop`** over the armed window) lives in [flight-platform-build-log.md](flight-platform-build-log.md) under **First flight (2026-04-19)**.
+
+### `XKF4` **`SS`** (solution status) and **`TS`** (timeout) over time
+
+**Why this matters:** [ArduPilot logmessages `XKF4`](https://ardupilot.org/copter/docs/logmessages.html) documents **`SS`** as a **bitmask** of named flags (**`USING_GPS`**, **`GPS_GLITCHING`**, **`GPS_QUALITY_GOOD`**, **`DEAD_RECKONING`**, **`TAKEOFF_EXPECTED`**, etc.). That is the **structured** counterpart to **PreArm `MSG` strings** -- same class of evidence, different channel. **`TS`** lists **sensor timeout** bits (position, velocity, height, mag, airspeed, drag).
+
+**How it was decoded:** bit names and values follow the **Copter** logmessages table; script-driven pass over **`rekon10-first-flight_1980-01-12_14-29-50.bin`**. Full transition list: [`attachments/logs/p1-xkf4-ss-ts-transitions.txt`](attachments/logs/p1-xkf4-ss-ts-transitions.txt).
+
+**`TS`:** Stays **`48`** for every **`XKF4`** sample in this log on both cores -- **`timeout_ARSP`** + **`timeout_DRAG`** (airspeed / drag timeouts; copter without those sensors still carries the bitmask). **No change** across arm, flight, or disarm -- **not** the story here.
+
+**`SS` changes (EKF cores 0 and 1 match):**
+
+| Approx time (rel. ARM) | What changed in `SS` | `XKF4.GPS` scalar (same row) |
+|------------------------|----------------------|------------------------------|
+| Just after ARM (~+0.1 s) | **`TAKEOFF_EXPECTED` set** (+2048) -- baro takeoff compensation | 0 |
+| ~**+4.0 s** (in armed flight) | **`TAKEOFF_EXPECTED` cleared** | **8** at the transition sample |
+| **After DISARM** (~+8.0 s wall; **~0.4 s after** `TimeUS` disarm) | **`GPS_GLITCHING` set** (+16384) | 136 |
+| Bench later (~+14--15 s) | **`GPS_QUALITY_GOOD` cleared** | still elevated |
+
+**Takeaways:**
+
+1. During the **armed 7.6 s hop**, the only **`SS`** motion is **on/off of `TAKEOFF_EXPECTED`** (paired with the takeoff phase) and the **`GPS` scalar** moving -- **not** the **`GPS_GLITCHING`** bit. **`USING_GPS`** and **`GPS_QUALITY_GOOD`** stay **set** in **`SS`** through the flight **per decode**.
+2. **`GPS_GLITCHING` in `SS`** turns on **after** the craft is already **disarmed** (same second as the **`MSG`** line **GPS Glitch or Compass error** in the tumbling era). That is **not** the same as saying the **DesRoll spike at ~+4 s** was driven by the **`GPS_GLITCHING` SS bit** -- it was **not** set yet.
+3. This fills the gap vs **PreArm:** we now have **both** verbatim **`MSG`** (above) **and** a **full `SS`/`TS` timeline** for the EKF lanes.
 
 ### Surprises (for downstream tasks)
 
@@ -57,6 +82,7 @@ Full narrative (DVR, **`VIBE`**, multi-axis **`Des`**, GNSS **`NSats` / `HDop`**
 - **`ATT.Roll`** to **~81 deg** while **`DesRoll`** is back near **zero** -- **body attitude** not tracking **commanded lean**.
 - Second large **`DesRoll`** transient **at disarm** (controller / motor-stop era, not stick).
 - **`GPS` `NSats`** over the armed segment spans **10--17**; **`HDop`** spans **1.82--4.02**.
+- **`XKF4` `SS`:** **`GPS_GLITCHING`** appears **after disarm**, not during the **~+4 s** spike; **`TAKEOFF_EXPECTED`** toggles with takeoff and clears at **~+4 s** when the **`GPS` scalar** moves.
 
 ---
 

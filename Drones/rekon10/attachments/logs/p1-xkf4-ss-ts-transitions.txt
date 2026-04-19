@@ -1,0 +1,51 @@
+P1: XKF4 SS (solution status) and TS (timeout) transitions, first-flight .bin
+Decode per ArduPilot Copter logmessages.html XKF4 (SS bitmask, TS bitmask).
+
+SS bits used: ATTITUDE_VALID(1) HORIZ_VEL(2) VERT_VEL(4) HORIZ_POS_REL(8)
+HORIZ_POS_ABS(16) VERT_POS(32) TERRAIN_ALT(64) CONST_POS_MODE(128)
+PRED_HORIZ_POS_REL(256) PRED_HORIZ_POS_ABS(512) TAKEOFF_DETECTED(1024)
+TAKEOFF_EXPECTED(2048) TOUCHDOWN_EXPECTED(4096) USING_GPS(8192)
+GPS_GLITCHING(16384) GPS_QUALITY_GOOD(32768) INITIALIZED(65536)
+REJECTING_AIRSPEED(131072) DEAD_RECKONING(262144)
+
+TS bits: bit0=position timeout, bit1=velocity, bit2=height, bit3=mag,
+bit4=airspeed, bit5=drag.  TS=48 = timeout_ARSP + timeout_DRAG (fixed this log).
+
+ARM TimeUS 148683236  DISARM 156283094  (rel 0 .. 7.60s armed)
+
+=== EKF core 0  (all SS/TS changes in file) ===
+t=85182795 rel_arm=-63.50s  SS=107327 TS=48 GPS=0  [init]
+  SS: ATTITUDE_VALID, HORIZ_VEL, VERT_VEL, HORIZ_POS_REL, HORIZ_POS_ABS, VERT_POS,
+      PRED_HORIZ_POS_REL, PRED_HORIZ_POS_ABS, USING_GPS, GPS_QUALITY_GOOD, INITIALIZED
+t=124982826 rel_arm=-23.70s  SS=109375 TS=48 GPS=0
+  SS: +TAKEOFF_EXPECTED
+t=134882833 rel_arm=-13.80s  SS=107327 TS=48 GPS=0
+  SS: -TAKEOFF_EXPECTED
+t=148782865 rel_arm=+0.10s [ARMED]  SS=109375 TS=48 GPS=0
+  SS: +TAKEOFF_EXPECTED
+t=152682808 rel_arm=+4.00s [ARMED]  SS=107327 TS=48 GPS=8
+  SS: -TAKEOFF_EXPECTED
+t=156682805 rel_arm=+8.00s  SS=123711 TS=48 GPS=136
+  SS: +GPS_GLITCHING   (note: AFTER disarm; disarm was 156283094)
+t=163982882 rel_arm=+15.30s  SS=90943 TS=48 GPS=136
+  SS: -GPS_QUALITY_GOOD
+
+=== EKF core 1  (same pattern, GPS_GLITCHING +14.5s clears GPS_QUALITY_GOOD) ===
+t=85182795  SS=107327 TS=48 GPS=0
+t=124982826  SS=109375  +TAKEOFF_EXPECTED
+t=134882833  SS=107327  -TAKEOFF_EXPECTED
+t=148782865 rel_arm=+0.10s [ARMED]  SS=109375  +TAKEOFF_EXPECTED
+t=152682808 rel_arm=+4.00s [ARMED]  SS=107327 GPS=8  -TAKEOFF_EXPECTED
+t=156682805 rel_arm=+8.00s  SS=123711 GPS=136  +GPS_GLITCHING
+t=163182790 rel_arm=+14.50s  SS=90943 GPS=136  -GPS_QUALITY_GOOD
+
+=== Armed window summary (core 0, every 100ms bucket) ===
+- TS stays 48 entire armed segment (no new sensor timeouts on this bitmask).
+- SS is 109375 from ~arm+0.1s until ~arm+4.0s: TAKEOFF_EXPECTED set (baro takeoff comp).
+- At ~arm+4.0s: TAKEOFF_EXPECTED clears; XKF4.GPS scalar shows 8 briefly before/around DesRoll spike window.
+- GPS_GLITCHING is NOT set in SS during 0..7.6s armed; it appears ~0.4s AFTER disarm.
+- USING_GPS and GPS_QUALITY_GOOD remain set in SS through the armed flight per decode.
+
+MSG line "GPS Glitch or Compass error" (TimeUS 156683209) is STATUSTEXT; it does not
+force GPS_GLITCHING in SS before that SS update at 156682805 -- check ordering: glitch
+message and SS change are the same second post-disarm.
