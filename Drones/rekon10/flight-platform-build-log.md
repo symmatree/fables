@@ -249,3 +249,25 @@ Also ran the Boxer's own **on-radio calibration** flow this morning (internal st
 Observed result: Mission Planner **Radio Calibration** now shows **green moving channel bars** for the Rekon10 model (first successful FC-side RC input indication in this build thread).
 
 Current interpretation: RF link quality had improved earlier (including better dual-antenna behavior after physical rework), but this step is the first clear confirmation that RC data reaches the FC.
+
+### First flight (2026-04-19): outdoor hop, mishap, log alignment
+
+**Preflight / mode:** **Loiter** would not arm (GPS / pre-arm unhappy despite a **3D**-class indication on the HUD at times). Flew in **Stabilize**; the **DataFlash** `MODE` line at arm matches **ModeNum 0** for the powered segment, with **no mode change** during the hop.
+
+**What happened (pilot + DVR + attitude log):** After arm, roughly **four seconds** of mostly straight climb, a **slight right** tendency, then a **strong right bank** on the order of **sixty degrees** while **roll and pitch sticks stayed flat** in `RCIN` (**C1**/**C2** on trim). A few seconds later the craft was **lower bank** but **picking up sideways speed and height**; the pilot **disarmed in the air**. DVR: **sharp forward tumble** (nose through vertical), a **brief upright** moment, then **on edge in mud** with **props buried**.
+
+**Log artifact:** Mission Planner **DataFlash download** over USB (no SD pull). On-disk name reflected unset RTC (**`1980-01-12 14-29-50.bin`**). **Armed segment ~7.6 s** in that file.
+
+**Explanation (as far as the log goes, not a court verdict):** This does **not** look like **pilot roll or pitch stick** driving the event: **`ATT.DesRoll`** (radians in the log; **~56 deg** at the spike) **does not** line up with **flat `RCIN.C1`**. **`ATT.Roll`** then runs out to **~80 deg** while **`DesRoll`** is already back near **zero** -- **attitude diverging from commanded lean**, not a sustained stick command. Around that same era, **`XKF4`** shows the **`GPS` diagnostic field** stepping **8 -> 0** on both EKF cores with **`SV` rising** -- **EKF / GPS trust or validity changed hard at essentially the same time** as the large **`DesRoll`** spike. **`MSG`** in the same session includes **EKF3 mag / yaw alignment** traffic, consistent with **compass / yaw / estimator stress**, not a clean GNSS story.
+
+**Hypothesis (explicitly uncertain):** The stack may have **acquired a fix or finished a configuring path**, **or** a **timeout / autoconfig path failed**; **either way**, a **sudden change in whether GPS data is treated as valid for the EKF** is **plausible** and matches the **`GPS` field in `XKF4` flipping to zero** at the spike. **Loiter was already locking you out**, so **deep GPS diagnosis did not happen in the field** -- that stays **bench work (P6 and P7)**.
+
+**Multi-axis desired attitude at the DesRoll spike:** On the **`ATT` sample at peak `|DesRoll|`**, **`DesRoll`** is about **+56 deg** (from radians in the `.bin`) while **`DesPitch`** is about **-11 deg** -- **roll and pitch demands do not line up as a single coordinated bank**, which fits **haywire** feel. **`DesYaw`** in **`ATT`** is a **yaw angle / heading-style field (degrees)**, not the same kind of **body lean** as **`DesRoll` / `DesPitch`**; treat **yaw** next to them as **heading solution churn**, not a third **stick-rate** axis unless you also check **`RATE`** or **RC yaw**.
+
+**GNSS quality over the armed segment (same log):** **`GPS` `NSats`** ranges **10 to 17**; **`HDop`** ranges **1.82 to 4.02** -- consistent with **satellite count dropping** and **HDOP rising** at times during the hop, even if a single 100 ms slice near the spike can look flat.
+
+**VIBE:** In flight, **motor-related vibration** tends to look **similar across axes** and **between IMU0 and IMU1**. The **ground impact** reads as a **directional** impulse (one horizontal axis and **Z** dominate briefly) rather than **uniform** prop energy -- useful contrast when scanning **`VIBE`** for **flight vs crash**.
+
+**Damage:** **Mud on props**; no broader airframe note from this flight.
+
+**Longer log narrative:** When Task **P1** lands in [telemetry-and-logging.md](telemetry-and-logging.md), point the detailed **PreArm chain**, plots, and verdict there; this section stays the **build-log chronicle**.
