@@ -42,7 +42,7 @@ These **`MSG`** strings appear **in time order before** the first **`ARM` `ArmSt
 - `PreArm: GPS 1 still configuring this GPS`
 - `GPS 1: u-blox navigation rate configuration 0x1FF3`
 
-**Later on the same log file (after the midair disarm, bench handling):** `PreArm: Accels inconsistent`, `PreArm: Check mag field (xy diff:265>100)`, and again `PreArm: Check mag field (xy diff:232>100)` -- **not** part of the chain immediately before that first outdoor arm, but kept for **P7** baseline.
+**Later on the same log file (after the midair disarm, craft **on the lawn** while retrieving it):** `PreArm: Accels inconsistent`, `PreArm: Check mag field (xy diff:265>100)`, and again `PreArm: Check mag field (xy diff:232>100)` -- **not** part of the chain immediately before that first outdoor arm, but kept for **P7** baseline.
 
 ### Verdict (plan categories)
 
@@ -68,7 +68,7 @@ Full narrative (DVR, **`VIBE`**, multi-axis **`Des`**, GNSS **`NSats` / `HDop`**
 | Just after ARM (~+0.1 s) | **`TAKEOFF_EXPECTED` set** (+2048) -- baro takeoff compensation | 0 |
 | ~**+4.0 s** (in armed flight) | **`TAKEOFF_EXPECTED` cleared** | **8** at the transition sample |
 | **After DISARM** (~+8.0 s wall; **~0.4 s after** `TimeUS` disarm) | **`GPS_GLITCHING` set** (+16384) | 136 |
-| Bench later (~+14--15 s) | **`GPS_QUALITY_GOOD` cleared** | still elevated |
+| On the lawn after crash (~+14--15 s; log still running while walking over to collect) | **`GPS_QUALITY_GOOD` cleared** | still elevated |
 
 **Takeaways:**
 

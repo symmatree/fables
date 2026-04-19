@@ -28,7 +28,7 @@ t=152682808 rel_arm=+4.00s [ARMED]  SS=107327 TS=48 GPS=8
 t=156682805 rel_arm=+8.00s  SS=123711 TS=48 GPS=136
   SS: +GPS_GLITCHING   (note: AFTER disarm; disarm was 156283094)
 t=163982882 rel_arm=+15.30s  SS=90943 TS=48 GPS=136
-  SS: -GPS_QUALITY_GOOD
+  SS: -GPS_QUALITY_GOOD   (post-crash: craft stuck in lawn, log still running while walking over to collect)
 
 === EKF core 1  (same pattern, GPS_GLITCHING +14.5s clears GPS_QUALITY_GOOD) ===
 t=85182795  SS=107327 TS=48 GPS=0
@@ -37,7 +37,7 @@ t=134882833  SS=107327  -TAKEOFF_EXPECTED
 t=148782865 rel_arm=+0.10s [ARMED]  SS=109375  +TAKEOFF_EXPECTED
 t=152682808 rel_arm=+4.00s [ARMED]  SS=107327 GPS=8  -TAKEOFF_EXPECTED
 t=156682805 rel_arm=+8.00s  SS=123711 GPS=136  +GPS_GLITCHING
-t=163182790 rel_arm=+14.50s  SS=90943 GPS=136  -GPS_QUALITY_GOOD
+t=163182790 rel_arm=+14.50s  SS=90943 GPS=136  -GPS_QUALITY_GOOD  (same: on lawn, not lab bench)
 
 === Armed window summary (core 0, every 100ms bucket) ===
 - TS stays 48 entire armed segment (no new sensor timeouts on this bitmask).
