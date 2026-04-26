@@ -16,6 +16,21 @@ The OAK-D imagery is not synchronized to the payload pod cameras, and is not use
 - **Isolated from high-frequency vibration:** Propeller buzz ("jello") from the 10" props blurs the stereo image and ruins depth sensing. The stereo-matching algorithm needs clean features to work in a forest environment (leaves, branches).
 - **Cooling:** Forestry surveys are slow-speed, high-load flights. The OAK-D's aluminum heat-sink fins must be exposed to prop wash.
 
+## OAK-D Specs
+
+[mfg page](https://docs.luxonis.com/hardware/products/OAK-D)
+
+* RVC2 with BNO086 IMU
+* 2x OV9282 72 HFOV 49 VFOV, global shutter, fixed focus, 1280x800@120FPS
+  * Stereo pair has 75mm baseline center-to-center
+* 1x IMX378 69 HFOV 55 VFOV, rolling shutter, auto focus, 4056x3040@60fps
+
+[Mechanical designs repo](https://github.com/luxonis/oak-hardware/blob/master/Mechanical-Designs.md)
+
+* SIZE (WxHxD) 97mm x 29.5mm x 22.9mm
+* Power draw: Max of 2A at 5.5V
+* Main mounting hole 1/4x20, 24.5mm from bottom to center
+
 ## Rejected alternative: GoPro mounting
 
 The Rekon10 frame comes with a TPU base for a standard GoPro "tab-style" mount. This provides convenient angle adjustment and a pre-built attachment point, but we believe it would buffer too much low-frequency signal, letting the camera lag the vehicle movements and confusing the FC. We need it to stay rigid to the FC in a macro sense, and only remove high frequency vibration.
