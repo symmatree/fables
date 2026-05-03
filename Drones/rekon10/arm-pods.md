@@ -39,6 +39,19 @@ Final angle-to-node assignment is TBD and iterable; these constraints define the
 
 ## Hardware
 
+### CAD starter library
+
+A first-pass OpenSCAD library of reusable "blank" components now lives at:
+
+- `components/pi-blanks.scad`
+
+It provides starter placeholders for:
+
+- `pi_zero2w_blank(...)` -- fixed board outline and 4-hole pattern, with optional envelope
+- `camera_module3_blank(...)` -- fixed standard CM3 board outline and 4-hole pattern, with optional lens keepout
+
+These are intended as mount-design primitives for the downward pods, vertical ring nodes, and rover nodes before any detailed cosmetic modeling.
+
 ### Thermal
 
 - **Camera Module 3:** Not a thermal concern. Pulling still frames at 1-2 Hz for photogrammetry is very low duty cycle.

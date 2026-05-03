@@ -16,6 +16,56 @@ The OAK-D imagery is not synchronized to the payload pod cameras, and is not use
 - **Isolated from high-frequency vibration:** Propeller buzz ("jello") from the 10" props blurs the stereo image and ruins depth sensing. The stereo-matching algorithm needs clean features to work in a forest environment (leaves, branches).
 - **Cooling:** Forestry surveys are slow-speed, high-load flights. The OAK-D's aluminum heat-sink fins must be exposed to prop wash.
 
+## Design notes
+
+### Rekon10 mounting holes in front:
+
+Using "measure" tool in OpenSCAD, measuring approx outermost point on each side, then innermost, and averaging.
+
+* Front hole side-to-side hole spacing 30.47mm so calling it 30.5mm
+* Rear hole 29.4mm
+
+In their STL using measure tool,
+* First hole on R: y=3, y=6
+* Second hole on R: y=3.54, 6.54
+
+* First pair, lateral: M3, 30.5mm center to center
+* Second pair, lateral: M3, 29.4mm center to center
+* First-to-second, axial: 40.7mm center to center
+
+So the outer edges of those are +/- 1.5mm. Let's allow 3mm of boss around each screwhole for bearing. It looks like their TPU footer is 3mm thick, that seems fine, and they also used a 3mm boss. (TPU not PLA but whatever.)
+
+So our footing is a rounded rectangle of those dimensions, then we'll cut back at the corners with a cylinder (with a generous fillet or webbing to the screw boss) to leave the screw boss and clearance for a tool. It flares wider laterally, the front goes straight up (approx; some overhang on drone to tilt down, some underhang on rover to point up). The back end swoops inward pretty fast to a 1cm (initial idea) thick pillar, from there on everything is parallel except for teh angling for the oak-d.
+
+I'm going to use 3mm as a somewhat arbitrary "thick enough to be rigid" number, and say that, from the initial footprint, by the bottom of the oak-d we should be a vertical rectangular prism, 6mm wider than the upright of the oak-d's "t" and 1cm deep. EXCEPT we have interfaces at the bottom of the oak-d which need to get backwards to the rpi and to power. So actually it should be a U shaped riser when seen from above, with the legs being at least 6mm wide, 1cm deep, and the front of the U being at least 3mm solid crossing the gap in front of the oak-d's base, culminating in a lip capturing the front of the oak-d's base and stopping before it interferes with a 90-degree USB-C plug and a power jack.
+
+From there, going upward, we become a somewhat wider U (since before we were narrowed to catch the shoulders) or even just pillars with cross-bands. Then a countersunk, solid through-boss for the main mounting 1/4-20 bolt, with skin-thickness support planes going sideways to the skin as well as up and down for a ways at least.
+
+From the 1/4-20 we can arc out in wings to cover the locating holes, with either a straight boss if they're threaded, or a boss with an inset nut to anchor a bolt square if it just stands out as a pin.
+
+We COULD go upward over the top to catch the front with a snap-fit lip coming downward. That might really help maintain against twisting, since the 1/4-20 won't hold it *down* against the shoulders, but it does add some print time and might be an issue with build volume. Probably worth it, that positive connection would be nice. Could actually put the bigger lip on top and the little one on the bottom so you rotate it upwards to snap in, then anchor with the 1/4-20. 
+
+### RPi mounting holes
+
+The rpi side is far easier, it needs standoffs for clearance and plug access and cooling. Cables (usb-c to USB-A, as well as barrel jack for OAK-D power) need to get through the tunnel and out around the pi to connect to it and/or to the BEC.
+
+4x M2.5 brass heat-set inserts
+
+Design the Hole: In your CAD software, you model a blind, straight-walled cylindrical hole wherever you want a thread. The diameter of this hole needs to be slightly smaller than the outer diameter of the insert (the insert manufacturer will provide the exact hole dimensions, usually something like a 4.0mm hole for a 4.6mm wide M3 insert).
+
+Position the Insert: Set the cold brass insert onto the top of the hole in your printed part. It will sit there, resting on the rim.
+
+Apply Heat: Press the hot tip of your soldering iron lightly into the center hole of the insert.
+
+Push Gently: As the brass heats up, it conducts heat into the surrounding PLA. Within a few seconds, the PLA begins to soften and melt. The insert will slowly sink into the hole under the light downward pressure of the iron.
+
+Flush and Cool: Once the top of the insert is flush with the surface of your print, pull the iron straight up and out. The melted PLA flows into the knurled ridges of the brass. As it cools (which only takes a few seconds), the plastic hardens, permanently locking the metal threads into the part.
+
+### BEC
+
+Should we put the BEC with the coordinator? We need it immediately, for the RPi and the OAK-D. Alternatively we could mount it standalone and then later with one or both of the usb hubs, the PPS isolator or isolators, and so forth. I guess short term I can just put it on a standoff on the rover and worry about the drone in a minute. On the rover, the rpi / oak-d / bec might all need active cooling, so if it was a tower with all three, we could put a fan at the top or bottom to blow along their heatsinks, across the rpi board.
+
+
 ## OAK-D Specs
 
 [mfg page](https://docs.luxonis.com/hardware/products/OAK-D)

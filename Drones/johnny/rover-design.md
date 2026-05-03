@@ -23,6 +23,10 @@ The intent is to take advantage of lessons and experience from working on the Re
 * ESC: HOBBYWING QUICRUN WP 1080 G2 Brushed 2-3s ESC
 * Onboard: SH1106 micro-oled
 
+### Links
+
+https://ardupilot.org/rover/docs/common-blitzh743wing.html
+
 ## General payload
 
 * Castle Creations CC Bec 10A 6S Switching Regulator
@@ -33,3 +37,16 @@ The intent is to take advantage of lessons and experience from working on the Re
 * ZOSKAY Servo High Torque Metal Gear Standard Digital Servo 25KG/0.13S 6.8V (Control Angle 180)
 * BNO085 IMU High Precision 9DOF Sensor I2C SPI UART
 * RCHUBAM RC Turnbuckles Camber Links M3
+
+## Camera layout study
+
+- OpenSCAD layout file: `rover-camera-layout.scad`
+- Uses CM3 standard frustums at +15 degrees elevation from near-horizontal.
+- Places 8 cameras at corners of a 5.5" x 18" rectangle with your notional pair ordering:
+  - front-left: NNW, WNW
+  - front-right: NNE, ENE
+  - rear-right: ESE, SSE
+  - rear-left: SSW, WSW
+- Includes:
+  - ground rectangle at 8" below camera centers
+  - vehicle blank 5.5" x 18", 7" high from ground
