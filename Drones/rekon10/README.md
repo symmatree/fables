@@ -21,6 +21,7 @@ System overview, mission context, and design rationale: **[rekon-design.md](reko
 | EdgeTX Boxer radio (calibration, `currModel`, etc.) | [`config/RADIO/radio.yml`](config/RADIO/radio.yml) |
 | Ground equipment (radio, goggles) | [ground-station.md](ground-station.md) |
 | Telemetry, logging, u-blox bench checks | [telemetry-and-logging.md](telemetry-and-logging.md) |
+| RTK integration (Holybro F9P, threads A through I, NTRIP/Tiles later) | [rtk-integration-tracker.md](rtk-integration-tracker.md) |
 | Flight stack bring-up (phases + params) | Cursor plan `~/.cursor/plans/rekon_flight_stack_bring-up_b564811b.plan.md` |
 
 
