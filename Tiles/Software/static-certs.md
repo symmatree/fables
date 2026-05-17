@@ -78,30 +78,14 @@ Uses `templates/laserjet.yaml`: password from 1Password item referenced by OnePa
 
 Fill in **Deploy target**, **Procedure**, and **Automation** as you decide each host's workflow.
 
-### raconteur (`raconteur.ad.local.symmatree.com`)
+### raconteur 
 
-- **Secret**: `raconteur-cert`
-- **Cluster**: Chart CRs / secrets for static-certs were observed on **tiles-test** (prod not checked here).
-- **Deploy target**: **Synology DSM** on raconteur (RS1619xs+): HTTPS for DSM UI and services bound to that cert object (see [[Synology/Raconteur]], [[Devices/Raconteur]]). SAN is `raconteur.ad.local.symmatree.com`.
-
-**Manual (UI):** DSM **Control Panel** > **Security** > **Certificate** -- import PEM + key from `raconteur-cert` (extract with generic commands, `NAME=raconteur`). Static-certs uses **ECDSA P-384**; if DSM rejects import, check DSM docs for imported-cert key types.
-
-**DSM Web API (for automation):** Same overall shape as [acme.sh `deploy/synology_dsm.sh`](https://github.com/acmesh-official/acme.sh/blob/master/deploy/synology_dsm.sh).
-
-- **Expired DSM TLS:** While DSM still presents an expired cert, strict HTTPS verification to `:5001` fails until you push a good cert -- use **`curl -k`** / **`verify=False`** only for those recovery calls.
-- **Login:** `SYNO.API.Auth` with **`enable_syno_token=yes`** (get **`sid`** + **`synotoken`**). Every **`entry.cgi`** call after that needs header **`X-SYNO-TOKEN: <synotoken>`**; without it, **`SYNO.Core.Certificate.CRT` `list`** returned **119** in testing.
-- **List certs:** **`POST`** `entry.cgi` with **`api=SYNO.Core.Certificate.CRT`**, **`method=list`**, **`version=1`**, **`_sid`** (not bare **`SYNO.Core.Certificate`** `list` via GET -- **103** here).
-- **Import / replace slot:** **`POST`** `entry.cgi` **`api=SYNO.Core.Certificate`**, **`method=import`**, **`version=1`**, query **`_sid`** + **`SynoToken`**, header **`X-SYNO-TOKEN`**. Multipart files **`key`**, **`cert`**, **`inter_cert`**; form **`id`** (from list), **`desc`** (must match slot, e.g. `raconteur.ad.local.symmatree.com`); **`as_default=true`** if replacing the default slot. Split **`tls.crt`** into leaf + chain when multiple PEM certs are present.
-
-**Terraform:** [synology-community/terraform-provider-synology](https://github.com/synology-community/terraform-provider-synology) **`synology_api`** only passes string parameters (query-style) -- **no multipart PEM upload**, so it does **not** replace DSM certificate import; use a script or Kubernetes Job instead.
-
-**Reference implementation:** [acme.sh `deploy/synology_dsm.sh`](https://github.com/acmesh-official/acme.sh/blob/master/deploy/synology_dsm.sh). The Synology **upload** logic (login, list, multipart `import`) matches what you need, but the shell file is **not** a separable CLI: it sources acme.sh (`_post`, `_getdeployconf`, deployconf storage, temp-admin helpers). You cannot point it at arbitrary PEM files without either pulling in that framework or copying the **curl-style multipart POST** block into a thin wrapper. Feeding cert-manager output through acme.sh's on-disk layout under `~/.acme.sh/<domain>/` only to run `--deploy` is possible in theory but duplicates state and is brittle.
-
-**Automation (Kubernetes):** Chart **`charts/static-certs`**: **`CronJob`** in namespace **`static-certs`** (enabled on prod via **`values-prod.yaml`**, off on test via **`values-test.yaml`**). Mounts selected **`tls`** Secrets and a **`OnePasswordItem`** for **`raconteur-login`** (DSM credentials). **`ConfigMap`** script clones **`acme.sh`**, builds per-domain **`~/.acme.sh/<fqdn>_ecc/`** layout from mounted PEMs (PKCS#12 split for leaf vs chain), runs **`--deploy --deploy-hook synology_dsm`**. Argo Application uses **`values-${targetRevision}.yaml`** alongside **`values.yaml`** (same **`targetRevision`** as misc-config: **`prod`** / **`test`**).
-
-**Credentials:** [`tf/nodes/README.md`](https://github.com/symmatree/tiles/blob/main/tf/nodes/README.md) -- `op read op://tiles-secrets/raconteur-login/...` for local use; the CronJob uses keys **`username`** / **`password`** on the operator-synced Secret (adjust **`loginSecretKeys`** in chart values if the 1Password item uses different field names).
-
-**Renewal:** cert-manager rotates the Secret on its schedule; DSM does **not** follow automatically -- re-import or run a sync when material changes.
+- **Certs:**
+  - `raconteur.ad.local.symmatree.com`
+  - `cam.local.symmatree.com`
+  - `photos.local.symmatree.com`
+- **Deploy target**: Synology DSM on raconteur (see [[Synology/Raconteur]], [[Devices/Raconteur]]).
+- **Automation**: On tiles only (`values-prod.yaml`; off on tiles-test), daily [CronJob](https://github.com/symmatree/tiles/blob/main/charts/static-certs/templates/dsm-synology-cronjob.helm.yaml) in `static-certs` pushes `raconteur-cert`, `cam-cert`, and `photos-cert` via [acme.sh `synology_dsm` deploy](https://github.com/acmesh-official/acme.sh/blob/master/deploy/synology_dsm.sh) (see also [deploy hooks](https://github.com/acmesh-official/acme.sh/wiki/deployhooks)). Uses `raconteur-login` for DSM API credentials. Each FQDN must already exist as a DSM certificate with that description.
 
 ### morpheus (`morpheus.local.symmatree.com`)
 
@@ -121,20 +105,6 @@ Fill in **Deploy target**, **Procedure**, and **Automation** as you decide each 
 
 - **Secret**: `hubitat-cert`
 - **Deploy target**: TBD (Hubitat hub UI / platform constraints)
-- **Procedure**: TBD
-- **Automation**: TBD
-
-### cam (`cam.local.symmatree.com`)
-
-- **Secret**: `cam-cert`
-- **Deploy target**: TBD (hosted on raconteur per chart comment)
-- **Procedure**: TBD
-- **Automation**: TBD
-
-### photos (`photos.local.symmatree.com`)
-
-- **Secret**: `photos-cert`
-- **Deploy target**: TBD
 - **Procedure**: TBD
 - **Automation**: TBD
 
