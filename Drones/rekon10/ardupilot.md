@@ -21,15 +21,15 @@ Wiring: [flight-platform.md](flight-platform.md). Serial **`PROTOCOL`** / **`BAU
 |------|------------|--------|
 | SERIAL0 | `PROTOCOL = 2`, `BAUD = 115` | USB |
 | SERIAL1 | `PROTOCOL = -1` | Unused |
-| SERIAL2 | `PROTOCOL = 5`, `BAUD = 115` | M100 Pro (UART + I2C1 compass) |
+| SERIAL2 | `PROTOCOL = -1` (target) | Was M100 Pro; clear when F9P on SERIAL7 is sole GPS |
 | SERIAL3 | `PROTOCOL = 42`, `BAUD = 115` | Walksnail MSP (TX3/RX3 only; VTX power is other FC pads, not UART3) |
 | SERIAL4 | `PROTOCOL = 9`, `BAUD = 115` | Unused |
 | SERIAL6 | `PROTOCOL = 2`, `BAUD = 460` | Matek ELRS R24-TD (see [ground-station.md](ground-station.md); `model01.yml` header `modelId` **10**) |
-| SERIAL7 | `PROTOCOL = 5` | Unused |
+| SERIAL7 | `PROTOCOL = 5`, `BAUD` = bench (**A**) | Holybro F9P Rover Lite (UART + I2C compass) |
 | SERIAL8 | `PROTOCOL = 16` | ESC ribbon |
 | SERIAL9 | `PROTOCOL = 2`, `BAUD = 115` | Unused |
 
-**SERIAL7:** F9P on the mast at **460800** when fitted (`SERIAL7_BAUD = 460`).
+**SERIAL7:** Sole GNSS on the mast -- Holybro F9P Rover Lite. Set `SERIAL7_BAUD` from u-center bench (**A** in [rtk-integration-tracker.md](rtk-integration-tracker.md)); **460800** was the earlier SparkFun-breakout plan, not a promise for Rover Lite. Point `GPS1_COM_PORT` at this UART when params are re-exported.
 
 ### RTCM / RTK
 
@@ -81,12 +81,12 @@ All **`MOT_PWM_*`**, **`SERVO_BLH_*`**, **`SERIAL8_*`**, motor **`SERVO*_*`**: *
 
 Telemetry keys and screens live in **`model01.yml`** (e.g. **RSNR**, **FM**, RSSI/LQ fields). [ground-station.md](ground-station.md) describes the ELRS profile and handset setup.
 
-## Compass and GPS (M100)
+## Compass and GPS (Holybro F9P Rover Lite)
 
-* `COMPASS_ORIENT = 6` (**Yaw270**)
-* `GPS1_TYPE = 1`, `GPS1_RATE_MS = 200`
+* `GPS1_TYPE` / `GPS1_COM_PORT` / `SERIAL7_*`: match bench and FC wiring ([rtk-integration-tracker.md](rtk-integration-tracker.md)).
+* `COMPASS_*`: integrated compass on the F9P I2C bus; `COMPASS_ORIENT` after outdoor cal (**E**). M100-era **Yaw270** / `COMPASS_ORIENT = 6` in export is **historical** only.
 
-This section refers to the **HGLRC M100 Pro** module on this airframe: bench USB tests have shown a non-RTK **3D fix** and successful compass calibration, but FC wall-clock / RTC time is still not set from GNSS in this setup. Details: [flight-platform-build-log.md](flight-platform-build-log.md).
+**Wall clock / RTC:** Do not rely on ArduPilot learning UTC from this GNSS path alone (same class of issue as M100 bench -- [flight-platform-build-log.md](flight-platform-build-log.md)). Payload cameras use the shared **DS3234** SQW PPS ([arm-pods.md](arm-pods.md), [central-hub.md](central-hub.md)); steering that RTC from GNSS time when fixes are good is a separate integration task.
 
 ## Battery monitoring
 
@@ -113,7 +113,7 @@ UART fallback if I2C fails: `RNGFND1_TYPE = 8` at 115200 on SERIAL4. [ArduPilot 
 ## Mission Planner and other tools
 
 * **Accel / level cal:** Lucid **"V"** on pad side **up**. [flight-platform-build-log.md](flight-platform-build-log.md).
-* **Compass cal:** Onboard for M100.
+* **Compass cal:** Onboard F9P compass after mast mount (tracker **E**).
 * **ELRS RX:** Match Boxer (**3.6.3** per [ground-station.md](ground-station.md)). [ExpressLRS web flasher](https://expresslrs.github.io/web-flasher/).
 * **Walksnail VTX:** Match goggles (e.g. **39.44.5**).
 * **AM32 ESC:** **## ESC (AM32, Lucid 4in1)** above; [AM32 firmware repo](https://github.com/am32-firmware/AM32).

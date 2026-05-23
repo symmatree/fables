@@ -16,9 +16,9 @@ The primary operational challenge is flying under tree canopy where RTK GPS sign
 
 ## Navigation architecture (roles)
 
-- **Primary GPS role:** RTK-capable **F9P** receiver with corrections relayed from a ground base station. Detail: [gps-mount.md](gps-mount.md).
-- **Fallback GPS + compass role:** Secondary onboard GPS/magnetometer provides heading and degraded-mode navigation. Detail: [flight-platform.md](flight-platform.md).
+- **GNSS + compass:** Single **Holybro F9P Rover Lite** (ZED-F9P + integrated compass) on the mast; RTCM from a ground base station. Replaces the former **M100 Pro**; no second mission-payload GPS. Detail: [gps-mount.md](gps-mount.md), [flight-platform.md](flight-platform.md), bring-up [rtk-integration-tracker.md](rtk-integration-tracker.md).
 - **VIO role:** **OAK-D** stereo+IMU module paired with the **Raspberry Pi 4B** Coordinator computing position estimates for GPS-degraded and under-canopy flight. Detail: [oak-d-mount.md](oak-d-mount.md), [central-hub.md](central-hub.md).
+- **Payload time base:** Shared [**DS3234**](https://www.sparkfun.com/sparkfun-deadon-rtc-breakout-ds3234.html) **SQW** (1 Hz) for multicamera PPS distribution -- local time agreement, disciplined from GNSS when available ([central-hub.md](central-hub.md), [arm-pods.md](arm-pods.md)).
 
 ## Mapping payload architecture
 
@@ -28,7 +28,7 @@ The mapping payload is a **synchronized multi-camera array** organized as two co
 - **Vertical ring (future build):** 360-degree side-scan perpendicular to travel, extending coverage from mid-elevation up through horizontal and above.
 - **Current build also pulls forward** a near-zenith pair from the vertical ring for **canopy gap detection** during under-canopy missions.
 
-All camera geometry (aim angles, pod assignment, FOV overlap, vibration analysis, PPS wiring) lives in [arm-pods.md](arm-pods.md). Hub/power/Coordinator detail lives in [central-hub.md](central-hub.md). Post-processing pipeline lives in [mapping.md](mapping.md).
+All camera geometry (aim angles, pod assignment, FOV overlap, vibration analysis, DS3234 PPS wiring) lives in [arm-pods.md](arm-pods.md). Hub/power/Coordinator detail lives in [central-hub.md](central-hub.md). Post-processing pipeline lives in [mapping.md](mapping.md).
 
 ### Key rationale: synchronized capture
 

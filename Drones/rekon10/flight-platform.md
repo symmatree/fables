@@ -2,7 +2,7 @@
 
 [Back to index](README.md) | [Build log](flight-platform-build-log.md) | [ArduPilot configuration](ardupilot.md)
 
-Flight stack, power path into the ESC, FPV link hardware, and radio receiver on the airframe. Excludes VIO / coordinator (see [central-hub.md](central-hub.md), [oak-d-mount.md](oak-d-mount.md)) and the F9P mast ([gps-mount.md](gps-mount.md)).
+Flight stack, power path into the ESC, FPV link hardware, and radio receiver on the airframe. Excludes VIO / coordinator (see [central-hub.md](central-hub.md), [oak-d-mount.md](oak-d-mount.md)). GNSS/compass on the mast: [gps-mount.md](gps-mount.md); RTK bring-up: [rtk-integration-tracker.md](rtk-integration-tracker.md).
 
 ## Frame
 
@@ -33,7 +33,7 @@ Other connections:
 
 * **470 µF** on FC VBatt.
 * **Buzzer** pads to **GEPRC Super Buzzer**.
-* **I2C1:** M100 Pro **QMC5883L** compass
+* **I2C (one bus):** Holybro F9P Rover Lite **integrated compass** (harness replaces former M100 I2C pair; which bus is recorded during [rtk-integration-tracker.md](rtk-integration-tracker.md) step **B**)
 Pending:
 
 * Second voltage sense from payload UBEC per [central-hub.md](central-hub.md).
@@ -44,14 +44,14 @@ Pending:
 | UART | SERIAL | Device | Protocol (ArduPilot) | Baud | Notes |
 |------|--------|--------|----------------------|------|-------|
 | USB | SERIAL0 | -- | MAVLink2 (2) | 115200 | Unused (coordinator) |
-| 2 | SERIAL2 | HGLRC M100 Pro GPS | GPS (5) | 115200 | Direct to FC pads; 3D fix + compass cal (see build log) |
+| 2 | SERIAL2 | -- | -- | -- | Was M100 Pro GPS; **retired** with module swap |
 | 3 | SERIAL3 | Walksnail VTX | MSP DisplayPort (42) | 115200 | JST to **TX3/RX3** for data only; VTX power on other FC pads |
 | 4 | SERIAL4 | -- | Rangefinder (9) | 115200 | Unused |
 | 6 | SERIAL6 | Matek ELRS R24-TD | MAVLink2 (2) | 460800 | Boxer MAVLink; [ground-station.md](ground-station.md) |
-| 7 | SERIAL7 | -- | GPS (5) | 460800 | Unused |
+| 7 | SERIAL7 | Holybro F9P Rover Lite | GPS (5) | TBD (bench **A**) | UART7 + I2C compass; see [gps-mount.md](gps-mount.md) |
 | 8 | SERIAL8 | ESC | ESC telemetry (16) | auto | FC ribbon |
 
-**Bring-up (cross-subsystem):** **M100** on SERIAL2 / I2C1: **3D fix**, compass cal, UART path (see build log). **Walksnail** UART + power **wired**; **VTX never powered**; **goggles** firmware current (expect VTX FW via goggles when linked). **ELRS** on SERIAL6: **MAVLink**, **R24-TD** **3.6.3**, bound to Boxer; link + telemetry OK; WiFi **10.0.4.65** / **rekon-rx.local.symmatree.com** ([rekon-rx](../../kb/rekon-rx.md)). **Model match:** [ELRS model match](#elrs-model-match). Per-subsystem detail: sections below and [ardupilot.md](ardupilot.md).
+**Bring-up (cross-subsystem):** **F9P Rover Lite** on SERIAL7 + I2C compass: [rtk-integration-tracker.md](rtk-integration-tracker.md) (steps **A**--**E**). Historical **M100** on SERIAL2: [flight-platform-build-log.md](flight-platform-build-log.md). **Walksnail** UART + power **wired**; **VTX never powered**; **goggles** firmware current (expect VTX FW via goggles when linked). **ELRS** on SERIAL6: **MAVLink**, **R24-TD** **3.6.3**, bound to Boxer; link + telemetry OK; WiFi **10.0.4.65** / **rekon-rx.local.symmatree.com** ([rekon-rx](../../kb/rekon-rx.md)). **Model match:** [ELRS model match](#elrs-model-match). Per-subsystem detail: sections below and [ardupilot.md](ardupilot.md).
 
 **Mission Planner param export:** Full list in git as **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**. This repo's **`.gitattributes`** marks that path **`text eol=crlf`** (alongside EdgeTX YAML under `Drones/rekon10/config/`) so CRLF exports from Mission Planner on Windows do not produce whole-file diffs against LF-only clones. A **facts** superproject checkout also sets the same behavior for the submodule path `fables/Drones/rekon10/config/` via **facts** `.gitattributes`.
 
@@ -110,7 +110,7 @@ The table below is from the **Helion 3110 / 900KV** datasheet for **HQ 10 x 5 x 
 
 **Mount:** Starboard, behind/outboard of stack, just forward of Walksnail VTX, **VHB**. Antenna routing: see [flight-platform-build-log.md](flight-platform-build-log.md) (tail vertical between VTX V-antennas; horizontal on rear power zip-tie tail).
 
-Connected to FC via 1.25mm JST pigtail to allow easier reflashing. On 5V (FC BEC) not 4V5 (USB) to allow for TD drawing a little more power, and the GPS already being on 4V5.
+Connected to FC via 1.25mm JST pigtail to allow easier reflashing. On 5V (FC BEC) not 4V5 (USB) to allow for TD drawing a little more power.
 
 **WiFi / OTA:** Receiver on **ExpressLRS 3.6.3**, joined to **house WiFi** for Web UI and updates. LAN address **10.0.4.65** (DHCP reservation; hostname **rekon-rx.local.symmatree.com**). Summary: [rekon-rx](../../kb/rekon-rx.md).
 
@@ -143,13 +143,13 @@ From WebUI:
 
 Direct soldered provided pigtail (plug on VTX): **TX3/RX3** for MSP DisplayPort; Lucid **9 V @ 2A** BEC.
 
-## GNSS and compass (HGLRC M100 Pro)
+## GNSS and compass (Holybro F9P Rover Lite)
 
-**HGLRC M100 PRO GPS** (u-blox M10, **QMC5883L** compass) -- [HGLRC product page](https://www.hglrc.com/products/hglrc-m100-pro-gps). Manual / pinout family: [attachments/m100-5883-gps.pdf](attachments/m100-5883-gps.pdf), diagram [attachments/hglrc-M100-5883.webp](attachments/hglrc-M100-5883.webp).
+**Holybro F9P Rover Lite** (ZED-F9P, **integrated compass**) -- mast mount and RF path: [gps-mount.md](gps-mount.md). Adapter: **4-pin UART + 5 V**, **2-pin I2C** per [rtk-integration-tracker.md](rtk-integration-tracker.md).
 
-Direct soldered to **UART2** + **I2C1** + **Lucid 4V5** (not 5V pad) + **GND**, **direct solder** to FC pads. **Harness colors do not follow pin order** -- solder by silk / manual pin names.
+**FC:** **UART7** / **SERIAL7** for GNSS; **I2C** on the bus chosen at integration (**B** in tracker). Replaces the **M100 Pro** that was on **UART2** / **SERIAL2** (bench history: [flight-platform-build-log.md](flight-platform-build-log.md)). **`config/rekon10-ardupilot.param`** may still reflect M100 until re-export after outdoor cal (**E**).
 
-**I2C1:** M100 Pro **QMC5883L** compass, address **0x0D** (13 decimal). Calibrated in Mission Planner; **Yaw270** / `COMPASS_ORIENT = 6`.
+**Compass:** Onboard on the F9P module; full compass cal outdoors per tracker step **E** (not assumed done in this doc).
 
 ## Rangefinder
 

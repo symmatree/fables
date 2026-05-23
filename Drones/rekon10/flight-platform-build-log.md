@@ -214,6 +214,8 @@ With the iron trusted again: **motor wires** soldered to the **underside** ESC p
 
 ### M100 Pro GPS, FC mount, ELRS antennas, rangefinder deferred
 
+**Superseded (GNSS plan):** The airframe now targets a single **Holybro F9P Rover Lite** on the mast in place of this module, with no second mission GPS. See [rtk-integration-tracker.md](rtk-integration-tracker.md), [gps-mount.md](gps-mount.md), [flight-platform.md](flight-platform.md). The notes below are **historical** bring-up for the M100 on **SERIAL2**.
+
 **HGLRC M100 Pro harness:** The **insulation color order along the cable does not match** the connector **pin order** in the HGLRC manual (which agrees with the labels on the board). Colors are in reverse order, esp black and red are NOT power.
 
 **Compass (USB-only bench, Mission Planner):** **I2C1** -- **QMC5883L** at **13** (**0x0D**). **Setup > Mandatory Hardware > Compass** -- **Onboard Magnetic Calibration**, **Default** fitness, bench rotation; MP **accepted**, **reboot**. **Yaw270** autodetected.
@@ -224,7 +226,7 @@ With the iron trusted again: **motor wires** soldered to the **underside** ESC p
 
 **ArduPilot Copter 4.6.3 reference (why RTC may stay unset despite 3D):** [send_mavlink_gps_raw](https://github.com/ArduPilot/ardupilot/blob/Copter-4.6.3/libraries/AP_GPS/AP_GPS.cpp) (~L1384--1387): **GPS_RAW_INT.time_usec** = **`last_fix_time_ms*1000`** (boot-relative, not Unix). [update_instance](https://github.com/ArduPilot/ardupilot/blob/Copter-4.6.3/libraries/AP_GPS/AP_GPS.cpp) (~L984--990) + [time_epoch_usec](https://github.com/ArduPilot/ardupilot/blob/Copter-4.6.3/libraries/AP_GPS/AP_GPS.cpp): **`set_utc_usec`** only if 3D and **`time_epoch_usec()!=0`**; needs **`time_week!=0`**. [UBLOX PVT / TIMEGPS](https://github.com/ArduPilot/ardupilot/blob/Copter-4.6.3/libraries/AP_GPS/AP_GPS_UBLOX.cpp) (~L1743--1768): **`time_week`** from **NAV-TIMEGPS** when **`valid & 0x02`** (u-blox **weekValid**); **NAV-PVT** sets iTOW / **`time_week_ms`**, not **`time_week`**. [AP_RTC::set_utc_usec](https://github.com/ArduPilot/ardupilot/blob/Copter-4.6.3/libraries/AP_RTC/AP_RTC.cpp) (~L54, ~L77): rejects UTC before **2022-01-01**. **Next:** **NAV-TIMEGPS** on UART, **`valid`** includes **0x02**.
 
-**Time sync:** **Not** treating **"push time from Mission Planner / GCS each session"** as an acceptable end state (session-dependent, behavior changes with vs without laptop). **Current:** RTC still unset on this bench setup (see above). **Future stack** (GNSS, PPS, F9P, coordinator, etc.) and how it will discipline the FC clock are **TBD** -- not documented here as done or decided.
+**Time sync:** **Not** treating **"push time from Mission Planner / GCS each session"** as an acceptable end state (session-dependent, behavior changes with vs without laptop). **Current:** RTC still unset on this bench setup (see above). **Payload plan (post-M100):** shared [**DS3234**](https://www.sparkfun.com/sparkfun-deadon-rtc-breakout-ds3234.html) **SQW** for multicamera PPS; discipline from GNSS when available ([central-hub.md](central-hub.md), [arm-pods.md](arm-pods.md)) -- not documented here as built.
 
 **Power:** M100 Pro is wired to the Lucid **4V5** rail (not **5V**) after checking it is within the module **3.6--5.5 V** input spec. This means it can get a **GPS fix from USB-only** FC power (no main flight battery).
 
@@ -270,4 +272,4 @@ Current interpretation: RF link quality had improved earlier (including better d
 
 **Damage:** **Mud on props**; no broader airframe note from this flight.
 
-**Longer log narrative:** When Task **P1** lands in [telemetry-and-logging.md](telemetry-and-logging.md), point the detailed **PreArm chain**, plots, and verdict there; this section stays the **build-log chronicle**.
+**Longer log narrative:** Detailed **PreArm chain**, plots, and verdict for first-flight analysis stay in this build log unless moved to a dedicated runbook later.

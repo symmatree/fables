@@ -9,13 +9,13 @@ Post-processing path from raw captures to photogrammetric products. Hardware, sy
 ## Inputs
 
 - **Synchronized image bursts** from the arm-pod cameras (Pi Zero 2 W + Camera Module 3, rolling shutter). Capture geometry, aim angles, and overlap targets: [arm-pods.md](arm-pods.md).
-- **GPS-locked capture timestamps** from each Pi Zero. Timestamps are locked to GPS time via PPS + chrony on the camera pods; see [arm-pods.md](arm-pods.md), *Time distribution: chrony + PPS*.
+- **Synchronized capture timestamps** from each Pi Zero. Timestamps are phase-locked to the shared **DS3234** epoch via SQW PPS + chrony on the camera pods; see [arm-pods.md](arm-pods.md), *Time distribution: chrony + PPS*.
 - **ArduPilot high-rate pose log** (50-100 Hz) covering the capture window, for post-hoc pose interpolation. Logging on the FC: [ardupilot.md](ardupilot.md).
 - **RTK positions** where available from the F9P (see [gps-mount.md](gps-mount.md)); VIO-fused pose during GPS-degraded intervals (see [oak-d-mount.md](oak-d-mount.md)).
 
 ## Processing
 
-- **PPK-style timestamp interpolation:** Each image's GPS-locked capture timestamp is interpolated against ArduPilot's pose log to assign a pose (position + attitude) at shutter time. Captures do not need to be aligned to FC log ticks; the sub-ms PPS-locked timestamps make interpolation clean. Precision math for the timing/pose tie-in lives in [arm-pods.md](arm-pods.md) (*Software sync only*, *Time distribution: chrony + PPS*).
+- **PPK-style timestamp interpolation:** Each image's capture timestamp (RTC-synced) is interpolated against ArduPilot's pose log to assign a pose (position + attitude) at shutter time. Captures do not need to be aligned to FC log ticks; the sub-ms PPS-locked timestamps make interpolation clean. Precision math for the timing/pose tie-in lives in [arm-pods.md](arm-pods.md) (*Software sync only*, *Time distribution: chrony + PPS*).
 - **OpenDroneMap (ODM):** Primary photogrammetry pipeline.
 - **Rolling shutter correction:** Enabled in ODM, fed the per-camera sensor readout parameters. Motivation and per-camera analysis: [arm-pods.md](arm-pods.md) (*Vibration and camera mounting rationale*).
 

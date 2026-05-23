@@ -9,8 +9,8 @@ System overview, mission context, and design rationale: **[rekon-design.md](reko
 | System overview, mission, mapping payload | [rekon-design.md](rekon-design.md) |
 | Canopy ops doctrine (ice-hole pattern, gap detection, map building, VIO risks) | [canopy-ops.md](canopy-ops.md) |
 | OAK-D forehead mount | [oak-d-mount.md](oak-d-mount.md) |
-| GPS mast, F9P, ground plane, SMA | [gps-mount.md](gps-mount.md) |
-| Arm pods (Pi Zero + cameras; multicamera sync, PPS, chrony, upward gap-detect pair) | [arm-pods.md](arm-pods.md) |
+| GPS mast, Holybro F9P Rover Lite, ground plane, SMA | [gps-mount.md](gps-mount.md) |
+| Arm pods (Pi Zero + cameras; multicamera sync, DS3234 PPS, chrony, upward gap-detect pair) | [arm-pods.md](arm-pods.md) |
 | Mapping pipeline (PPK interpolation, ODM, rolling-shutter correction) | [mapping.md](mapping.md) |
 | Central hub, power, pod harness | [central-hub.md](central-hub.md) |
 | Flight platform (as-built hardware, wiring, stack recipe) | [flight-platform.md](flight-platform.md) |
@@ -20,7 +20,6 @@ System overview, mission context, and design rationale: **[rekon-design.md](reko
 | EdgeTX FIREFLY16 model | [`config/MODELS/model02.yml`](config/MODELS/model02.yml) |
 | EdgeTX Boxer radio (calibration, `currModel`, etc.) | [`config/RADIO/radio.yml`](config/RADIO/radio.yml) |
 | Ground equipment (radio, goggles) | [ground-station.md](ground-station.md) |
-| Telemetry, logging, u-blox bench checks | [telemetry-and-logging.md](telemetry-and-logging.md) |
 | RTK integration (Holybro F9P, threads A through I, NTRIP/Tiles later) | [rtk-integration-tracker.md](rtk-integration-tracker.md) |
 | Flight stack bring-up (phases + params) | Cursor plan `~/.cursor/plans/rekon_flight_stack_bring-up_b564811b.plan.md` |
 

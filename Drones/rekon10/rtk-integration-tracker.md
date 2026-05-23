@@ -1,22 +1,10 @@
-# RTK integration tracker (Rekon10 + Holybro ZED-F9P)
+# RTK integration tracker (Rekon10 + Holybro F9P Rover Lite)
 
 [Back to index](README.md)
 
 More detail lives in [ardupilot.md](ardupilot.md), [gps-mount.md](gps-mount.md), [ground-station.md](ground-station.md), [flight-platform.md](flight-platform.md).
 
-Hardware: **Holybro ZED-F9P**; **adapter board** from module connector to **4-pin UART + 5 V** and **2-pin I2C (SCL/SDA)**; **USB-UART dongle** with **female** header for that 4-pin side. Bench path: u-center on the PC; **try adapter stack first**, fall back to **Holybro USB-C** direct cable.
-
-**Bench and airframe**
-
-- [ ] **A** u-center: adapter + USB-UART, then **Holybro USB-C** if needed. Bench satellite fix. UART baud noted; match `SERIAL7_*` and F9P when wiring the FC.
-- [ ] **B** On **one** I2C bus: cut/replace **two** hard-soldered wires with a **2-pin harness** to the F9P. Record which bus (silk + [flight-platform.md](flight-platform.md)); sync [`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param) when it settles.
-- [ ] **C** Drone powered, **VTX off**, **USB to FC only**: 3D fix and good enough for **Loiter** per prearm; **compass present** in Mission Planner (**no** compass cal yet).
-- [ ] **D** If **C** is good: top plate off, **four holes** in the **rear** of the top plate for the mast, mount antenna and strain-relief leads, reassemble; repeat **C** indoors (VTX still off) to confirm GPS + compass still there.
-- [ ] **E** **Outside:** full compass calibration; re-export params when good.
-
-**WiFi ground station** (do **F** as soon as it helps; **ideally before outdoor cal E** so you are not USB-tethered for that.)
-
-- [ ] **F** Mission Planner: turn off or soften the **full config/param refresh on connect** that floods the RF link (note the exact option). **RadioMaster Boxer / ELRS:** MAVLink over **WiFi** (handsets already join WiFi -- [ground-station.md](ground-station.md) for ports, `boxer-tx.local`, etc.). Goal: laptop for checks and telemetry **without** USB to the drone or the radio.
+Hardware: **Holybro F9P Rover Lite** (ZED-F9P + integrated compass); **adapter board** from module connector to **4-pin UART + 5 V** and **2-pin I2C (SCL/SDA)**; **USB-UART dongle** with **female** header for that 4-pin side. Bench path: u-center on the PC; **try adapter stack first**, fall back to **Holybro USB-C** direct cable. Replaces **M100 Pro** on the FC; **no** second mission-payload GPS. Multicamera PPS is **DS3234 SQW**, not GNSS PPS ([gps-mount.md](gps-mount.md), [central-hub.md](central-hub.md)).
 
 **NTRIP / cluster / corrections**
 

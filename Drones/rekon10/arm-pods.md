@@ -68,9 +68,9 @@ over it.
 - **Camera anchor:** The lower skeletal case holding the camera module bolts directly to those thick side walls. Creates a contiguous ring of plastic from the carbon arm through the sled flanks to the camera lens -- rock-solid.
 - **Open core:** The entire center channel is open. The Pi Zero and heatsink sit in a wind tunnel getting maximum prop-wash cooling, carrying no structural weight.
 
-### Signal wiring (PPS timing from GPS)
+### Signal wiring (PPS timing from DS3234 SQW)
 
-Run a **twisted pair**: signal wire + dedicated signal ground (any GND pin from the Pi header). This keeps the loop area near zero and prevents ESC EMI from corrupting the pulse.
+Run a **twisted pair** from the hub PPS buffer (driven by [**SparkFun DeadOn RTC DS3234**](https://www.sparkfun.com/sparkfun-deadon-rtc-breakout-ds3234.html) **SQW**, typically 1 Hz): signal wire + dedicated signal ground (any GND pin from the Pi header). This keeps the loop area near zero and prevents ESC EMI from corrupting the pulse. The GNSS module does **not** fan out PPS to the pods ([gps-mount.md](gps-mount.md)).
 
 At the Pi side, connect the signal ground through a **100-ohm resistor** to prevent it from becoming a high-current shortcut during a motor failure, while still providing a clean 3.3 V reference.
 
@@ -82,7 +82,7 @@ Configure USB as simulated network adapter; the Coordinator bridges. TODO: More 
 
 ### Time coordination
 
-Following pieces of [Microsecond accurate NTP with a Raspberry Pi and PPS GPS](https://austinsnerdythings.com/2021/04/19/microsecond-accurate-ntp-with-a-raspberry-pi-and-pps-gps/) it looks like `chrony` running on the Zeros to get NTP from the Coordinator.
+Following pieces of [Microsecond accurate NTP with a Raspberry Pi and PPS GPS](https://austinsnerdythings.com/2021/04/19/microsecond-accurate-ntp-with-a-raspberry-pi-and-pps-gps/) (pattern applies to **RTC SQW** as the PPS source, not a GPS PPS pin) it looks like `chrony` running on the Zeros to get NTP from the Coordinator.
 
 ### Capture sync
 
@@ -90,7 +90,7 @@ Following pieces of [Microsecond accurate NTP with a Raspberry Pi and PPS GPS](h
 
 The Camera Module 3 does not have XVS hardware trigger pins. The build uses **software-based timing sync for all cameras**.
 
-All cameras use interpolated timestamping: capture timestamps (locked to GPS time via PPS + chrony) are matched against ArduPilot's high-frequency pose logs (50-100 Hz) during post-processing (PPK-style interpolation). Even at 10 m/s (a worst-case for the timing math, not a planned survey speed) with 1 ms sync, positional error is only ~1 cm -- acceptable for photogrammetry. libcamera claims less than 10 microseconds.
+All cameras use interpolated timestamping: capture timestamps (locked to the **shared RTC time base** via DS3234 SQW + PPS + chrony) are matched against ArduPilot's high-frequency pose logs (50-100 Hz) during post-processing (PPK-style interpolation). Even at 10 m/s (a worst-case for the timing math, not a planned survey speed) with 1 ms sync, positional error is only ~1 cm -- acceptable for photogrammetry. libcamera claims less than 10 microseconds.
 
 **Planned survey speed:** 3-5 m/s for overhead mapping transects, slower under canopy. At 3 m/s with the same 1 ms sync budget, positional error is ~3 mm.
 
@@ -102,12 +102,13 @@ Standard NTP over USB gadget mode has 2-10 ms of jitter due to USB polling, whic
 
 **Architecture:**
 
-1. **The Coordinator** gets absolute time from GPS (NMEA sentences via serial or MAVLink SYSTEM_TIME) plus the PPS pulse. It acts as NTP server on the USB gadget network.
-2. **Each Zero** gets "rough" absolute time from the Coordinator over USB (accurate to the correct second, but sloppy by 5-15 ms).
-3. **A physical PPS wire** from the GPS runs to a GPIO pin on every Pi Zero.
-4. **Chrony** on each Zero is configured with both sources: it uses the network time to determine *which* second it is, then **phase-locks to the hardware PPS interrupt** for sub-microsecond alignment. All USB jitter is eliminated.
+1. **One DS3234** at the coordinator hub outputs **SQW** (1 Hz) into the PPS buffer tree ([central-hub.md](central-hub.md)). Primary need: **local agreement** across Pis, not strict absolute UTC on every flight.
+2. **The Coordinator** runs NTP on the USB gadget network and can **discipline** the DS3234 from GNSS time (u-center / MAVLink / logged fixes) when sky view is good.
+3. **Each Zero** gets "rough" time from the Coordinator over USB (accurate to the correct second, but sloppy by 5-15 ms).
+4. **A physical PPS wire** (buffered SQW) runs to a GPIO pin on every Pi Zero.
+5. **Chrony** on each Zero uses both sources: network time for the second boundary, **phase-lock to the hardware PPS interrupt** for sub-microsecond alignment. USB jitter is eliminated.
 
-When libcamera saves a frame, the timestamp comes from CLOCK_MONOTONIC, which is now locked to GPS time. Post-processing interpolation against ArduPilot's GPS-based TimeUS logs is clean.
+When libcamera saves a frame, the timestamp comes from CLOCK_MONOTONIC, phase-locked to the shared RTC epoch. Post-processing interpolates against ArduPilot pose logs (GPS/VIO **TimeUS**); GNSS provides georeferencing, not the pod PPS wire.
 
 See central-hub.md for signal buffering details.
 
@@ -262,7 +263,7 @@ This reframes the nearfield parallax analysis from the [DJI experiments](../../D
 
 Images land on each Pi Zero's local SD card. Post-flight processing:
 
-1. **Collect images** from all SD cards, with GPS-locked timestamps embedded by libcamera (CLOCK_MONOTONIC, phase-locked to GPS via PPS + chrony).
+1. **Collect images** from all SD cards, with timestamps embedded by libcamera (CLOCK_MONOTONIC, phase-locked to the DS3234 epoch via SQW PPS + chrony).
 2. **PPK-style interpolation:** Match each image's capture timestamp against ArduPilot's high-rate pose logs (50-100 Hz) to determine the exact 3D position and attitude of the drone at the moment of capture.
 3. **Feed to ODM** with `--rolling-shutter` enabled and the measured IMX708 readout time. ODM handles feature matching, bundle adjustment, RS correction, point cloud generation, mesh/DEM/orthophoto output.
 4. **Multi-camera metadata:** Each image carries its camera's aim direction and position offset from the GPS antenna (lever arm). ODM's multi-camera support (or manual rig definition) uses this to jointly optimize all cameras.

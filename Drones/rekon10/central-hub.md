@@ -42,8 +42,8 @@ Call this the central or MAVLink Pi so we don't freak everybody out if we go bac
 
 * Runs VIO along with the OAK-D (has internal IMU)
 * Bridges pi zeros to each other (virtual network adapters over USB)
-* Serves NTP to pi zeros
-* Listens to MAVLink to FC for absolute time etc
+* Serves NTP to pi zeros; disciplines the shared **DS3234** from GNSS/MAVLink time when available
+* Listens to MAVLink to FC for pose and time hints
 * Sends position estimates over MAVLink to FC
 * Sends depth field-based obstacle-distance messages to the FC
 
@@ -61,7 +61,7 @@ TODO: I'd like to get voltage off its output and current from the input. The mat
 
 ### PPS distribution board
 
-Uses a buffer IC in DIP package to remove load on the GPS output line.
+Uses a buffer IC in DIP package to remove load on the [**DS3234**](https://www.sparkfun.com/sparkfun-deadon-rtc-breakout-ds3234.html) **SQW** line (1 Hz), not the GNSS module.
 
 - **Camera pod connectors:** 2-wire JST SM (20 AWG): signal ground, 3.3 V PPS (from buffer). JST SM housings must be **zip-tied/anchored to the frame** to prevent pendulum vibration from fatiguing wires.
 - **Upward pair (NNW + NNE):** Two additional PPS outputs needed for the early vertical-ring cameras ([arm-pods.md](arm-pods.md), *Upward-looking cameras*). The SN74AHC125N is a **quad** buffer; the horizontal-ring 8 Zeros already need **two** buffer chips (or the Coordinator shares the raw line and 8 buffered outputs go to 8 Zeros). The upward pair adds 2 more buffered outputs -- plan for a total of **10 Zero PPS lines + 1 raw Coordinator line**, requiring **three** quad buffer ICs (12 outputs, 2 spare) or **two** hex buffers.
@@ -97,7 +97,7 @@ Board reference: ElectroCookie snappable stripboard from Amazon.
 
 One per macro-pod of 4 Zeros/cameras. Could be a single board if it's not inconveniently large, but my instinct is that we'll put this next to the usb hub for the same macro-pod.
 
-* PPS-in from GPS
+* **PPS-in** from **DS3234 SQW** (one RTC breakout at the hub; SPI/I2C to Coordinator for discipline from GNSS when available)
 * TODO: Firm up buffer chip wiring and power, make sure we're at right levels for RPi
 * 2-wire PPS (after buffer) and signal ground to each pi zero
 * Connector reference: VISDOLL JST SM connector kits (Amazon)
@@ -105,11 +105,11 @@ One per macro-pod of 4 Zeros/cameras. Could be a single board if it's not inconv
 
 ### PPS signal buffering
 
-Driving 5 GPIO pins from a single weak GPS PPS output (~4-8 mA) would degrade edge sharpness due to capacitive loading.
+Driving many GPIO pins from a single weak **SQW** output would degrade edge sharpness due to capacitive loading.
 
 **Buffer:** 3.3 V quad buffer, **SN74AHC125N** (or 74LVC125A). Powered from the Coordinator's 3.3 V rail (~20 uA quiescent, negligible load).
 
-**Topology:** All buffer inputs tied together in parallel to the raw GPS PPS line (zero phase skew, ~12-16 pF total input capacitance per quad chip -- trivial for the GPS module). The Coordinator shares the raw GPS line directly; buffered outputs go to the Pi Zeros. With 8 horizontal-ring Zeros + 2 upward-pair Zeros = **10 buffered outputs** needed, requiring **three** SN74AHC125N quad chips (or two hex-buffer equivalents). Two spare outputs remain.
+**Topology:** All buffer inputs tied in parallel to the raw **DS3234 SQW** line (zero phase skew, ~12-16 pF total input capacitance per quad chip -- trivial for the RTC). The Coordinator may share the raw SQW line for chrony; buffered outputs go to the Pi Zeros. With 8 horizontal-ring Zeros + 2 upward-pair Zeros = **10 buffered outputs** needed, requiring **three** SN74AHC125N quad chips (or two hex-buffer equivalents). Two spare outputs remain.
 
 Do not daisy-chain a "preamp" gate -- it adds cascaded propagation delay and unnecessary skew. Parallel is strictly better.
 

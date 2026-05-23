@@ -1,20 +1,22 @@
 # GPS mast ("funnel")
 
-[Back to index](README.md)
+[Back to index](README.md) | RTK bring-up: [rtk-integration-tracker.md](rtk-integration-tracker.md)
 
-This component mounts an F9P breakout board and a helical antenna. This mount may not always be fitted, but when it is, it talks to the FC to get RTCM corrections and to provide RTK positions. It also sends a PPS signal to the camera pods to allow them to synchronize their clocks to the microsecond level.
+The **primary** GNSS/compass for the airframe: **Holybro F9P Rover Lite** (ZED-F9P + integrated compass), mast-mounted helical antenna, RTCM from the ground link. Wired to the FC in place of the former **HGLRC M100 Pro** (same airframe role; UART/I2C details in [flight-platform.md](flight-platform.md)). There is **no** second mission-payload GPS.
+
+**Camera time sync** does **not** use a PPS output from this module. A shared [**SparkFun DeadOn RTC (DS3234)**](https://www.sparkfun.com/sparkfun-deadon-rtc-breakout-ds3234.html) at the coordinator hub drives **SQW** (1 Hz square wave) into the PPS distribution path ([central-hub.md](central-hub.md), [arm-pods.md](arm-pods.md)). Goal: **local agreement** on time across Pis; **discipline** the DS3234 from GNSS time when fixes are good, not a hard requirement for absolute UTC on every flight.
 
 ## Requirements
 
 - GPS antenna wants a **rigid mount** -- unlike a camera, it only cares about its phase center. Vibration that moves the antenna even 2 cm is indistinguishable from actual motion and creates noise in position/velocity estimates. Bolt it down hard.
-- The F9P breakout board needs cooling (pulls ~600 mA at 3.3 V when tracking 40+ satellites on L1/L2/L5). Must be in open air, not buried inside the funnel.
+- The F9P module needs cooling when tracking many constellations (budget similar to other ZED-F9P installs: on the order of hundreds of mA at 3.3 V). Must be in open air, not buried inside the funnel.
 - The SMA connection must be mechanically solid and electrically snug. A loose SMA under vibration creates micro-intermittency that drops RTK Fixed status.
 
 ### Design: PLA "ship's funnel" with side-mounted F9P
 
 - **Shape:** A funnel-like structure with a central tunnel (min 15 mm internal radius so SMA cables maintain impedance without kinking), a strong flat on top for the antenna, and a wide base flange.
 - **Base:** Bolts to the rear four top-plate screws. A forward "tongue" tucks under the battery strap for anti-rotation, even if only the rear two screws are structural. (If the battery conflicts with the tongue, the battery goes underslung.)
-- **F9P "Aegis" mount:** The breakout board mounts on the outside face of the funnel, exposed to prop wash for cooling. Connected to the antenna only via SMA (there is no physical mounting relationship between the F9P and the ground plane -- they're on different faces of the funnel).
+- **F9P mount:** The **Rover Lite** module mounts on the outside face of the funnel, exposed to prop wash for cooling. Connected to the antenna only via SMA (no structural tie between module PCB and ground plane beyond the RF path).
 - **Material:** PLA is what's available. Check for white stress marks around screws after first flights (PLA is brittle under vibration). PETG would be preferable.
 
 ## RF Shield option
@@ -45,13 +47,16 @@ This ensures the SMA is in **slight compression** (not tension), which is safer 
 
 ## Connections (end-to-end endpoints)
 
-### F9P / GPS (RTK)
+### Holybro F9P Rover Lite (GNSS + compass)
 
-* Board power TBD, ideally off FC not UBEC for resilience
-* UART RX/TX to FC UART 7 (3.3V) -- ArduPilot SERIAL7
-* SMA to bulkhead connector to antenna
-* [SparkFun GPS-RTK-SMA](https://www.sparkfun.com/sparkfun-gps-rtk-sma-breakout-zed-f9p-qwiic.html) ZED-F9P breakout board
-* **RTCM corrections path:** Base station -> house WiFi -> `boxer-txbp` backpack (UDP) -> ELRS MAVLink uplink -> ArduPilot -> `GPS_RTCM_DATA` forwarded to F9P on UART7. Requires ELRS in MAVLink mode (not normal CRSF). Current Rekon profile is **333 Hz Full, 1:2 telemetry** with about **13211 baud** telemetry budget reported on the handset; final RTCM traffic volume depends on selected message types, constellations, and update rates. See [ardupilot.md](ardupilot.md) (SERIAL6 / RTCM bandwidth).
+Bench and FC wiring follow [rtk-integration-tracker.md](rtk-integration-tracker.md):
+
+* **Module:** Holybro **F9P Rover Lite** (ZED-F9P); **adapter board** to **4-pin UART + 5 V** and **2-pin I2C (SCL/SDA)**; optional **USB-UART** dongle or **Holybro USB-C** for u-center on the bench.
+* **FC UART:** **SERIAL7** / UART7 (3.3 V RX/TX) -- match `SERIAL7_*` and module baud after bench (**A** in tracker).
+* **FC I2C:** One bus -- cut/replace the former M100 compass harness with a **2-pin harness** to the F9P; record bus in [flight-platform.md](flight-platform.md) and sync [`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param) when settled (**B** in tracker).
+* **Power:** TBD; prefer FC rail over payload UBEC where practical (same resilience rationale as before).
+* **SMA** to bulkhead to helical antenna.
+* **RTCM corrections path:** Base station -> house WiFi -> `boxer-txbp` backpack (UDP) -> ELRS MAVLink uplink -> ArduPilot -> `GPS_RTCM_DATA` forwarded to the F9P on SERIAL7. Requires ELRS in MAVLink mode (not normal CRSF). Current Rekon profile is **333 Hz Full, 1:2 telemetry** with about **13211 baud** telemetry budget reported on the handset; final RTCM traffic volume depends on selected message types, constellations, and update rates. See [ardupilot.md](ardupilot.md) (SERIAL6 / RTCM bandwidth).
 
 ## TODO: RTCM traffic shaping for ELRS link budget
 
