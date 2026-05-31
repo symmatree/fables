@@ -158,7 +158,7 @@ mixData:
    delayPrec: 0
    speedPrec: 0
    flightModes: 000000000
-   weight: -100
+   weight: 100
    offset: 0
    swtch: "NONE"
    delayUp: 0
@@ -175,7 +175,7 @@ mixData:
    delayPrec: 0
    speedPrec: 0
    flightModes: 000000000
-   weight: -100
+   weight: 100
    offset: 0
    swtch: "NONE"
    delayUp: 0
@@ -209,7 +209,7 @@ mixData:
    delayPrec: 0
    speedPrec: 0
    flightModes: 000000000
-   weight: -100
+   weight: 100
    offset: 0
    swtch: "NONE"
    delayUp: 0
