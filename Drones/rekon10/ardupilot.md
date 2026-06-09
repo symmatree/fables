@@ -146,3 +146,22 @@ loose prop) spin in flat circles until it completely augured in and broke a
 
 ----
 
+26-06-08
+
+Steady hover flight, althold and loiter:
+
+* Checked RATE outputs for oscillation per [methodic](https://ardupilot.github.io/MethodicConfigurator/TUNING_GUIDE_ArduCopter.html#711-check-for-motor-output-oscillation)
+* Ditto the RATE Des (desired) no visible oscillations
+* The ESC RPM values are pretty clean, they hunt up and down a little but it doesn't look like oscillation as such.
+* Motor temps seem fine; starting around 35 degrees and slowly going up to 50C (122F)
+* One weird thing: two motors are about 5300 RPM and two are at maybe 6100. I suspect this is fore/aft imbalance forcing uneven speeds to stay level.
+* PM group: Zero long loops, rock solid at 400 Hz main loop rate.
+* VIBE: VibeX is 3-6, VibeY is 2-5. VibeZ is 3-6 except a big spike at touchdown during landing. The guidance from [methodic docs](https://ardupilot.github.io/MethodicConfigurator/TUNING_GUIDE_ArduCopter.html#81-notch-filter-calibration) is 
+
+> According to common ArduPilot forum knowledge, and quoting @xfacta:
+> Vibrations over 30 are very bad
+> Vibrations over 20 are causing issues even if you don’t know it yet
+> Vibrations over 15 are in a grey area - it could go either way - check clipping, it must be zero
+> Vibrations below 10 are good
+
+I need to download a BIN file so I can use the filter tool, or I need to enable bin logging and collect another one.
