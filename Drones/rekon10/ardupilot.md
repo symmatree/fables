@@ -127,3 +127,22 @@ Mission Planner **Initial Setup** / **wizard** text is **shared across vehicle t
 * **Flight Data** tab -- **Messages** (or the scrolling message area on the HUD). Look for **`PreArm:`** / **`Arm:`** / **`STATUSTEXT`** lines (GPS, EKF, compass, RC cal, battery, throttle, fence, etc.). While disarmed, failing checks are often repeated about every **30 s** (see [Pre-Arm Safety Checks](https://ardupilot.org/copter/docs/common-prearm-safety-checks.html) -- message/cause/solution table for **Copter**).
 
 **Checks:** **`ARMING_CHECK`** bitmask; **`ARMING_SKIPCHK`** is for bench only -- [doc](https://ardupilot.org/copter/docs/common-prearm-safety-checks.html#disabling-the-pre-arm-safety-check).
+
+## Tuning
+
+### Logs
+
+HQProp 3-bladed props were fine with the default tune, the only downside was a "chirp" on certain attitude changes. This is the 5/29 6pm flight.
+
+Airscrew 2-bladed props showed substantial oscillation in stabilize mode, visible and audible. This is the 5/31 morning flight.
+
+Reverting INS filter settings to [this commit](https://github.com/symmatree/fables/commit/7553a7698d2c789b8b7906041552deec3c3070be) got me back to slightly chirpy flight, still with the two-bladed prop. This is the 5/31 afternoon flight.
+
+----
+
+Subsequent 2-bladed flight lost control and crashed; follow-up (perhaps with
+loose prop) spin in flat circles until it completely augured in and broke a
+2-bladed prop, so we're back to the 3-bladed HQProp ones again.
+
+----
+
