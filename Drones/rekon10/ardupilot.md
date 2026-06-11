@@ -171,3 +171,18 @@ Steady hover flight, althold and loiter:
 So we start below 50 dB except for a couple of spikes, and after filtering we are substantially below. We could probably drop the second set of notches and only do the primary harmonic but maybe not. Anyway our out of the box filter
 on first and second harmonic does just fine.
 
+### Single Notch, Loop rate
+
+Switching to a single notch but increasing to evaluate a loop rate (updating the notch at 400 Hz rather than at 200 Hz or something) is still really nice and hopefully lower latency. It held up with some control twitches - at roughly the same total energy input, but twitching the loiter target back and forth horizontally, and commanding a flat spin. Gemini argues for a vertical climb test to get the RPM up into the 15k range where the primary motor harmonic would overlap with its guess of a 250 Hz and 310 Hz frame resonance (based on the higher motor harmonics being smeared out somewhat below and above their natural rates).
+
+![Vibration from accel](1-notch-vibe.png)
+
+Very low; under 10 was simply "good" with no further comment, versus nuanced descriptions above that.
+
+![Rates](1-notch-rates.png)
+
+No oscillation visible in the rates, you can clearly see my commanded twitches in the second half of the flight. 
+
+![RPM](1-notch-rpm.png)
+
+Still a systemic gap between (0, 1) and (2, 3) which I think is just an off-center weight fore and aft.
