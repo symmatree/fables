@@ -164,4 +164,10 @@ Steady hover flight, althold and loiter:
 > Vibrations over 15 are in a grey area - it could go either way - check clipping, it must be zero
 > Vibrations below 10 are good
 
-I need to download a BIN file so I can use the filter tool, or I need to enable bin logging and collect another one.
+![initial results](init-260608-notch.png)
+
+> Use as little notch filter bandwidth and attenuation as possible. Noise levels below -50dB are considered good enough. Do not use notch filters to reduce noise below that level as it introduces unwanted signal lag.
+
+So we start below 50 dB except for a couple of spikes, and after filtering we are substantially below. We could probably drop the second set of notches and only do the primary harmonic but maybe not. Anyway our out of the box filter
+on first and second harmonic does just fine.
+
