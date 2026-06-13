@@ -186,3 +186,36 @@ No oscillation visible in the rates, you can clearly see my commanded twitches i
 ![RPM](1-notch-rpm.png)
 
 Still a systemic gap between (0, 1) and (2, 3) which I think is just an off-center weight fore and aft.
+
+
+-----
+
+QuickTune pass one. Strictly reduced a few values from the initials.
+Checked in as commit 27edae822d4aea576cf6c345b62af4b5aa400256. Was a pretty
+still day but the failure mode from not enough wind is supposed to be too aggressive a tuning not too cautious a one, so I think this is reasonably clean. I suspect what happened is that it tried to increase each one, decided it was a failure, and dropped by the target percentage which ended up slightly below where it started. which I'm fine with.
+
+Note that it didn't really "do" anything, basically just hovered there, whined a little, and moved on with updates in Messages.
+
+----
+
+Autotune cycle 1:
+
+### Roll
+
+Tests:
+
+* The resulting ATC_ANG_RLL_P parameter value is smaller than 4.5
+* The resulting ATC_RAT_RLL_D parameter value is equal to the AUTOTUNE_MIN_D parameter value (AUTOTUNE_MID_D = 0.0005)
+
+Results
+
+* ATC_ANG_RLL_P,18.37906 (up from 4.5)
+* ATC_RAT_RLL_D,0.004112592 (up from 0.0031)
+* ATC_RAT_RLL_I,0.08487533 (down from 0.101)
+* ATC_RAT_RLL_P,0.08487533 (down from 0.101)
+* ATC_ACCEL_R_MAX,127035.2 up from 116700
+
+Both Roll checks pass, D is 10x the min value, no reason to disbelieve this.
+
+
+----
