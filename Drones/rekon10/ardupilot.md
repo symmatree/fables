@@ -219,3 +219,23 @@ Both Roll checks pass, D is 10x the min value, no reason to disbelieve this.
 
 
 ----
+
+### Vertical bounce
+
+I refuse to call it a "punchout". Attempted settings: 
+max v accel to 2.5 m/s2 and max speed at 10 m/s, so it would wind up to full throttle.
+Over 12s it climbed from 1m to 78.5m, average speed of 6.45 m/s.
+Throttle rose from 0.12 to a peak of 0.35 about halfway through the climb, then I backed out of it then rolled back in to a second peak of 0.31. Last 18m or so of climb were after the throttle was dropping quickly toward idle.
+
+![Vertical bounce graphs](260613-vertical-bounce.png)
+
+Over just that climb period, the motor fundamental frequency rose to peaks of ~154 Hz and then 148 Hz on the second lower spike, from a hover at about 100 Hz. Notch tracks the noise really nicely. The second harmonics are visible but dimmer. It seems like there's more distributed noise until the throttle starts to climb, then it converges on a few sharper lines.
+
+VibeX got up to 15 a few times but no clipping.
+
+Limited to just the climb period where the rising throttle swept the fundamental frequency up 50 Hz, post-filter noise highest peak is -75 dB, oddly for the Y channel in particular. So even during this aggressive climb it was still at quite desirably low levels of noise.
+
+### Pitch tuning
+
+I completed this but switched modes before landing, which seems to have lost it. I could recover
+it from the logs I think, or I'll just re-run in the still air tomorrow morning if it doesn't rain.
