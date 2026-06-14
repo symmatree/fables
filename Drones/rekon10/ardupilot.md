@@ -239,3 +239,15 @@ Limited to just the climb period where the rising throttle swept the fundamental
 
 I completed this but switched modes before landing, which seems to have lost it. I could recover
 it from the logs I think, or I'll just re-run in the still air tomorrow morning if it doesn't rain.
+
+Second iteration:
+
+* ATC_ACCEL_P_MAX,138192.4 from 116700
+* ATC_ANG_PIT_P,23.45685 from 4.5
+* ATC_RAT_PIT_D,0.004828416 up slightly from 0.0035
+* ATC_RAT_PIT_I,0.04900767 down from 0.10125
+* ATC_RAT_PIT_P,0.04900767 down from 0.10125
+
+This sets off none of their red flags in [the section](https://ardupilot.github.io/MethodicConfigurator/TUNING_GUIDE_ArduCopter.html#952-pitch-axis-autotune). They say the quality of the tune is proportional to the ATC_ANG_RLL_P, ATC_ANG_PIT_P, and ATC_ANG_YAW_P parameters for their respective axis and that's the 23.4, so I won't worry that RAT I and P are less than for roll. This could also just reflect that it's much easier to roll than to pitch, just from the weight distribution.
+
+---
