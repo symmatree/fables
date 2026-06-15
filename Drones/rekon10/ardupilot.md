@@ -251,3 +251,9 @@ Second iteration:
 This sets off none of their red flags in [the section](https://ardupilot.github.io/MethodicConfigurator/TUNING_GUIDE_ArduCopter.html#952-pitch-axis-autotune). They say the quality of the tune is proportional to the ATC_ANG_RLL_P, ATC_ANG_PIT_P, and ATC_ANG_YAW_P parameters for their respective axis and that's the 23.4, so I won't worry that RAT I and P are less than for roll. This could also just reflect that it's much easier to roll than to pitch, just from the weight distribution.
 
 ---
+
+### Yaw tuning
+
+ATC_ANG_YAW_P is barely over their 4.5 cap but I'm okay with that. other values tightened up.
+
+probably should rerun but not now.
