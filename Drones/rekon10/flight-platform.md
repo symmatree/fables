@@ -2,7 +2,7 @@
 
 [Back to index](README.md) | [Build log](flight-platform-build-log.md) | [ArduPilot configuration](ardupilot.md)
 
-Flight stack, power path into the ESC, FPV link hardware, and radio receiver on the airframe. Excludes VIO / coordinator (see [central-hub.md](central-hub.md), [oak-d-mount.md](oak-d-mount.md)). GNSS/compass on the mast: [gps-mount.md](gps-mount.md); RTK bring-up: [rtk-integration-tracker.md](rtk-integration-tracker.md).
+This doc covers Flight stack, power path into the ESC, FPV link hardware, and radio receiver on the airframe. Excludes VIO / coordinator (see [central-hub.md](central-hub.md), [oak-d-mount.md](oak-d-mount.md))
 
 ## Frame
 
@@ -44,16 +44,15 @@ Pending:
 | UART | SERIAL | Device | Protocol (ArduPilot) | Baud | Notes |
 |------|--------|--------|----------------------|------|-------|
 | USB | SERIAL0 | -- | MAVLink2 (2) | 115200 | Unused (coordinator) |
-| 2 | SERIAL2 | -- | -- | -- | Was M100 Pro GPS; **retired** with module swap |
+| 2 | SERIAL2 | -- | -- | None | Was M100 Pro GPS; **retired** with module swap |
 | 3 | SERIAL3 | Walksnail VTX | MSP DisplayPort (42) | 115200 | JST to **TX3/RX3** for data only; VTX power on other FC pads |
-| 4 | SERIAL4 | -- | Rangefinder (9) | 115200 | Unused |
+| 4 | SERIAL4 | -- | None | 115200 | Unused |
 | 6 | SERIAL6 | Matek ELRS R24-TD | MAVLink2 (2) | 460800 | Boxer MAVLink; [ground-station.md](ground-station.md) |
-| 7 | SERIAL7 | Holybro F9P Rover Lite | GPS (5) | TBD (bench **A**) | UART7 + I2C compass; see [gps-mount.md](gps-mount.md) |
+| 7 | SERIAL7 | Holybro F9P Rover Lite | GPS (5) | 115200 | also I2C compass |
 | 8 | SERIAL8 | ESC | ESC telemetry (16) | auto | FC ribbon |
+| OTG2 | SERIAL9 | -- | 115200 | -- | 
 
-**Bring-up (cross-subsystem):** **F9P Rover Lite** on SERIAL7 + I2C compass: [rtk-integration-tracker.md](rtk-integration-tracker.md) (steps **A**--**E**). Historical **M100** on SERIAL2: [flight-platform-build-log.md](flight-platform-build-log.md). **Walksnail** UART + power **wired**; **VTX never powered**; **goggles** firmware current (expect VTX FW via goggles when linked). **ELRS** on SERIAL6: **MAVLink**, **R24-TD** **3.6.3**, bound to Boxer; link + telemetry OK; WiFi **10.0.4.65** / **rekon-rx.local.symmatree.com** ([rekon-rx](../../kb/rekon-rx.md)). **Model match:** [ELRS model match](#elrs-model-match). Per-subsystem detail: sections below and [ardupilot.md](ardupilot.md).
-
-**Mission Planner param export:** Full list in git as **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**. This repo's **`.gitattributes`** marks that path **`text eol=crlf`** (alongside EdgeTX YAML under `Drones/rekon10/config/`) so CRLF exports from Mission Planner on Windows do not produce whole-file diffs against LF-only clones. A **facts** superproject checkout also sets the same behavior for the submodule path `fables/Drones/rekon10/config/` via **facts** `.gitattributes`.
+**Mission Planner param export:** Full list in git as **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**
 
 ### ELRS model match
 
@@ -145,11 +144,11 @@ Direct soldered provided pigtail (plug on VTX): **TX3/RX3** for MSP DisplayPort;
 
 ## GNSS and compass (Holybro F9P Rover Lite)
 
-**Holybro F9P Rover Lite** (ZED-F9P, **integrated compass**) -- mast mount and RF path: [gps-mount.md](gps-mount.md). Adapter: **4-pin UART + 5 V**, **2-pin I2C** per [rtk-integration-tracker.md](rtk-integration-tracker.md).
+* **Module:** Holybro **F9P Rover Lite** (ZED-F9P); **adapter board** to **4-pin UART + 5 V** and **2-pin I2C (SCL/SDA)**; optional **USB-UART** dongle or **Holybro USB-C** for u-center on the bench.
+* **FC UART:** **SERIAL7** / UART7 (3.3 V RX/TX) -- match `SERIAL7_*` and module baud after bench (**A** in tracker).
+* **RTCM corrections path:** Base station -> ntrip (tiles) -> mavproxy (tiles) -> house WiFi -> `boxer-txbp` backpack (UDP) -> ELRS MAVLink uplink -> ArduPilot -> `GPS_RTCM_DATA` forwarded to the F9P on SERIAL7. Current Rekon profile is **333 Hz Full, 1:2 telemetry** with about **13211 baud** telemetry budget reported on the radio.
 
-**FC:** **UART7** / **SERIAL7** for GNSS; **I2C** on the bus chosen at integration (**B** in tracker). Replaces the **M100 Pro** that was on **UART2** / **SERIAL2** (bench history: [flight-platform-build-log.md](flight-platform-build-log.md)). **`config/rekon10-ardupilot.param`** may still reflect M100 until re-export after outdoor cal (**E**).
-
-**Compass:** Onboard on the F9P module; full compass cal outdoors per tracker step **E** (not assumed done in this doc).
+RTCM messages set in [tiles](https://github.com/symmatree/tiles/pull/516) to `1005(10),1074,1084,1094,1124,1230(10)`
 
 ## Rangefinder
 

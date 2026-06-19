@@ -33,7 +33,7 @@ Wiring: [flight-platform.md](flight-platform.md). Serial **`PROTOCOL`** / **`BAU
 
 ### RTCM / RTK
 
-RTCM over the ELRS link is not finalized. Profile and headroom: [ground-station.md](ground-station.md), [rekon-design.md](rekon-design.md), [gps-mount.md](gps-mount.md).
+Profile and headroom: [ground-station.md](ground-station.md), [rekon-design.md](rekon-design.md).
 
 ## ESC (AM32, Lucid 4in1)
 
@@ -256,4 +256,8 @@ This sets off none of their red flags in [the section](https://ardupilot.github.
 
 ATC_ANG_YAW_P is barely over their 4.5 cap but I'm okay with that. other values tightened up.
 
-probably should rerun but not now.
+probably should rerun but not now. I ran YawD for giggles, it also set some values.
+
+### Retune and overall
+
+It all seems fine? final values aren't the defaults and aren't on the limits for all of them, so nominally it converged. I'm not sure that the "raise X% until oscillation and then drop Y%" doesn't produce a systematic drift if you repeat it, but that's fine.

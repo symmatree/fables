@@ -16,7 +16,7 @@ The primary operational challenge is flying under tree canopy where RTK GPS sign
 
 ## Navigation architecture (roles)
 
-- **GNSS + compass:** Single **Holybro F9P Rover Lite** (ZED-F9P + integrated compass) on the mast; RTCM from a ground base station. Replaces the former **M100 Pro**; no second mission-payload GPS. Detail: [gps-mount.md](gps-mount.md), [flight-platform.md](flight-platform.md), bring-up [rtk-integration-tracker.md](rtk-integration-tracker.md).
+- **GNSS + compass:** Single **Holybro F9P Rover Lite** (ZED-F9P + integrated compass) on the mast; RTCM from a ground base station.
 - **VIO role:** **OAK-D** stereo+IMU module paired with the **Raspberry Pi 4B** Coordinator computing position estimates for GPS-degraded and under-canopy flight. Detail: [oak-d-mount.md](oak-d-mount.md), [central-hub.md](central-hub.md).
 - **Payload time base:** Shared [**DS3234**](https://www.sparkfun.com/sparkfun-deadon-rtc-breakout-ds3234.html) **SQW** (1 Hz) for multicamera PPS distribution -- local time agreement, disciplined from GNSS when available ([central-hub.md](central-hub.md), [arm-pods.md](arm-pods.md)).
 

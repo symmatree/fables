@@ -70,7 +70,7 @@ over it.
 
 ### Signal wiring (PPS timing from DS3234 SQW)
 
-Run a **twisted pair** from the hub PPS buffer (driven by [**SparkFun DeadOn RTC DS3234**](https://www.sparkfun.com/sparkfun-deadon-rtc-breakout-ds3234.html) **SQW**, typically 1 Hz): signal wire + dedicated signal ground (any GND pin from the Pi header). This keeps the loop area near zero and prevents ESC EMI from corrupting the pulse. The GNSS module does **not** fan out PPS to the pods ([gps-mount.md](gps-mount.md)).
+Run a **twisted pair** from the hub PPS buffer (driven by [**SparkFun DeadOn RTC DS3234**](https://www.sparkfun.com/sparkfun-deadon-rtc-breakout-ds3234.html) **SQW**, typically 1 Hz): signal wire + dedicated signal ground (any GND pin from the Pi header). This keeps the loop area near zero and prevents ESC EMI from corrupting the pulse.
 
 At the Pi side, connect the signal ground through a **100-ohm resistor** to prevent it from becoming a high-current shortcut during a motor failure, while still providing a clean 3.3 V reference.
 
@@ -338,7 +338,6 @@ No ML required for V1. The Pi Zero runs this locally and reports a binary flag t
 3. **FPV view** (Walksnail): forward/lateral context during ascent -- always available but aimed forward, not up.
 4. **Slow cautious ascent** with periodic re-evaluation from the upward cameras.
 
-Do not design the mission around WiFi availability. Canopy attenuates it, and you chose ELRS for RTCM delivery precisely because you could not count on WiFi to the aircraft.
 
 ### Weight and electrical budget (upward pair)
 

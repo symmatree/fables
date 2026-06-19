@@ -11,7 +11,7 @@ Post-processing path from raw captures to photogrammetric products. Hardware, sy
 - **Synchronized image bursts** from the arm-pod cameras (Pi Zero 2 W + Camera Module 3, rolling shutter). Capture geometry, aim angles, and overlap targets: [arm-pods.md](arm-pods.md).
 - **Synchronized capture timestamps** from each Pi Zero. Timestamps are phase-locked to the shared **DS3234** epoch via SQW PPS + chrony on the camera pods; see [arm-pods.md](arm-pods.md), *Time distribution: chrony + PPS*.
 - **ArduPilot high-rate pose log** (50-100 Hz) covering the capture window, for post-hoc pose interpolation. Logging on the FC: [ardupilot.md](ardupilot.md).
-- **RTK positions** where available from the F9P (see [gps-mount.md](gps-mount.md)); VIO-fused pose during GPS-degraded intervals (see [oak-d-mount.md](oak-d-mount.md)).
+- **RTK positions** where available from the F9P; VIO-fused pose during GPS-degraded intervals (see [oak-d-mount.md](oak-d-mount.md)).
 
 ## Processing
 

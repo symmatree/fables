@@ -214,7 +214,7 @@ With the iron trusted again: **motor wires** soldered to the **underside** ESC p
 
 ### M100 Pro GPS, FC mount, ELRS antennas, rangefinder deferred
 
-**Superseded (GNSS plan):** The airframe now targets a single **Holybro F9P Rover Lite** on the mast in place of this module, with no second mission GPS. See [rtk-integration-tracker.md](rtk-integration-tracker.md), [gps-mount.md](gps-mount.md), [flight-platform.md](flight-platform.md). The notes below are **historical** bring-up for the M100 on **SERIAL2**.
+**Superseded (GNSS plan):** The airframe now targets a single **Holybro F9P Rover Lite** on the mast in place of this module, with no second mission GPS. See [rtk-integration-tracker.md](rtk-integration-tracker.md), [flight-platform.md](flight-platform.md). The notes below are **historical** bring-up for the M100 on **SERIAL2**.
 
 **HGLRC M100 Pro harness:** The **insulation color order along the cable does not match** the connector **pin order** in the HGLRC manual (which agrees with the labels on the board). Colors are in reverse order, esp black and red are NOT power.
 
