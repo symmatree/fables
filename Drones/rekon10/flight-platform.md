@@ -44,11 +44,11 @@ Pending:
 | UART | SERIAL | Device | Protocol (ArduPilot) | Baud | Notes |
 |------|--------|--------|----------------------|------|-------|
 | USB | SERIAL0 | -- | MAVLink2 (2) | 115200 | Unused (coordinator) |
-| 2 | SERIAL2 | -- | -- | None | Was M100 Pro GPS; **retired** with module swap |
+| 2 | SERIAL2 | Holybro F9P Rover Lite | GPS (5) | 115200 | also I2C compass |
 | 3 | SERIAL3 | Walksnail VTX | MSP DisplayPort (42) | 115200 | JST to **TX3/RX3** for data only; VTX power on other FC pads |
 | 4 | SERIAL4 | -- | None | 115200 | Unused |
 | 6 | SERIAL6 | Matek ELRS R24-TD | MAVLink2 (2) | 460800 | Boxer MAVLink; [ground-station.md](ground-station.md) |
-| 7 | SERIAL7 | Holybro F9P Rover Lite | GPS (5) | 115200 | also I2C compass |
+| 7 | SERIAL7 |  -- | None | 115200 | Unused |
 | 8 | SERIAL8 | ESC | ESC telemetry (16) | auto | FC ribbon |
 | OTG2 | SERIAL9 | -- | 115200 | -- | 
 
