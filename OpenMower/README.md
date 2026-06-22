@@ -12,9 +12,9 @@ This directory holds the first data-gathering wave for understanding the v1 Open
 | [onboard-data-gathering-instructions.md](onboard-data-gathering-instructions.md) | Handoff for the agent (or user) working on the mower via Remote-SSH/SSH: context, inspection order, commands to run, where to write results, and how to behave when something is unexpected. |
 | [v1-physical-and-logical-controls.md](v1-physical-and-logical-controls.md) | v1 power switch (back of robot), mainboard Neopixel LED meanings (steady green = ready), and charging via the modified dock. |
 
-## Intent
+## Current state
 
-- **Task zero:** Identify the various components in the v1 OpenMower stack that have configurable state and how we can identify them.
-- **Next:** Use this as the reference to plan version assessment on the robot, choose a target state (old vs new release), and decide how to get there (reflash, reset, or update in place).
+2026-06-14 - imaged the SD Card to openmower latest. raspi-config set the hostname to kikuyu.
 
-Public-safe: no passwords; config and geolocation are fine.
+Access under WSL with "ssh.exe openmower@kikuyu.local.symmatree.com" and it will use the OnePKey from 1Password.
+
