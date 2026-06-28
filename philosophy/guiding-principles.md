@@ -645,41 +645,62 @@ need, at most, to catalog the relevant to me parts of the relevant to me items."
 Single-reader / single-namer scope deletes the adversarial-consensus machinery
 entirely -- not a cheaper Wikipedia, a different problem class.
 
-That is one instance of a broader pattern worth naming: when your specific
-situation puts you in a different cost regime than the conventional framing, you
-can sometimes solve a problem in a way conventionally unavailable -- not by being
-better at the conventional solution, but by not having the constraint the
-conventional solution is working around. The move: identify the constraint the
-standard solution exists to manage, notice whether *you* actually have it, and if
-not, design for your costs rather than theirs.
+That is one instance of a broader diagnostic pattern: the conventional solution's
+anxiety about a problem is evidence about cost structure, and that evidence points
+either way. If a standard approach is very worried about something you're not
+worried about, you are either underestimating the problem or your use case
+genuinely doesn't require the thing being protected. Noticing the mismatch is the
+start of the analysis, not the conclusion.
 
-The Google GFS case is the clearest external example: POSIX random-access
-semantics serve a cost model (local disk, arbitrary reads/writes, single writer)
-that Google's workload didn't have. By dropping the semantics rather than
-improving on them, they accessed a solution space -- append-only, immutable-once-
-written, replication over hardware reliability -- where commodity hardware becomes
-viable and the cost structure inverts. The insight wasn't "better filesystem"; it
-was "we are not solving the filesystem problem."
+The pattern runs in two directions:
+
+**Identifying slack you already have.** When you can solve a problem cheaply that
+others cannot, look at what the conventional solution is anxious about and check
+whether your actual use cases exercise that constraint. If they don't, design for
+not-having-it. The Google GFS case: POSIX random-access semantics exist to manage
+a cost (local disk, arbitrary seek, single writer) that Google's workloads --
+appending proto logs to a file tail, precomputing immutable shards -- genuinely
+didn't exercise. Dropping the semantics wasn't motivated reasoning; it was a
+correct reading of what the use cases actually needed. If instead the log package
+had kept a live header at byte 0 (constantly seeking back to rewrite it), that
+constraint would have been real and couldn't be wished away.
+
+**Constructing slack you don't yet have.** When you can't solve a problem at your
+constraints, review the "obvious" requirements and ask which ones could be relaxed
+through reworking the use case rather than improving the solution. In the header
+example: you can't afford random writes, but maybe the header can be reconstructed
+at read time from the appended records, or written to a separate cheap file. If
+so, you've adapted the use case to genuinely not need the constraint -- not
+rationalized it away, but actually removed it. That adaptation is real work, but
+usually cheaper than a problem you cannot solve at your price/performance/time.
+
+No special guard against motivated reasoning is required: if you drop a property
+your use case actually needs, the result can't serve the purpose, so it doesn't
+help. The correction is empirical, not introspective. If the log constantly
+updates the header and you drop random-write support, the log package breaks --
+that's the signal, not a prior audit of whether your reasoning was honest.
 
 Homelab is the everyday version: you accept failure modes (downtime, manual
-recovery, idiosyncratic UX) that would be unacceptable in production. That
-acceptance is a real cost advantage, not a compromise -- it collapses a tier of
-infrastructure cost that production can't drop because other people are affected.
-The constraint you lack is other-users-are-affected, and its absence changes what
-is solvable.
+recovery, idiosyncratic UX) that production cannot accept because other people are
+affected. The constraint other-people-are-affected is genuinely absent; it doesn't
+need to be constructed. That absence collapses a tier of cost and changes what is
+solvable, without any rationalization required.
 
 The pattern already appears implicitly in confirmed principles. In P2: the lazy-
 good-names channeling only works because Seth's naming habits are coherent -- a
-shared repo with multiple contributors loses the idiosyncratic property and lazy
-names stop being good. In P3: "own where you're the best solver" often means
-"own where you have an idiosyncratic cost advantage," not just superior skill.
-Google owns GFS not because they are the best filesystem engineers but because
-they are the only ones with that cost structure.
+shared repo with multiple contributors loses the idiosyncratic property, and the
+"lazy act is the correct act" no longer holds. In P3: "own where you're the best
+solver" often means "own where you have an idiosyncratic cost advantage." Google
+owns GFS not because they are the best filesystem engineers but because they are
+the only ones with that specific cost structure.
 
-Not promoted: the examples are real but the principle needs more development
-before it carries predictive weight -- specifically, a cleaner account of how to
-*identify* which constraints you actually lack (vs. which you merely wish you
-lacked). Leave here; revisit when there are more cases to triangulate from.
+Not promoted: the pattern is real and the examples are good, but it arrived and
+was refined in this same session -- the "not promoted" principles went through
+cross-domain adjudication and counter-example testing before landing where they
+are. This one hasn't. Revisit when it has been tested against more cases,
+particularly ones where the constraint turned out not to be relaxable, to
+calibrate where the pattern fires correctly versus where it flatters a bad
+decision.
 
 ---
 
