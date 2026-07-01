@@ -1,10 +1,14 @@
 # Betaflight CLI snippet
+#
+# DEAD END (verified 2026-07): this does NOT cut the 9V rail on the FLYWOOF405S_AIO.
+# The board has no PINIO / no VTX power-enable pin -- PC8 is just MOTOR8, and nothing
+# gates the 9V rail. The PC8=PINIO2 idea came from a different board (F405HD-AIOv2).
+# Kept only as a record of what was tried. See firefly16.md for the full write-up and
+# the recovery approach (motor DShot beacon + self-powered finder buzzer).
+#
 # FLYWOOF405S_AIO: free PC8 from Motor 8 so PINIO 2 can drive the 9V rail enable.
 # Matches EdgeTX USER2 on AUX5 (pinio_box USER1=40, USER2=41).
 # Recorded on the vehicle in config/BTFL_cli_FIREFLY-WH16_FLYWOOF405S_AIO.txt (# resources).
-#
-# Paste into Configurator CLI, check for errors, reboot, then `resource show all`.
-# If the rail still does not cut, revise after bench verification (see firefly16.md).
 
 batch start
 

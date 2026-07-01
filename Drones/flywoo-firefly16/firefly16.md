@@ -70,31 +70,23 @@ the raw switch behavior on the Boxer.
 
 ACRO is the default when no angle/horizon mode is active (SB away, no mode range matched on AUX2).
 
-**USER2 / PINIO polarity:** `pinio_config = 1` (inverted) on the Flywoo Goku F405S AIO.
-Default pin state (USER2 not active) = HIGH = 9V rail on. USER2 active = LOW = 9V
-rail cut. So low channel value (SA toward pilot) activates USER2 and cuts VTX power.
-The arm gate overrides CH9 high while armed, keeping VTX on regardless of SA position.
+### FLYWOOF405S_AIO: no software-switchable 9V rail (corrected 2026-07)
 
-### FLYWOOF405S_AIO: default pin map and 9V PINIO
+**The VTX 9V cut does not work on this board, and can't be made to.** The earlier plan -- free `PC8` from Motor 8, drive it as `PINIO2`, and cut the 9V rail from USER2/SA -- was built on a **board mismatch**. Both authoritative pin maps for the FLYWOOF405S_AIO define **no PINIO and no VTX power-enable pin**; `PC8` is just a motor output. Nothing on this board gates the 9V rail, so no config/`resource`/`pinio_config` change cuts it.
 
-Official Betaflight board config (no PINIO lines; note **`PC8` is `MOTOR8`** in the stock timer map):
+* Flywoo's own Betaflight config defines **`PC8` = `MOTOR8_PIN`**, no PINIO: [`configs/FLYWOOF405S_AIO/config.h`](https://github.com/betaflight/config/blob/master/configs/FLYWOOF405S_AIO/config.h) ([raw](https://raw.githubusercontent.com/betaflight/config/master/configs/FLYWOOF405S_AIO/config.h)).
+* ArduPilot's hwdef for the **exact** board, [`FlywooF405S-AIO/hwdef.dat`](https://github.com/ArduPilot/ardupilot/blob/master/libraries/AP_HAL_ChibiOS/hwdef/FlywooF405S-AIO/hwdef.dat), also defines **no PINIO** and never references `PC8`; VTX is **USART6 data only** (SmartAudio/MSP, not power).
+* The `PB5`=PINIO1 / `PC8`=PINIO2 idea came from a **different** board, [`FlywooF405HD-AIOv2/hwdef.dat`](https://github.com/ArduPilot/ardupilot/blob/master/libraries/AP_HAL_ChibiOS/hwdef/FlywooF405HD-AIOv2/hwdef.dat) (the HD-AIO v2, which *does* have switchable rails). Cross-applying it to the F405S was the error.
+* Context / others hitting the same wall: [iNavFlight/inav#10716](https://github.com/iNavFlight/inav/issues/10716), [IntoFPV: Flywoo Goku F405 HD 9V VTX switch](https://intofpv.com/t-flywoo-goku-f405-hd-9v-vtx-switch-issue).
 
-* [Betaflight `configs/FLYWOOF405S_AIO/config.h` (browse)](https://github.com/betaflight/config/blob/master/configs/FLYWOOF405S_AIO/config.h)
-* [same file raw](https://raw.githubusercontent.com/betaflight/config/master/configs/FLYWOOF405S_AIO/config.h)
+**Bench result (consistent):** USER2 / SA toggled the box correctly but **9V never cut** -- because there is no enable on the rail for any pin to drive. Treat the 9V as **hardware, always-on**. A routed-but-unexposed enable would be all cost and no benefit, so it isn't expected to exist; only a physical solder-jumper on the board's own wiring sticker could hard-disable it (worth an eyeball, not counted on). The apply snippet [`config/vtx-9v-pinio-apply.cli`](config/vtx-9v-pinio-apply.cli) is retained only as a **dead-end record** -- it does not cut power.
 
-* [ArduPilot `FlywooF405HD-AIOv2/hwdef.dat`](https://github.com/ArduPilot/ardupilot/blob/master/libraries/AP_HAL_ChibiOS/hwdef/FlywooF405HD-AIOv2/hwdef.dat) (**`PB5`** **PINIO1**, **`PC8`** **PINIO2** in that file)
+**Recovery approach instead (the actual goal -- find this beeper-less micro before the VTX overheats lying in grass):**
 
-* [iNavFlight/inav#10716](https://github.com/iNavFlight/inav/issues/10716), [IntoFPV: Flywoo Goku F405 HD 9V VTX switch](https://intofpv.com/t-flywoo-goku-f405-hd-9v-vtx-switch-issue)
+* **Motor DShot beacon** -- already configured (`beacon RX_LOST` / `RX_SET`, `beeper_dshot_beacon_tone = 3`): radio off, or the BEEPER switch, chirps the motors while the pack is connected. Free, no weight -- try first. Limits: needs the pack still connected and FC alive; muffled by grass.
+* **Self-powered finder buzzer** (own cell, ~100 dB, auto-alarms when it loses main power) for the browns-out / pack-off case the motor beacon can't cover. Needs a `BZ-` + 5V pad -- confirm against *this* board's wiring sticker before soldering.
 
-* [Oscar Liang: GOKU F405 1-2S 12A AIO build](https://oscarliang.com/flywoo-goku-f405-2s-aio-fc-v2-3inch-toothpick-build/)
-
-**CLI: free `PC8` from Motor 8, assign PINIO2, keep USER1/USER2 box mapping**
-
-**Observed (bench):** **USER2** / **SA** and **AIR MODE** / **SD** match Modes as intended (**USER2** on with **SA** toward pilot, off when away). **9V** to the VTX did not cut when **USER2** was on -- treat as **PINIO / hardware**, not radio mapping.
-
-Snippet file (paste into Betaflight Configurator CLI, check for errors, reboot so resources apply): [`config/vtx-9v-pinio-apply.cli`](config/vtx-9v-pinio-apply.cli).
-
-After reboot, run **`resource show all`** and find the line for pin **`C08`** (format is `C08: <owner>`). It should be **`PINIO 2`**. Betaflight does not print a separate **`MOTOR 8`** line; freeing **`resource MOTOR 8 NONE`** shows up as **`C08`** no longer being a motor output. Modes tab should still use **USER2** on **AUX5** with **900--1200 us** for cut when disarmed (see table above). If **9V** sense is inverted vs **USER2**, adjust **`pinio_config`** (Betaflight docs).
+Contrast [rekon10/ardupilot.md](../rekon10/ardupilot.md): the Lucid board *does* have a relay-switched VTX BEC (`RELAY4`), so there the default can simply be flipped to off-at-boot.
 
 ### Ports tab
 
