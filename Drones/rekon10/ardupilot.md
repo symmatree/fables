@@ -75,7 +75,9 @@ All **`MOT_PWM_*`**, **`SERVO_BLH_*`**, **`SERIAL8_*`**, motor **`SERVO*_*`**: *
 | CH6 | **`FLTMODE_CH = 6`**. **`FLTMODE1` / `FLTMODE4` / `FLTMODE6`** = **Loiter (5) / AltHold (2) / Sport (13)** toward-to-away on **SB** ([ground-station.md](ground-station.md)). |
 | CH7 | **`RC7_OPTION = 18`** (**LAND Mode** on **SD**; [aux functions](https://ardupilot.org/copter/docs/common-auxiliary-functions.html)). |
 | CH8 | **`RC8_OPTION = 30`** (*Lost vehicle sound*: **GEPRC** / FC buzzer **while CH8 is high**, i.e. while **SF** is held for the arm gate). |
-| CH9 | **`RC9_OPTION = 36`** (Relay4). **`RELAY4_PIN = 83`**, **`RELAY4_FUNCTION = 1`** (Lucid HD VTX BEC). |
+| CH9 | **`RC9_OPTION = 36`** (Relay4). **`RELAY4_PIN = 83`**, **`RELAY4_FUNCTION = 1`** (Lucid HD VTX BEC). **`RELAY4_DEFAULT = 0`** so the VTX BEC is **off at power-up** (bench work with the radio off leaves the VTX cold); CH9 / **SA** still switches it on for flight. |
+
+**VTX default-off at boot:** **`RELAY4_DEFAULT`** is the relay's startup state (**0 = Off, 1 = On, 2 = No change**). Set to **0** so a bench power-up with **no radio** leaves the VTX unpowered instead of energizing it (was **1**). With the radio on, CH9 controls Relay4 as before -- you must switch the VTX on before flight. **Polarity not yet bench-verified this session:** confirm `RELAY4_DEFAULT = 0` with `RELAY4_INVERTED = 0` actually leaves the BEC de-energized (power up radio-off, check the goggles see no VTX). **`RELAY2_DEFAULT` / `RELAY3_DEFAULT`** (pins 81/82) are still **1** and undocumented here -- left alone, but they also come up energized at boot.
 
 ### ELRS telemetry on the radio
 
@@ -261,3 +263,15 @@ probably should rerun but not now. I ran YawD for giggles, it also set some valu
 ### Retune and overall
 
 It all seems fine? final values aren't the defaults and aren't on the limits for all of them, so nominally it converged. I'm not sure that the "raise X% until oscillation and then drop Y%" doesn't produce a systematic drift if you repeat it, but that's fine.
+
+## EKF3 source mixing (altitude and vertical velocity)
+
+Verified against ArduPilot source (`AP_NavEKF3_PosVelFusion.cpp`, `AP_NavEKF_Source.cpp`).
+
+**Altitude position (`EK3_SRC1_POSZ`) -- hard mutex.** `selectHeightForFusion()` is a strict `if / else if` chain that sets exactly one `activeHgtSource` per tick. Only one sensor's measurement feeds the EKF altitude correction at any moment. Options: `1` = Baro (default), `3` = GPS, `2` = RangeFinder, `6` = ExtNav/VIO. If the active source drops out (GPS timeout, range out of range, etc.) it falls back to Baro automatically. There is no "blend baro and GPS altitude based on quality" path -- pick one.
+
+**Vertical velocity (`EK3_SRC1_VELZ`) -- can fuse multiple simultaneously.** `useVelZSource()` returns true for any source that appears in any of the three source sets (SRC1/2/3) when `EK3_SRC_OPTIONS` bit 0 (`FUSE_ALL_VELOCITIES`) is set. Current config: `EK3_SRC1_VELZ = 3` (GPS), `EK3_SRC_OPTIONS = 1`. GPS vertical velocity is already fused, gated by `EK3_GPS_VACC_MAX = 0.15 m` (reject GPS VelZ when reported VACC exceeds 0.15 m).
+
+**To add VIO vertical velocity alongside GPS:** set `EK3_SRC2_VELZ = 6` (ExtNav). With `SRC_OPTIONS = 1` already set, both GPS VelZ and VIO VelZ will fuse simultaneously, each weighted by their noise parameters. VIO VelZ requires an active ExtNav source; if it goes stale the EKF silently drops it and continues on GPS alone.
+
+**Barometer propwash offset.** In-flight analysis of loiter-around (2026-06-19) shows BARO reads ~1.2 m higher than GPS-normalized altitude during hover, converging toward zero as throttle drops on descent. Cause: low-pressure region under the props inflates the barometer. The offset is systematic (not random noise) and tracks throttle, with std ~0.5 m across the flight. `EK3_ALT_M_NSE = 2.0` accommodates this within the EKF noise budget. Switching `EK3_SRC1_POSZ` to GPS would trade the propwash bias for GPS vertical noise; at RTK float/fixed quality that is likely a better trade for precision altitude work. `EK3_GPS_VACC_MAX` would then gate when GPS altitude is accepted (the same threshold already gates GPS VelZ).
