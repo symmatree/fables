@@ -200,40 +200,6 @@ mixData:
    speedUp: 0
    speedDown: 0
    name: "Buzzer"
- -
-   destCh: 8
-   srcRaw: "SA"
-   carryTrim: 0
-   mixWarn: 0
-   mltpx: ADD
-   delayPrec: 0
-   speedPrec: 0
-   flightModes: 000000000
-   weight: -100
-   offset: 0
-   swtch: "NONE"
-   delayUp: 0
-   delayDown: 0
-   speedUp: 0
-   speedDown: 0
-   name: "VTX"
- -
-   destCh: 8
-   srcRaw: "MAX"
-   carryTrim: 0
-   mixWarn: 0
-   mltpx: REPL
-   delayPrec: 0
-   speedPrec: 0
-   flightModes: 000000000
-   weight: 100
-   offset: 0
-   swtch: "L3"
-   delayUp: 0
-   delayDown: 0
-   speedUp: 0
-   speedDown: 0
-   name: "VTX On"
 limitData: 
    0:
       min: 0
