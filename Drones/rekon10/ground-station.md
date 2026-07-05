@@ -174,7 +174,10 @@ Rekon10 **FC** parameters that must match this layout (`FLTMODE*`, `RCx_OPTION`,
 
 Toward = safe applies to all switches, including SA: VTX off (toward)
 prevents overheating on the bench. The arm gate overrides CH9 to force VTX
-on while armed, so SA only controls VTX power when disarmed.
+on while armed, so SA only controls VTX power when disarmed. **SA (or
+airflow) is the only bench-heat control: the VTX comes up energized at boot
+and `RELAY4_DEFAULT` cannot be used to keep it cold -- setting it `0` breaks
+the ELRS boot link (see [ardupilot.md](ardupilot.md)).**
 
 **Arm safety gate:** SF is configured as truly momentary (2POS in [`config/RADIO/radio.yml`](config/RADIO/radio.yml)). Three logical switches (L1=AND(SE down, SF held), L2=AND(SE up, SF held), L3=Sticky(L1,L2)) implement a gated latch: arming or disarming requires holding SF while flipping SE. Bumping SE without SF has no effect. **CH8** carries **SF** to the FC; **`RC8_OPTION = 30`** drives the craft buzzer **while SF is held** (see [ardupilot.md](ardupilot.md) **CH8** row). **EdgeTX** also plays **Bp1** on the **handset** on **SF2** / **L3** / **!L3** (`customFn` in [`config/MODELS/model01.yml`](config/MODELS/model01.yml)). VTX power (CH9) is forced on while armed to prevent accidental mid-flight video loss.
 

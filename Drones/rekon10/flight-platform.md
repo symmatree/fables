@@ -43,10 +43,10 @@ Pending:
 
 | UART | SERIAL | Device | Protocol (ArduPilot) | Baud | Notes |
 |------|--------|--------|----------------------|------|-------|
-| USB | SERIAL0 | -- | MAVLink2 (2) | 115200 | Unused (coordinator) |
+| USB | SERIAL0 | -- | MAVLink2 (2) | 115200 | USB console (bench Mission Planner) |
 | 2 | SERIAL2 | Holybro F9P Rover Lite | GPS (5) | 115200 | also I2C compass |
 | 3 | SERIAL3 | Walksnail VTX | MSP DisplayPort (42) | 115200 | JST to **TX3/RX3** for data only; VTX power on other FC pads |
-| 4 | SERIAL4 | -- | None | 115200 | Unused |
+| 4 | SERIAL4 | Coordinator (Pi 4B, VIO) | None (→ MAVLink2 (2) when cabled) | 115200 (→ 1500000) | Companion VIO link; kept None until the cable exists |
 | 6 | SERIAL6 | Matek ELRS R24-TD | MAVLink2 (2) | 460800 | Boxer MAVLink; [ground-station.md](ground-station.md) |
 | 7 | SERIAL7 |  -- | None | 115200 | Unused |
 | 8 | SERIAL8 | ESC | ESC telemetry (16) | auto | FC ribbon |
@@ -141,6 +141,13 @@ From WebUI:
 **Caddx / Walksnail Avatar HD Pro Kit - 32GB w/ Dual Antennas** -- [product page](https://www.caddxfpv.com/products/walksnail-avatar-hd-pro-kit-dual-antenna). Local docs: [attachments/walksnail-vtx.webp](attachments/walksnail-vtx.webp), [attachments/Avatar_V2_DUAL_kit_Quickstart_Guide.pdf](attachments/Avatar_V2_DUAL_kit_Quickstart_Guide.pdf), [attachments/Goggles_X_User_Manual_EN_V1.2.pdf](attachments/Goggles_X_User_Manual_EN_V1.2.pdf).
 
 Direct soldered provided pigtail (plug on VTX): **TX3/RX3** for MSP DisplayPort; Lucid **9 V @ 2A** BEC.
+
+**Open: heavy pixelation investigation (2026-07).** Symptom is macroblocking on the goggle feed (digital link -- not analog static). Bench view at **unarmed / low TX power** was **clean**, which clears the encoder/camera/sensor and the short-duration case, but does **not** exercise the two prime suspects, both of which only appear armed/outdoors:
+
+- **Power / brownout at full TX.** The VTX runs off a **9 V @ 2A = 18 W** BEC; a Walksnail Avatar HD Pro at high TX power + recording can approach that ceiling. If it's marginal, expect macroblocking that **tracks throttle** (pack sag) or steps with **TX power level** -- not with range.
+- **Thermal throttling.** Full TX power = more heat; degradation that **grows over a soak** while stationary points here. (Bench thermal protection is via SA / airflow now that `RELAY4_DEFAULT` must stay `1` -- see [ardupilot.md](ardupilot.md).)
+
+Test-flight read (arm -> throttle up -> hover): if pixelation **correlates with throttle / TX power** -> power or ESC EMI; if it's **constant or grows with time-on** -> thermal or RF link. Vibration under motors is also the most likely thing to re-open a marginal **micro-U.FL** VTX antenna in the crowded rear bay (antennas were reseated this session -- the hoped-for fix). Interference from the Coordinator / Pi Zero / USB hub was ruled out **at idle** only; the OAK-D on **USB3** is a broadband noise source that needs a pass with the VIO stack **actively streaming**, not just powered.
 
 ## GNSS and compass (Holybro F9P Rover Lite)
 
