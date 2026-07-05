@@ -2,7 +2,7 @@
 
 [Back to index](README.md) | [Flight platform hardware](flight-platform.md) | [Ground station / radio](ground-station.md)
 
-FC-side settings for the **TBS Lucid H7** build. The FC is the source of truth; **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)** is the last export committed from Mission Planner (**Write Params**, **Save to File**, then git) so the repo matches what was on the FC at export time.
+FC-side settings for the **TBS Lucid H7** build. The FC is the source of truth; **[`config/rekon10-methodi.param`](config/rekon10-methodi.param)** is the last export committed from Mission Planner (**Write Params**, **Save to File**, then git) so the repo matches what was on the FC at export time.
 
 Handset and ELRS profile (Boxer, rates, Model Match, switch table): **[ground-station.md](ground-station.md)**. EdgeTX model export: **[`config/MODELS/model01.yml`](config/MODELS/model01.yml)** (**Rekon10**, model id **10**).
 
@@ -59,9 +59,9 @@ NOTE: Once you remap the servo/motor mappings using SERVO1_FUNCTION - SERVO4_FUN
 | **Pole count** | **`SERVO_BLH_POLES`** = your **motor** pole count (export shows **14** -- confirm on the motor datasheet) | Wrong poles skew **eRPM** / telemetry and **harmonic notch** if fed from ESC RPM. |
 | RPM into ArduPilot | **Default: UART only** -- **`SERIAL8`** ESC telemetry. Keep **`SERVO_BLH_BDMASK = 0`** | **Bi-directional DShot** is an **optional** alternate RPM path on the motor wires; you do **not** need it if UART telemetry works. Avoid turning on **both** without a reason. **`INS_HNTCH_ENABLE`** is **0** in export until you have ESC RPM in logs ([IMU harmonic notch](https://ardupilot.org/copter/docs/common-imu-notch-filtering.html) is post-hover tuning). |
 
-**Design record:** **`MOT_PWM_TYPE`** = **DShot600** (baseline). RPM for logging / notch from **`SERIAL8`** unless you later prove UART is insufficient and switch deliberately. Re-export **`rekon10-ardupilot.param`** after changes.
+**Design record:** **`MOT_PWM_TYPE`** = **DShot600** (baseline). RPM for logging / notch from **`SERIAL8`** unless you later prove UART is insufficient and switch deliberately. Re-export **`rekon10-methodi.param`** after changes.
 
-All **`MOT_PWM_*`**, **`SERVO_BLH_*`**, **`SERIAL8_*`**, motor **`SERVO*_*`**: **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**.
+All **`MOT_PWM_*`**, **`SERVO_BLH_*`**, **`SERIAL8_*`**, motor **`SERVO*_*`**: **[`config/rekon10-methodi.param`](config/rekon10-methodi.param)**.
 
 ## RC and FC aux mapping
 
@@ -77,7 +77,7 @@ All **`MOT_PWM_*`**, **`SERVO_BLH_*`**, **`SERIAL8_*`**, motor **`SERVO*_*`**: *
 | CH8 | **`RC8_OPTION = 30`** (*Lost vehicle sound*: **GEPRC** / FC buzzer **while CH8 is high**, i.e. while **SF** is held for the arm gate). |
 | CH9 | **`RC9_OPTION = 36`** (Relay4). **`RELAY4_PIN = 83`**, **`RELAY4_FUNCTION = 1`** (Lucid HD VTX BEC). **`RELAY4_DEFAULT = 1`** (VTX on at power-up) -- **must stay `1`**; setting it `0` to keep the VTX cold on the bench breaks the ELRS boot link (see note below). CH9 / **SA** controls it when disarmed, and the Boxer **arm gate forces CH9 high (VTX on) while armed** ([ground-station.md](ground-station.md)) -- arming powers the VTX, no manual step. |
 
-**`RELAY4_DEFAULT` must be `1` -- ELRS boot interaction (found 2026-07):** `RELAY4_DEFAULT` is the relay's startup state (**0 = Off, 1 = On, 2 = No change**). It was briefly set to **0** so a bench power-up with **no radio** would leave the VTX cold. **That setting breaks the ELRS link at boot and must not be used:** with `RELAY4_DEFAULT = 0`, the Matek R24-TD fails to acquire the handset and drops into **WiFi / web-config mode within a few seconds** of power-up, even with the transmitter on and trying. Reverting to **1** restores the link immediately. This was cleanly isolated -- `RELAY4_DEFAULT` was the **only** variable toggled between the failing and working boots (antennas untouched between the two), so the dependence is real, not a confound. **The FC is now at `RELAY4_DEFAULT = 1`; the committed [`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param) export predates this revert and should be re-exported.**
+**`RELAY4_DEFAULT` must be `1` -- ELRS boot interaction (found 2026-07):** `RELAY4_DEFAULT` is the relay's startup state (**0 = Off, 1 = On, 2 = No change**). It was briefly set to **0** so a bench power-up with **no radio** would leave the VTX cold. **That setting breaks the ELRS link at boot and must not be used:** with `RELAY4_DEFAULT = 0`, the Matek R24-TD fails to acquire the handset and drops into **WiFi / web-config mode within a few seconds** of power-up, even with the transmitter on and trying. Reverting to **1** restores the link immediately. This was cleanly isolated -- `RELAY4_DEFAULT` was the **only** variable toggled between the failing and working boots (antennas untouched between the two), so the dependence is real, not a confound. **The FC is at `RELAY4_DEFAULT = 1`, matching the committed [`config/rekon10-methodi.param`](config/rekon10-methodi.param) export (built with the methodical configurator, seeded then rebooted).**
 
 The arm-gate mix in [`config/MODELS/model01.yml`](config/MODELS/model01.yml) still **forces CH9 high (VTX on) whenever armed** (via the L1-L3 latch; [ground-station.md](ground-station.md)), so flight is unaffected -- arming powers the VTX and it can't drop mid-flight regardless of the default.
 
@@ -103,7 +103,7 @@ Telemetry keys and screens live in **`model01.yml`** (e.g. **RSNR**, **FM**, RSS
 
 ## Battery monitoring
 
-Mission Planner **Initial Tune** (with **6S Li-ion** selected) set most **`BATT_*`** metering and voltage thresholds. Full **`BATT_*`** / **`MOT_BAT_*`** list: **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**.
+Mission Planner **Initial Tune** (with **6S Li-ion** selected) set most **`BATT_*`** metering and voltage thresholds. Full **`BATT_*`** / **`MOT_BAT_*`** list: **[`config/rekon10-methodi.param`](config/rekon10-methodi.param)**.
 
 **Failsafe actions (operator choice, not Initial Tune):** **`BATT_FS_LOW_ACT = 0`** (warn only on low pack) then **`BATT_FS_CRT_ACT = 1`** (**Land** on critical). Low uses **`BATT_LOW_VOLT`** with **`BATT_LOW_TIMER`** (**10** s hold in export) before the warning state; critical uses **`BATT_CRT_VOLT`**.
 

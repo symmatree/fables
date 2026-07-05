@@ -2,7 +2,7 @@
 
 [Back to index](README.md) | [As-built flight platform](flight-platform.md) | [ArduPilot configuration](ardupilot.md)
 
-Chronological notes: Gorilla drilling, stack iterations, bench bring-up, and wiring discovery. **Canonical wiring, serial map, and final FC/ESC stack recipe** are in [flight-platform.md](flight-platform.md). **ArduPilot parameters** are in [ardupilot.md](ardupilot.md) and [config/rekon10-ardupilot.param](config/rekon10-ardupilot.param).
+Chronological notes: Gorilla drilling, stack iterations, bench bring-up, and wiring discovery. **Canonical wiring, serial map, and final FC/ESC stack recipe** are in [flight-platform.md](flight-platform.md). **ArduPilot parameters** are in [ardupilot.md](ardupilot.md) and [config/rekon10-methodi.param](config/rekon10-methodi.param).
 
 **Bring-up phases:** Cursor plan `~/.cursor/plans/rekon_flight_stack_bring-up_b564811b.plan.md`.
 

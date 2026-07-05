@@ -52,7 +52,7 @@ Pending:
 | 8 | SERIAL8 | ESC | ESC telemetry (16) | auto | FC ribbon |
 | OTG2 | SERIAL9 | -- | 115200 | -- | 
 
-**Mission Planner param export:** Full list in git as **[`config/rekon10-ardupilot.param`](config/rekon10-ardupilot.param)**
+**Mission Planner param export:** Full list in git as **[`config/rekon10-methodi.param`](config/rekon10-methodi.param)**
 
 ### ELRS model match
 
