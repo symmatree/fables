@@ -1,10 +1,15 @@
 # CLAUDE.md -- agent conduct
 
 Guidance for AI coding agents (Claude Code and others) working in this repo. The
-rules below are **general** -- they are the same conduct expected in every repo in
-this project, so this file is the canonical copy; other repos reference or copy it.
-Repo-specific operational rules (deploy mechanics, cluster safety, build steps) live
-in that repo's own guidance, not here.
+rules below are **general** -- the same conduct expected in every repo in this project.
+
+**Canonical source:** the copy in the `fables` repo,
+`https://github.com/symmatree/fables/blob/main/CLAUDE.md`. It is the single source of
+truth; the copies in the other repos are duplicates of it. To change a conduct rule,
+edit the canonical copy first, then bring the other copies up to date to match. This
+note is identical in every copy, so whichever one you are reading, the fables copy is
+the one to update. Repo-specific operational rules (deploy mechanics, cluster safety,
+build steps) live in that repo's own guidance, not here.
 
 These are distilled from real session corrections. The deeper reasoning behind several
 of them is in [philosophy/guiding-principles.md](philosophy/guiding-principles.md).
