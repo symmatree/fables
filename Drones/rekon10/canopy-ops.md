@@ -6,13 +6,13 @@ Mission doctrine for flying under tree canopy: the "ice-hole" navigation pattern
 
 > **Measured evidence (2026-07-07).** Several error-budget and VIO-risk items below were *assumptions*
 > when written. Some now have data from two 2026-07-05 flights, reprocessed through a tracked,
-> deterministic VIO pipeline in the **coordinator** repo — see coordinator
+> deterministic VIO pipeline in the **coordinator** repo -- see coordinator
 > [#42](https://github.com/symmatree/coordinator/issues/42),
 > [`analysis/vio-quality-experiments.md`](https://github.com/symmatree/coordinator/blob/main/analysis/vio-quality-experiments.md),
 > and the `vio-quality.ipynb` notebook. Measured points are marked **[measured, GPS-good proxy]** inline.
 > **Important caveat on all of them:** the data is from **GPS-good, open, well-lit** flights (RTK the
 > whole time; GPS-denial is *simulated* by withholding intermediate GPS from the reconstruction). Canopy
-> — feature-poor, moving leaves, lighting transitions, low light — is a different and likely worse
+> -- feature-poor, moving leaves, lighting transitions, low light -- is a different and likely worse
 > environment, and remains **untested**. Treat every number as an **optimistic floor**.
 
 ---
