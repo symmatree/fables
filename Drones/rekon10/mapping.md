@@ -23,6 +23,8 @@ Post-processing path from raw captures to photogrammetric products. Hardware, sy
 
 Under-canopy legs are bounded by the ice-hole pattern so each leg begins and ends at an RTK-Fixed position. The mapping error budget (post-hoc, forgiving) is deliberately separated from the flight-safety budget (real-time, coarse). See [canopy-ops.md](canopy-ops.md), *Two separate error budgets*, for how VIO drift interacts with post-processing endpoint constraints rather than with real-time navigation.
 
+The post-hoc endpoint-constrained reconstruction is being prototyped as an **offline global (batch) factor-graph solve** over the recorded feature motions with GPS priors at the leg endpoints (intermediate GPS withheld) -- coordinator [#59](https://github.com/symmatree/coordinator/issues/59). Early measurement (GPS-good backyard proxy) puts stereo-only drift at tens of cm over 10-20 m legs; see [canopy-ops.md](canopy-ops.md), *Planning interval*, and coordinator [`vio-quality-experiments.md`](https://github.com/symmatree/coordinator/blob/main/analysis/vio-quality-experiments.md). This is the mechanism that turns each leg's VIO into a georeferenced trajectory for ODM.
+
 ## Design rationale (synchronized multi-camera vs single-camera baseline)
 
 Why the Rekon's mapping architecture is multi-camera synchronized rather than a single gimballed camera making repeated passes is framed in [rekon-design.md](rekon-design.md) and grounded in the single-camera DJI Mini 3 Pro experiments in [`../../Datasets/experiments-house-model.md`](../../Datasets/experiments-house-model.md).

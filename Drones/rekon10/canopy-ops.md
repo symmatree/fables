@@ -4,6 +4,17 @@
 
 Mission doctrine for flying under tree canopy: the "ice-hole" navigation pattern, gap detection, incremental map building, error budgets, VIO risks, and fallback procedures. Hardware details for gap detection live in [arm-pods.md](arm-pods.md) (*Upward-looking gap detection*); navigation sensors and VIO in [rekon-design.md](rekon-design.md).
 
+> **Measured evidence (2026-07-07).** Several error-budget and VIO-risk items below were *assumptions*
+> when written. Some now have data from two 2026-07-05 flights, reprocessed through a tracked,
+> deterministic VIO pipeline in the **coordinator** repo — see coordinator
+> [#42](https://github.com/symmatree/coordinator/issues/42),
+> [`analysis/vio-quality-experiments.md`](https://github.com/symmatree/coordinator/blob/main/analysis/vio-quality-experiments.md),
+> and the `vio-quality.ipynb` notebook. Measured points are marked **[measured, GPS-good proxy]** inline.
+> **Important caveat on all of them:** the data is from **GPS-good, open, well-lit** flights (RTK the
+> whole time; GPS-denial is *simulated* by withholding intermediate GPS from the reconstruction). Canopy
+> — feature-poor, moving leaves, lighting transitions, low light — is a different and likely worse
+> environment, and remains **untested**. Treat every number as an **optimistic floor**.
+
 ---
 
 ## Ice-hole pattern (periodic GPS re-acquisition)
@@ -21,6 +32,14 @@ PPK post-processing also benefits: each under-canopy leg starts and ends with a 
 **Target: ~60-90 seconds between GPS re-acquisitions**, corresponding to roughly 60-180 m of path at under-canopy speeds (1-2 m/s -- obstacle avoidance keeps you slower than the 3-5 m/s survey speed). This is a **planning target, not a rigid timer**. Some forests have convenient gaps every 30 m; dense closed canopy might not offer one for 200 m. The system should support **opportunistic gap-finding** driven by an upward-looking camera (see [arm-pods.md](arm-pods.md), *Upward-looking gap detection*) and pilot judgment, not a countdown.
 
 Over 60-90 seconds of flight, VIO drift should remain in the tens-of-cm range -- acceptable for photogrammetry and well within what PPK endpoint constraints can absorb.
+
+> **[measured, GPS-good proxy]** On the armed 2026-07-05 flight, reconstructing **stereo-only** VIO
+> (no IMU -- see *VIO risk assessment* below) with intermediate GPS **withheld** and anchored only at
+> segment endpoints, a locally-rigid fit holds to (rms residual): **~6 cm @ 2 m, ~16 cm @ 5 m, ~26 cm
+> @ 10 m, ~37 cm @ 20 m, ~64 cm @ 40 m** of path. So over the 10s-of-metres leg the plan targets, drift
+> is **tens of cm** as assumed -- confirming the budget, on the optimistic (open, well-lit) end. This is
+> a rigid-fit *proxy*; a proper GPS-anchored global (batch) solve should match or beat it (coordinator
+> [#59](https://github.com/symmatree/coordinator/issues/59)).
 
 ### Ascent / hold / descent procedure
 
@@ -59,6 +78,18 @@ The flight-safety error budget and the mapping error budget are different proble
 The drone needs to know where it is well enough to **find its way back to the gap it came from** and **not fly into a tree**. This is a coarse requirement -- meter-scale accuracy is fine. VIO drift of 30-50 cm over a 90-second leg is not a safety problem. Even a meter of drift is survivable if the pilot is flying conservatively.
 
 The real flight-safety threat is not gradual drift but **sudden VIO jumps** -- a 2-meter step in estimated position causes ArduPilot to command a correction that sends the drone sideways into a trunk. Mitigations:
+
+> **[measured, GPS-good proxy]** Confirmed, and important: even the well-behaved **stereo-only**
+> reconstruction is smooth 99% of the time (inter-sample steps < 10 cm) but throws **rare 1-2 m
+> single-sample jumps** (max ~1.3 m armed, ~2.4 m handheld). So dropping the IMU removes the
+> *catastrophic* runaway (see *VIO risk assessment*) but **not** this jump mode -- it is the residual
+> safety item. Handle it with ArduPilot's **existing** EKF3 innovation gate (`EK3_POS_I_GATE` +
+> external-nav source noise, `EK3_GLITCH_RAD`), which rejects measurements whose innovation exceeds the
+> gate; **do not build a bespoke filter** until that gate is shown insufficient. (Lane switching,
+> `EK3_IMU_MASK`/`EK3_ERR_THRESH`, is a *different* mechanism -- IMU-core health, not measurement
+> outliers.) Note the deployed IMU-fusion config fails **fail-confident** (a smooth ~1000 m/s garbage
+> velocity), which is the worst case for "in doubt, hold" -- another reason to prefer stereo-only. See
+> coordinator [`vio-quality-experiments.md`](https://github.com/symmatree/coordinator/blob/main/analysis/vio-quality-experiments.md) (E12, X10).
 
 - **Fly slow under canopy** (1-2 m/s). This gives both VIO and the pilot time to react.
 - **Use AltHold or Stabilize as the fallback**, not Loiter, if VIO is degraded. Position hold without good position estimates is worse than no position hold.
@@ -112,11 +143,25 @@ Each mission's GPS endpoints tie into prior data. ODM (or any SfM pipeline) gets
 
 VIO quality under canopy is the **gating unknown** in this plan. Everything else -- cameras, timing, GPS, frame, power -- is well-characterized hardware doing well-understood things. The one thing that has not been flight-tested is whether VINS-Fusion on a Pi 4B with the OAK-D produces usable position estimates while flying at 1-2 m/s under tree canopy.
 
+> **[measured, GPS-good proxy] The deployed VIO config (`imu: 1`) fails hard; stereo-only works.** On
+> both 2026-07-05 flights, the deployed IMU-fusion pose **runs away** (to ~41.9 km on the armed flight,
+> velocity to ~1000 m/s), while **stereo-only** VINS (`imu: 0`) tracks the whole flight at ~1 m ATE.
+> Because the OAK-D is stereo, metric **scale comes from the baseline** and the IMU is not needed for it
+> -- "visual-**inertial**" is a *monocular* requirement we don't share. The likely architectural fault:
+> we fuse a **poor** IMU (BNO085 *fused* output, hard-mounted, online-estimated extrinsic/time) into VINS
+> *first*, then feed that to the FC's central EKF, which already fuses a **good** IMU -- a redundant,
+> low-quality inertial stage given authority. The plan should **run the OAK-D stereo-only** and let the
+> FC's EKF do the inertial fusion (or reintroduce the IMU only as a properly-weighted relative-velocity
+> factor in the offline solve, coordinator [#59](https://github.com/symmatree/coordinator/issues/59)).
+> *Caveat:* stereo scale weakens for **far** scenes vs the ~75 mm baseline, so this holds for the
+> **near-field** canopy regime, not at altitude. Cause of the IMU-fusion failure (vibration vs extrinsic
+> vs time-sync vs the fused-IMU model) is **not isolated** -- see the vibration bullet below.
+
 ### Failure modes to expect
 
 - **Feature-poor scenes** (uniform leaf litter, snow, water) can cause sudden jumps, not gradual drift. VIO needs visual texture to track.
 - **Rapid lighting transitions** (flying from shade into a sunbeam) can blow out stereo matching. Auto-exposure lag on the OAK-D may exacerbate this.
-- **Vibration coupling** through the OAK-D's bobbins into the IMU can corrupt VINS-Fusion's pre-integration. The bobbin isolation is designed for this, but it is untested in flight.
+- **Vibration coupling** through the OAK-D's bobbins into the IMU can corrupt VINS-Fusion's pre-integration. The bobbin isolation is designed for this, but it is untested in flight. **[measured, GPS-good proxy]** The camera IMU *does* see vibration (accel band-power >5 Hz ~400-500x higher armed vs handheld), but we have **not** isolated vibration as the cause of the IMU-fusion failure -- the motors-off handheld run *also* failed on `imu: 1` (though "motors off" is not "vibration-free": hand tremor, footfalls). Running **stereo-only** sidesteps this entire class of risk (no IMU pre-integration to corrupt), whatever its true cause.
 - **Compute limits on Pi 4B.** VINS-Fusion is not lightweight. If the Pi 4B drops frames or falls behind on IMU integration, position estimates degrade unpredictably.
 
 ### Mitigations (all already in the plan)
