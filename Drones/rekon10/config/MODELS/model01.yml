@@ -234,6 +234,23 @@ mixData:
    speedUp: 0
    speedDown: 0
    name: "VTX On"
+ -
+   destCh: 9
+   srcRaw: "SC"
+   carryTrim: 0
+   mixWarn: 0
+   mltpx: ADD
+   delayPrec: 0
+   speedPrec: 0
+   flightModes: 000000000
+   weight: 100
+   offset: 0
+   swtch: "NONE"
+   delayUp: 0
+   delayDown: 0
+   speedUp: 0
+   speedDown: 0
+   name: "EKFSrc"
 limitData: 
    0:
       min: 0
