@@ -29,15 +29,50 @@ Default UART to SERIAL mapping is in the Lucid manual (ArduPilot column). **This
 
 **VTX power:** Lucid **RELAY4** on **GPIO 83** controls the **9/12 V BEC** rail for HD VTX. Full ArduPilot relay / RC options: [ardupilot.md](ardupilot.md).
 
-Other connections:
+FC Connections:
 
-* **470 µF** on FC VBatt.
-* **Buzzer** pads to **GEPRC Super Buzzer**.
-* **I2C (one bus):** Holybro F9P Rover Lite **integrated compass** (harness replaces former M100 I2C pair; which bus is recorded during [rtk-integration-tracker.md](rtk-integration-tracker.md) step **B**)
-Pending:
-
-* Second voltage sense from payload UBEC per [central-hub.md](central-hub.md).
-* Rangefinder pigtail from SMT adapter board
+* RADIO pigtail
+  * green - T6
+  * yellow - R6
+  * red - 5V
+  * black - G
+* COORD pigtail
+  * green - T4
+  * yellow - R4
+  * red - N/C
+  * black - G
+* VTX pigtail
+  * red - 9V
+  * grey - R3
+  * white - T3
+  * black - G
+* GPS pigtail (4 pin)
+  * green - T2
+  * yellow - R2
+  * red - 4V5
+  * black - G
+* GPS pigtail (3 pin)
+  * red - DA1
+  * yellow - CL1
+  * black - N/C
+* BEEP pigtail
+  * red - 5V
+  * yellow - Buz-
+  * black - G
+* RANGE pigtail
+  * green - DA2
+  * yellow - CL2
+  * red - 5V
+  * black - G
+* SH1106 - 4-pin female Dupont
+  * green - DA1
+  * yellow - CL1
+  * orange - 5V
+  * brown - G
+* 470 µF 50V capacitor
+  * positive - Vbat
+  * negative - G
+* ESC - TBS-provided cable
 
 ## Serial ports (as wired)
 
