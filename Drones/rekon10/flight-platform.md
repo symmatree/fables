@@ -99,7 +99,7 @@ current / mAh telemetry until an alternate current sensor is fitted.
 | USB | SERIAL0 | -- | MAVLink2 (2) | 115200 | USB console (bench Mission Planner) |
 | 2 | SERIAL2 | Holybro F9P Rover Lite | GPS (5) | 115200 | also I2C compass |
 | 3 | SERIAL3 | Walksnail VTX | MSP DisplayPort (42) | 115200 | JST to **TX3/RX3** for data only; VTX power on other FC pads |
-| 4 | SERIAL4 | Coordinator (Pi 4B, VIO) | None (→ MAVLink2 (2) when cabled) | 115200 (→ 1500000) | Companion VIO link; kept None until the cable exists |
+| 4 | SERIAL4 | Coordinator (Pi 4B, VIO) | MAVLink2 (2) | 1500000 | Companion VIO link; cabled and active at 1.5 Mbaud (as-flown 2026-07-09) |
 | 6 | SERIAL6 | Matek ELRS R24-TD | MAVLink2 (2) | 460800 | Boxer MAVLink; [ground-station.md](ground-station.md) |
 | 7 | SERIAL7 |  -- | None | 115200 | Unused |
 | 8 | SERIAL8 | ESC | ESC telemetry (16) | auto | FC ribbon |
@@ -205,8 +205,8 @@ Test-flight read (arm -> throttle up -> hover): if pixelation **correlates with 
 ## GNSS and compass (Holybro F9P Rover Lite)
 
 * **Module:** Holybro **F9P Rover Lite** (ZED-F9P); **adapter board** to **4-pin UART + 5 V** and **2-pin I2C (SCL/SDA)**; optional **USB-UART** dongle or **Holybro USB-C** for u-center on the bench.
-* **FC UART:** **SERIAL7** / UART7 (3.3 V RX/TX) -- match `SERIAL7_*` and module baud after bench (**A** in tracker).
-* **RTCM corrections path:** Base station -> ntrip (tiles) -> mavproxy (tiles) -> house WiFi -> `boxer-txbp` backpack (UDP) -> ELRS MAVLink uplink -> ArduPilot -> `GPS_RTCM_DATA` forwarded to the F9P on SERIAL7. Current Rekon profile is **333 Hz Full, 1:2 telemetry** with about **13211 baud** telemetry budget reported on the radio.
+* **FC UART:** **SERIAL2** (3.3 V RX/TX) -- match `SERIAL2_*` and module baud after bench (**A**). (The F9P sits on the old M100 port SERIAL2; the earlier SERIAL7 plan was abandoned. Matches the serial table above and [ardupilot.md](ardupilot.md).)
+* **RTCM corrections path:** Base station -> ntrip (tiles) -> mavproxy (tiles) -> house WiFi -> `boxer-txbp` backpack (UDP) -> ELRS MAVLink uplink -> ArduPilot -> `GPS_RTCM_DATA` forwarded to the F9P on SERIAL2. Current Rekon profile is **333 Hz Full, 1:2 telemetry** with about **13211 baud** telemetry budget reported on the radio.
 
 RTCM messages set in [tiles](https://github.com/symmatree/tiles/pull/516) to `1005(10),1074,1084,1094,1124,1230(10)`
 
