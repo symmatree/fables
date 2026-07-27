@@ -1,5 +1,13 @@
 # Mimir
 
+Analysis notebooks (health / usage / no-LGTM, capture-then-analyze, committed with
+output) live with the deployment in the tiles repo:
+[tiles notebooks/](https://github.com/symmatree/tiles/tree/main/notebooks) -- see
+[tiles docs/notebooks.md](https://github.com/symmatree/tiles/blob/main/docs/notebooks.md)
+for the pattern and the placement rule (a notebook lives in the repo you would have
+to touch when its subject changes; design discussion in
+[tiles#644](https://github.com/symmatree/tiles/issues/644)).
+
 ## Interesting points
 
 This is pretty stock, but a few decisions:
