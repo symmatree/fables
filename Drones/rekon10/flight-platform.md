@@ -34,7 +34,7 @@ FC Connections:
 * RADIO pigtail
   * green - T6
   * yellow - R6
-  * red - 5V
+  * red - 4V5 (moved from 5V; lets the RX power/link on USB)
   * black - G
 * COORD pigtail
   * green - T4
@@ -64,15 +64,33 @@ FC Connections:
   * yellow - CL2
   * red - 5V
   * black - G
-* SH1106 - 4-pin female Dupont
-  * green - DA1
-  * yellow - CL1
-  * orange - 5V
+* SH1106 - 4-pin female Dupont; **inline AMS1117 LDO (5V -> 3.3V) on the VCC line**
+  * green - DA1 (I2C1 SDA, shared with GPS compass)
+  * yellow - CL1 (I2C1 SCL)
+  * orange - 3.3V (from the inline LDO, fed from FC 5V)
   * brown - G
+  * Enabled in ArduPilot as `NTF_DISPLAY_TYPE = 2` (sh1106)
 * 470 µF 50V capacitor
   * positive - Vbat
   * negative - G
 * ESC - TBS-provided cable
+
+### Power rails (measured 2026-07-27; 6S pack, VTX off unless noted)
+
+| Rail | Measured | Feeds / notes |
+|------|----------|---------------|
+| Vbat | 23.74 V | pack (470 uF cap) |
+| 5V | 5.1 V | buzzer, RANGE pigtail, SH1106 LDO input |
+| 4V5 | 4.76 V | GPS, RADIO (RX) |
+| 3V3 | 3.268 V | logic breakout -- do not use for external device power |
+| 9V (VTX) | ~9 V on / 0.4 V off | RELAY4-switched |
+| PC1 (current sense) | 9.92 V, fixed | over-range; sensor failed -- see below |
+
+**Current sensor (analog):** the current-sense input (PC1 / `BATT_CURR_PIN=11`) sits at a
+fixed ~9.9 V regardless of load -- above the ADC's ~3.6 V range -- so the FC reports a
+constant, false current. The analog current channel is treated as **failed**.
+`BATT_MONITOR=3` (Analog Voltage Only) is in use; the voltage channel reads correctly. No
+current / mAh telemetry until an alternate current sensor is fitted.
 
 ## Serial ports (as wired)
 
