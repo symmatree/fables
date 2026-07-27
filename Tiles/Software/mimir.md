@@ -1,8 +1,16 @@
 # Mimir
 
-Health snapshot notebook: [mimir-health.ipynb](mimir-health.ipynb) -- capture-then-analyze
-of series budget, ingest, query load, component health, ruler/alertmanager, storage, and
-cardinality, committed with output (last observation). Design: [tiles#644](https://github.com/symmatree/tiles/issues/644).
+Analysis notebooks (capture-then-analyze, committed with output as the last observation;
+design [tiles#644](https://github.com/symmatree/tiles/issues/644), shared capture layer
+[nb_capture.py](nb_capture.py)):
+
+* [mimir-health.ipynb](mimir-health.ipynb) -- general status via the stack: components,
+  request errors (mixin thresholds), ruler/alertmanager, plus Loki logs and firing
+  alerts as independent cross-checks.
+* [mimir-usage.ipynb](mimir-usage.ipynb) -- tenants / series budget / cardinality /
+  capacity planning.
+* [mimir-nolgtm.ipynb](mimir-nolgtm.ipynb) -- strictly no-LGTM assessment (kube API +
+  direct /ready probes) for when Mimir is unhappy and can't answer about itself.
 
 ## Interesting points
 
