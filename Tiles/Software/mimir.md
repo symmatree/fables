@@ -1,5 +1,9 @@
 # Mimir
 
+Health snapshot notebook: [mimir-health.ipynb](mimir-health.ipynb) -- capture-then-analyze
+of series budget, ingest, query load, component health, ruler/alertmanager, storage, and
+cardinality, committed with output (last observation). Design: [tiles#644](https://github.com/symmatree/tiles/issues/644).
+
 ## Interesting points
 
 This is pretty stock, but a few decisions:
