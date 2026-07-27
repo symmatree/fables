@@ -21,15 +21,17 @@ Wiring: [flight-platform.md](flight-platform.md). Serial **`PROTOCOL`** / **`BAU
 |------|------------|--------|
 | SERIAL0 | `PROTOCOL = 2`, `BAUD = 115` | USB |
 | SERIAL1 | `PROTOCOL = -1` | Unused |
-| SERIAL2 | `PROTOCOL = -1` (target) | Was M100 Pro; clear when F9P on SERIAL7 is sole GPS |
+| SERIAL2 | `PROTOCOL = 5`, `BAUD = 115` | Holybro F9P Rover Lite -- sole GNSS on the mast (UART + I2C compass). Was M100 Pro on this same port. |
 | SERIAL3 | `PROTOCOL = 42`, `BAUD = 115` | Walksnail MSP (TX3/RX3 only; VTX power is other FC pads, not UART3) |
-| SERIAL4 | `PROTOCOL = 9`, `BAUD = 115` | Unused |
+| SERIAL4 | `PROTOCOL = 2`, `BAUD = 1500` | Coordinator (Pi 4B, VIO) -- MAVLink2 companion link, now cabled (1.5 Mbaud) |
 | SERIAL6 | `PROTOCOL = 2`, `BAUD = 460` | Matek ELRS R24-TD (see [ground-station.md](ground-station.md); `model01.yml` header `modelId` **10**) |
-| SERIAL7 | `PROTOCOL = 5`, `BAUD` = bench (**A**) | Holybro F9P Rover Lite (UART + I2C compass) |
+| SERIAL7 | `PROTOCOL = -1` | Unused |
 | SERIAL8 | `PROTOCOL = 16` | ESC ribbon |
 | SERIAL9 | `PROTOCOL = 2`, `BAUD = 115` | Unused |
 
-**SERIAL7:** Sole GNSS on the mast -- Holybro F9P Rover Lite. Set `SERIAL7_BAUD` from u-center bench (**A** in [rtk-integration-tracker.md](rtk-integration-tracker.md)); **460800** was the earlier SparkFun-breakout plan, not a promise for Rover Lite. Point `GPS1_COM_PORT` at this UART when params are re-exported.
+*Wiring resolved 2026-07 from the recorded pigtail pads + the methodic param export (`config/rekon10-methodi.param`), which agree with the [flight-platform.md](flight-platform.md) table. An earlier plan to move the F9P to SERIAL7 was abandoned -- it stayed on SERIAL2 (the old M100 port), and SERIAL7 is unused.*
+
+**SERIAL2 (F9P):** Sole GNSS on the mast -- Holybro F9P Rover Lite. `SERIAL2_BAUD = 115200` in the export; **460800** was the earlier SparkFun-breakout plan, not a promise for Rover Lite. `GPS1_COM_PORT` follows this UART.
 
 ### RTCM / RTK
 
@@ -96,7 +98,7 @@ Telemetry keys and screens live in **`model01.yml`** (e.g. **RSNR**, **FM**, RSS
 
 ## Compass and GPS (Holybro F9P Rover Lite)
 
-* `GPS1_TYPE` / `GPS1_COM_PORT` / `SERIAL7_*`: match bench and FC wiring ([rtk-integration-tracker.md](rtk-integration-tracker.md)).
+* `GPS1_TYPE` / `GPS1_COM_PORT` / `SERIAL2_*`: match bench and FC wiring (RTK integration threads -- bench-baud thread **A**, tracker not yet written).
 * `COMPASS_*`: integrated compass on the F9P I2C bus; `COMPASS_ORIENT` after outdoor cal (**E**). M100-era **Yaw270** / `COMPASS_ORIENT = 6` in export is **historical** only.
 
 **Wall clock / RTC:** Do not rely on ArduPilot learning UTC from this GNSS path alone (same class of issue as M100 bench -- [flight-platform-build-log.md](flight-platform-build-log.md)). Payload cameras use the shared **DS3234** SQW PPS ([arm-pods.md](arm-pods.md), [central-hub.md](central-hub.md)); steering that RTC from GNSS time when fixes are good is a separate integration task.

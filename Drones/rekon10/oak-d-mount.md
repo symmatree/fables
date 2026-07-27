@@ -87,6 +87,11 @@ The Rekon10 frame comes with a TPU base for a standard GoPro "tab-style" mount. 
 
 ## Solution: rigid skeleton + rubber bobbins
 
+> **As-built caveat (see [flight-platform-build-log.md](flight-platform-build-log.md), 2026-07-05):** the
+> parts actually fitted turned out to be firm **pads**, not compliant decouplers -- so there is **no working
+> vibration isolation right now**, and the camera IMU sees armed-vs-handheld accel band-power ~400-500x
+> higher ([canopy-ops.md](canopy-ops.md)). The design intent below is not yet realized in hardware.
+
 The theory is these should be soft enough to stop high frequency noise but firm enough to pass frame movements. This is an interplay between the hardness (and geometry) of the bobbin material versus the weight (or properly the various moment arms) of the suspended payload. The OAK-D being a dense chunk of metal and glass dominates the payload center of gravity.
 
 #### Bobbin amazon specs

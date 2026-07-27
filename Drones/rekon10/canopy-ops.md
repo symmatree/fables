@@ -65,7 +65,7 @@ Ascending above canopy exposes the drone to wind that was blocked below. The 10"
 - No online visual relocalization or map-matching software.
 - No changes to ArduPilot -- standard GPS/VIO EKF switching handles it.
 
-The lidar rangefinder (TF-Luna, planned) helps with **AGL accuracy** during the under-canopy legs but is not required for the ice-hole pattern itself.
+The lidar rangefinder (Benewake TFS20-L, planned -- not yet fitted) helps with **AGL accuracy** during the under-canopy legs but is not required for the ice-hole pattern itself.
 
 ---
 
@@ -143,8 +143,9 @@ Each mission's GPS endpoints tie into prior data. ODM (or any SfM pipeline) gets
 
 VIO quality under canopy is the **gating unknown** in this plan. Everything else -- cameras, timing, GPS, frame, power -- is well-characterized hardware doing well-understood things. The one thing that has not been flight-tested is whether VINS-Fusion on a Pi 4B with the OAK-D produces usable position estimates while flying at 1-2 m/s under tree canopy.
 
-> **[measured, GPS-good proxy] The deployed VIO config (`imu: 1`) fails hard; stereo-only works.** On
-> both 2026-07-05 flights, the deployed IMU-fusion pose **runs away** (to ~41.9 km on the armed flight,
+> **[measured, GPS-good proxy] IMU-fusion (`imu: 1`) fails hard; stereo-only works -- deployed default
+> has since moved to `imu: 0` (coordinator [#69](https://github.com/symmatree/coordinator/issues/69)).** On
+> both 2026-07-05 flights, the then-deployed IMU-fusion pose **runs away** (to ~41.9 km on the armed flight,
 > velocity to ~1000 m/s), while **stereo-only** VINS (`imu: 0`) tracks the whole flight at ~1 m ATE.
 > Because the OAK-D is stereo, metric **scale comes from the baseline** and the IMU is not needed for it
 > -- "visual-**inertial**" is a *monocular* requirement we don't share. The likely architectural fault:
