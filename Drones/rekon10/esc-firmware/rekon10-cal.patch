@@ -1,0 +1,22 @@
+diff --git a/Inc/targets.h b/Inc/targets.h
+index 3c0ab52..4a96106 100644
+--- a/Inc/targets.h
++++ b/Inc/targets.h
+@@ -551,6 +551,17 @@
+ #define CURRENT_ADC_PIN GPIO_PINS_3
+ #define VOLTAGE_ADC_CHANNEL ADC_CHANNEL_6
+ #define VOLTAGE_ADC_PIN GPIO_PINS_6
++// rekon10 bench calibration (coordinator#117). Stock TBS target leaves current + voltage
++// on generic fallbacks (TARGET_VOLTAGE_DIVIDER 110, CURRENT_OFFSET 0, MILLIVOLT_PER_AMP 20).
++// Measured on this board:
++//   TARGET_VOLTAGE_DIVIDER 158 = 110 * 23.32 V(meter) / 16.2 V(ESC): corrects the ~1.44x under-read.
++//   CURRENT_OFFSET 1600: nulls the ~80 A/ESC phantom. actual_current is in 10mA units, so
++//     80 A/ESC = 8000 internal = (raw*3300/41)/20 at OFFSET 0; null needs OFFSET*100 = 8000*20
++//     => OFFSET = 80 * MILLIVOLT_PER_AMP(20) = 1600. (Was mistakenly 16 -- factor-of-100 unit error.)
++//   MILLIVOLT_PER_AMP 20: still generic, PROVISIONAL -- re-measure scale once the offset clears the baseline.
++#define TARGET_VOLTAGE_DIVIDER 158
++#define CURRENT_OFFSET 1600
++#define MILLIVOLT_PER_AMP 20
+ #endif
+ 
+ #ifdef  TBS_6S_F421

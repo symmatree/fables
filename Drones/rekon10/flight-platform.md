@@ -84,13 +84,18 @@ FC Connections:
 | 4V5 | 4.76 V | GPS, RADIO (RX) |
 | 3V3 | 3.268 V | logic breakout -- do not use for external device power |
 | 9V (VTX) | ~9 V on / 0.4 V off | RELAY4-switched |
-| PC1 (current sense) | 9.92 V, fixed | over-range; sensor failed -- see below |
+| PC1 (current sense) | 9.92 V, fixed | analog sensor dead (over-range); superseded by ESC telemetry -- see below |
 
-**Current sensor (analog):** the current-sense input (PC1 / `BATT_CURR_PIN=11`) sits at a
-fixed ~9.9 V regardless of load -- above the ADC's ~3.6 V range -- so the FC reports a
-constant, false current. The analog current channel is treated as **failed**.
-`BATT_MONITOR=3` (Analog Voltage Only) is in use; the voltage channel reads correctly. No
-current / mAh telemetry until an alternate current sensor is fitted.
+**Battery monitor: ESC telemetry (`BATT_MONITOR=9`).** The FC's analog current input
+(PC1 / `BATT_CURR_PIN=11`) is dead -- arc-blown at first bring-up, stuck at a fixed ~9.9 V
+(above the ADC's ~3.6 V range), reporting a constant false current. Instead of the analog
+channel, battery **voltage and current now come from ESC serial telemetry** (SERIAL8), using a
+**custom-calibrated AM32 build** (see [ESC / Firmware](#firmware) and
+[`esc-firmware/`](esc-firmware/README.md)). With the calibrated firmware the ESC readout tracks a
+meter within ~1 % on voltage and reads ~0 A at rest. Voltage / capacity failsafes are active
+(`BATT_LOW_VOLT=18.6`, `BATT_CRT_VOLT=18`, `BATT_CAPACITY=8000`). The current **scale** is left at
+the AM32 generic value, so mAh is good to ~+/-15 % -- enough for low-voltage / low-capacity
+"land now" detection, not precise energy accounting.
 
 ## Serial ports (as wired)
 
@@ -129,6 +134,14 @@ Settings (non-default):
 * 900 KV, 14 poles
 * Beeper volume 3
 * Running brake level 9 for all that propeller inertia
+
+**Calibrated current/voltage telemetry (custom build).** Stock `TBS_6S_4IN1_F421` leaves the
+current/voltage constants on generic fallbacks that read badly here (voltage ~1.44x low; a
+~80 A/ESC zero-throttle current phantom). Fixed with a 3-constant patch to `Inc/targets.h` built
+from the v2.20 tag -- `TARGET_VOLTAGE_DIVIDER 158`, `CURRENT_OFFSET 1600`, `MILLIVOLT_PER_AMP 20`
+(scale still generic) -- flashed to all 4 ESCs via ArduPilot passthrough (`SERVO_BLH_AUTO=1`).
+Reproducible build env, patch, and hex: [`esc-firmware/`](esc-firmware/README.md). Full
+derivation in [coordinator#117](https://github.com/symmatree/coordinator/issues/117).
 
 ### Hardware
 
