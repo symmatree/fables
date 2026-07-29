@@ -13,6 +13,14 @@
 
 Current status: working toward Level 1. Most analysis has been diagnostic (understanding *why* it fails). Only 2 full collection runs to date (02-16 snow + grid/orbit; 02-21 grid/orbit + close-orbit), of which only the second included close-orbit imagery.
 
+> **Tentative: reading this doc through the "operating-envelope" lens (2026-07-28).** A framing being tried on the coordinator ledgers (`analysis/operating-envelopes.md`, `vio-quality-experiments.md`) may fit here too — and the **Levels of success above already are it**: Level 2 is *"understand which variables matter and their **safe ranges**"* (characterize the envelope), Level 3 is *"**mitigate** rather than merely **avoid**"* (expand it). The lens: state each finding as a claim about **an observable metric**, the **region of driver-space** that governs it, and the **decision** it informs. It sorts cleanly, and where a finding **resists** the form, the resistance is the signal:
+> - **Boundary sweet-spot** (Conclusion 1) — *fits, a positive window:* metric = reconstruction quality (shots reconstructed, GPS ce90, displacement) · region = boundary size (tight `house` < optimal `house-2` ~84×84 m > wide `uncrop` ~180 m) · decision = set the boundary. This is exactly a **nailed positive window** with a safe range.
+> - **Barometric drift** — *fits:* metric = altitude error/drift · region = sensor thermal state × ambient ΔT × weather trend · decision = the equilibration protocol (power on outdoors, wait 3–5 min). A safe-range claim.
+> - **Twig texture projection** — *resists (region ill-defined):* the mechanism is partly understood but the *governing driver axis* isn't identified, so there's no region to bound yet → the gap is **needs a discriminating probe**, not a metric.
+> - **Frozen-skeleton localization / geometric priors** — *resists (category mismatch):* these are **solution proposals** ("build this"), not envelope claims — they have no metric×region×decision because they're answers, not boundaries. Keep them as proposed *mechanisms*, not forced into claim form.
+>
+> Not every finding can or should be pinned now (Level-1-stage, only 2 runs) — but naming *which kind of gap* each has (needs-probe / ill-defined-region / it's-a-solution-not-a-claim) is itself the value. Tentative; adopt or discard.
+
 ---
 
 ## Experiments log
