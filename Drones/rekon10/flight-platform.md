@@ -91,7 +91,7 @@ FC Connections:
 (above the ADC's ~3.6 V range), reporting a constant false current. Instead of the analog
 channel, battery **voltage and current now come from ESC serial telemetry** (SERIAL8), using a
 **custom-calibrated AM32 build** (see [ESC / Firmware](#firmware) and
-[`esc-firmware/`](esc-firmware/README.md)). With the calibrated firmware the ESC readout tracks a
+[`firmware/esc/` (coordinator)](https://github.com/symmatree/coordinator/blob/main/firmware/esc/README.md)). With the calibrated firmware the ESC readout tracks a
 meter within ~1 % on voltage and reads ~0 A at rest. Voltage / capacity failsafes are active
 (`BATT_LOW_VOLT=18.6`, `BATT_CRT_VOLT=18`, `BATT_CAPACITY=8000`). The current **scale** is left at
 the AM32 generic value, so mAh is good to ~+/-15 % -- enough for low-voltage / low-capacity
@@ -140,7 +140,7 @@ current/voltage constants on generic fallbacks that read badly here (voltage ~1.
 ~80 A/ESC zero-throttle current phantom). Fixed with a 3-constant patch to `Inc/targets.h` built
 from the v2.20 tag -- `TARGET_VOLTAGE_DIVIDER 158`, `CURRENT_OFFSET 1600`, `MILLIVOLT_PER_AMP 20`
 (scale still generic) -- flashed to all 4 ESCs via ArduPilot passthrough (`SERVO_BLH_AUTO=1`).
-Reproducible build env, patch, and hex: [`esc-firmware/`](esc-firmware/README.md). Full
+Reproducible build env, patch, and hex: [`firmware/esc/` (coordinator)](https://github.com/symmatree/coordinator/blob/main/firmware/esc/README.md). Full
 derivation in [coordinator#117](https://github.com/symmatree/coordinator/issues/117).
 
 ### Hardware
