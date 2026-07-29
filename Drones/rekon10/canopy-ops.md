@@ -137,6 +137,22 @@ Each mission's GPS endpoints tie into prior data. ODM (or any SfM pipeline) gets
 - No need for centimeter-accurate VIO under canopy -- PPK and bundle adjustment handle that post-hoc.
 - No need for the vertical ring -- the horizontal ring captures geometry fine for the mapping mission. The vertical ring adds side-scan coverage under canopy and gap detection; the gap detection is handled by the Pixel Fold in phase 1.
 
+### The frontier: observe ahead, map it, then traverse it
+
+The mechanic that makes "nibble in from the edges" a *frontier* and not just repeated coverage: the OAK-D (and the pod array) **observe geometry the aircraft has not yet flown through** -- trunks, gaps, and clearances ahead of and beside the corridor. So the loop is **observe -> map offline -> traverse next time on that map**: fly a known/GPS-anchored corridor, reconstruct the *neighbouring now-observed* area offline, and let the **next** mission penetrate into that freshly-mapped area with its geometry already known. The frontier is the boundary of "mapped well enough to fly."
+
+Any point on the growing map is then in one of three states -- and this trichotomy is the real planning surface:
+
+- **Expandable** -- observed *and* reconstructed accurately enough to navigate against. Fair game for the next penetration.
+- **Untrusted** -- observed but **poorly mapped** (thin coverage, weak geometry, high reconstruction residual). Don't rely on it for nav; re-observe from a better angle first.
+- **Unreachable** -- we could not **verify we were there** absent GPS (the accumulated-error corridor to reach it exceeds the available clearance). Off-limits until the frontier advances closer or the corridor tightens.
+
+### What we can measure now (and the near-term plan)
+
+Near-term flying is **mapping grids in the safe (open, GPS-good) envelope** with the existing sensors (OAK-D, VTX camera, and EM measures such as RSSI from a fixed transmitter) -- *not* under canopy yet. The under-canopy designed use case waits on **tier-5 VIO trust** (coordinator `analysis/vio-quality-experiments.md`, "What working means"): if VIO were as precise as GPS we would already be running under the trees -- that is the actual designed use case, and everything else is a step toward it.
+
+Before a map with a frontier even exists, the measurable that sizes feasibility is the **clearance corridor**: the **max actual deviation of VIO from EKF/GPS** over a flight (eventually from post-hoc SfM-aligned truth, given a good data-collection story) -> how far a path would have had to stay from the trees to avoid a strike. From that error-vs-distance model fall the two feasibility numbers -- **achievable mission length** and **max penetration depth** for a chosen corridor budget -- and, with the ice-hole resets (above) bounding the accumulation, how far each leg can push before it must re-anchor.
+
 ---
 
 ## VIO risk assessment
