@@ -223,6 +223,8 @@ Test-flight read (arm -> throttle up -> hover): if pixelation **correlates with 
 
 RTCM messages set in [tiles](https://github.com/symmatree/tiles/pull/516) to `1005(10),1074,1084,1094,1124,1230(10)`
 
+**Canonical:** the full hop-by-hop path, rates, and the recurring ELRS-backpack failure mode (it silently anchors to the first GCS that answers) live in coordinator [`docs/rtk-corrections-path.md`](https://github.com/symmatree/coordinator/blob/main/docs/rtk-corrections-path.md).
+
 ## Rangefinder
 
 **Benewake TFS20-L** not yet installed. ArduPilot params: [ardupilot.md](ardupilot.md).
