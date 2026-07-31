@@ -36,7 +36,7 @@ Wiring: [flight-platform.md](flight-platform.md). Serial **`PROTOCOL`** / **`BAU
 ### RTCM / RTK
 
 Profile and headroom: [ground-station.md](ground-station.md), [rekon-design.md](rekon-design.md).
-Full corrections delivery path (base -> NTRIP -> mavproxy -> ELRS -> F9P), rates, and the backpack anchor-to-wrong-GCS failure mode: coordinator [`docs/rtk-corrections-path.md`](https://github.com/symmatree/coordinator/blob/main/docs/rtk-corrections-path.md).
+Full corrections delivery path (base -> NTRIP -> mavproxy -> ELRS -> F9P), rates, and the leading (unconfirmed) theory for the recurring no-RTK failure -- the backpack anchoring to the wrong GCS: coordinator [`docs/rtk-corrections-path.md`](https://github.com/symmatree/coordinator/blob/main/docs/rtk-corrections-path.md).
 
 ## ESC (AM32, Lucid 4in1)
 
