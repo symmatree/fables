@@ -53,7 +53,7 @@ MavLink configuration (default):
 * Send port 14550
 * Listen port 14555
 
-The backpack's UDP MAVLink bridge broadcasts for discovery then **latches to the first ground station that answers** and unicasts only there (firmware never releases the lock), which is how RTK corrections get silently stolen by a stray GCS. Delivery path, the `GET /mavlink` diagnostic (`ip.gcs` names who it latched to), and the fix: coordinator [`docs/rtk-corrections-path.md`](https://github.com/symmatree/coordinator/blob/main/docs/rtk-corrections-path.md).
+The backpack's UDP MAVLink bridge broadcasts for discovery then **latches to the first ground station that answers** and unicasts only there (firmware never releases the lock), which is how RTK corrections get silently stolen by a stray GCS. Delivery path, the `GET /mavlink` diagnostic (`ip.gcs` names who it latched to), and how it recovers: coordinator [`docs/rtk-corrections-path.md`](https://github.com/symmatree/coordinator/blob/main/docs/rtk-corrections-path.md).
 
 #### Rekon (model 10)
 
