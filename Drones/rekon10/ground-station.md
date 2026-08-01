@@ -169,7 +169,7 @@ Rekon10 **FC** parameters that must match this layout (`FLTMODE*`, `RCx_OPTION`,
 | SD (2-pos) | Airmode off / **Land** on **CH7** (low) | Airmode on / normal (high) | -100 | CH7 |
 | SE (2-pos shoulder) | Disarmed (used by arm gate) | Armed (used by arm gate) | -- | via L1-L3 |
 | SF (momentary shoulder) | Released | Held (gate + buzzer) | 100 | CH8 |
-| SC (3-pos) | Unmapped (reserved) | -- | -- | -- |
+| SC (3-pos) | EKF source-set select: SRC1=GPS / SRC2=VIO (ExtNav) / SRC3=GPS -- runtime GPS-vs-VIO toggle for the VIO flight test | -- | -- | CH10 (`RC10_OPTION=90`, EKF_SOURCE_SET) |
 | P3 (6-pos) | Unmapped (reserved) | -- | -- | -- |
 
 **SD and RTL:** **CH7** is **Land** for tight / canopy flying where **RTL** would be unsafe; see [ardupilot.md](ardupilot.md) (**Why Land on SD, not RTL**).
