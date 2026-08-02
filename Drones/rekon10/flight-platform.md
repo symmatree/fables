@@ -23,7 +23,7 @@ Wheelbase **455 mm**, 30.5 mm FC pattern, 19 mm motor pattern. TPU in the kit fi
 
 **TBS Lucid H7 Flight Controller - ICM42688** -- [TBS product page](https://www.team-blacksheep.com/products/prod:lucid_h7?srsltid=AfmBOoqm1P3rKUduaVLpS7PoSnZ1OvNZD1bLFvPFrDRYj9yclz82P66P), [ArduPilot hardware doc](https://ardupilot.org/copter/docs/common-tbs-lucidh7.html). Manual: [attachments/tbs-lucid-manual.pdf](attachments/tbs-lucid-manual.pdf). Gorilla pattern PDF: [attachments/tbs-gorilla-mounting-pattern.pdf](attachments/tbs-gorilla-mounting-pattern.pdf).
 
-**Firmware flashed:** `https://firmware.ardupilot.org/Copter/stable-4.6.3/TBS_LUCID_H7/arducopter_with_bl.hex`
+**Firmware flashed:** `https://firmware.ardupilot.org/Copter/stable-4.7.0/TBS_LUCID_H7/arducopter_with_bl.hex` (upgraded from 4.6.3 on 2026-07-27).
 
 Default UART to SERIAL mapping is in the Lucid manual (ArduPilot column). **This aircraft's wiring** is summarized in the serial table below and in [ardupilot.md](ardupilot.md).
 
@@ -110,7 +110,7 @@ the AM32 generic value, so mAh is good to ~+/-15 % -- enough for low-voltage / l
 | 8 | SERIAL8 | ESC | ESC telemetry (16) | auto | FC ribbon |
 | OTG2 | SERIAL9 | -- | 115200 | -- | 
 
-**Mission Planner param export:** Full list in git as **[`config/rekon10-methodi.param`](config/rekon10-methodi.param)**
+**FC parameters:** the full Mission Planner export and the subsystem-decomposed fragments now live in coordinator [`ardupilot/`](https://github.com/symmatree/coordinator/blob/main/ardupilot/README.md) (ground-truth `rekon10-methodi.param` + `inputs/*.param` with per-param rationale/provenance). Rationale and wiring context: [ardupilot.md](ardupilot.md).
 
 ### ELRS model match
 
@@ -175,7 +175,7 @@ The table below is from the **Helion 3110 / 900KV** datasheet for **HQ 10 x 5 x 
 
 **Mount:** Starboard, behind/outboard of stack, just forward of Walksnail VTX, **VHB**. Antenna routing: see [flight-platform-build-log.md](flight-platform-build-log.md) (tail vertical between VTX V-antennas; horizontal on rear power zip-tie tail).
 
-Connected to FC via 1.25mm JST pigtail to allow easier reflashing. On 5V (FC BEC) not 4V5 (USB) to allow for TD drawing a little more power.
+Connected to FC via 1.25mm JST pigtail to allow easier reflashing. **Powered from 4V5** (moved from 5V on 2026-07-27): the 4V5 rail lets the RX link on USB-only power, and moving it off the 5V rail also fixed the VTX-cold-boot ELRS web-flash issue (the RX was witnessing a 5V-rail boot transient -- see the RELAY4 note in [ardupilot.md](ardupilot.md) and the power rails table above).
 
 **WiFi / OTA:** Receiver on **ExpressLRS 3.6.3**, joined to **house WiFi** for Web UI and updates. LAN address **10.0.4.65** (DHCP reservation; hostname **rekon-rx.local.symmatree.com**). Summary: [rekon-rx](../../kb/rekon-rx.md).
 
@@ -211,7 +211,7 @@ Direct soldered provided pigtail (plug on VTX): **TX3/RX3** for MSP DisplayPort;
 **Open: heavy pixelation investigation (2026-07).** Symptom is macroblocking on the goggle feed (digital link -- not analog static). Bench view at **unarmed / low TX power** was **clean**, which clears the encoder/camera/sensor and the short-duration case, but does **not** exercise the two prime suspects, both of which only appear armed/outdoors:
 
 - **Power / brownout at full TX.** The VTX runs off a **9 V @ 2A = 18 W** BEC; a Walksnail Avatar HD Pro at high TX power + recording can approach that ceiling. If it's marginal, expect macroblocking that **tracks throttle** (pack sag) or steps with **TX power level** -- not with range.
-- **Thermal throttling.** Full TX power = more heat; degradation that **grows over a soak** while stationary points here. (Bench thermal protection is via SA / airflow now that `RELAY4_DEFAULT` must stay `1` -- see [ardupilot.md](ardupilot.md).)
+- **Thermal throttling.** Full TX power = more heat; degradation that **grows over a soak** while stationary points here. (Bench thermal protection: `RELAY4_DEFAULT=0` leaves the VTX cold at boot, and SA / airflow manage it otherwise -- see [ardupilot.md](ardupilot.md).)
 
 Test-flight read (arm -> throttle up -> hover): if pixelation **correlates with throttle / TX power** -> power or ESC EMI; if it's **constant or grows with time-on** -> thermal or RF link. Vibration under motors is also the most likely thing to re-open a marginal **micro-U.FL** VTX antenna in the crowded rear bay (antennas were reseated this session -- the hoped-for fix). Interference from the Coordinator / Pi Zero / USB hub was ruled out **at idle** only; the OAK-D on **USB3** is a broadband noise source that needs a pass with the VIO stack **actively streaming**, not just powered.
 

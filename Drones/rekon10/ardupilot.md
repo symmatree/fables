@@ -2,11 +2,13 @@
 
 [Back to index](README.md) | [Flight platform hardware](flight-platform.md) | [Ground station / radio](ground-station.md)
 
-FC-side settings for the **TBS Lucid H7** build. The FC is the source of truth; **[`config/rekon10-methodi.param`](config/rekon10-methodi.param)** is the last export committed from Mission Planner (**Write Params**, **Save to File**, then git) so the repo matches what was on the FC at export time.
+FC-side settings for the **TBS Lucid H7** build. The FC is the source of truth for values; this doc is the **rationale and wiring context**.
+
+**Config now lives in the coordinator repo, decomposed by subsystem:** coordinator [`ardupilot/`](https://github.com/symmatree/coordinator/blob/main/ardupilot/README.md) holds the ground-truth Mission Planner export (`rekon10-methodi.param`) plus [`inputs/*.param`](https://github.com/symmatree/coordinator/blob/main/ardupilot/inputs) -- one commented fragment per subsystem, overrides only, each param carrying its rationale and provenance. **Those fragments are authoritative for the actual values;** the tables and `PARAM = value` mentions in this doc are for context and can lag -- when they disagree, trust the fragment. Section pointers below name the specific fragment.
 
 Handset and ELRS profile (Boxer, rates, Model Match, switch table): **[ground-station.md](ground-station.md)**. EdgeTX model export: **[`config/MODELS/model01.yml`](config/MODELS/model01.yml)** (**Rekon10**, model id **10**).
 
-Firmware: **Copter 4.6.3** `arducopter_with_bl.hex` for **TBS_LUCID_H7** from `https://firmware.ardupilot.org/Copter/stable-4.6.3/TBS_LUCID_H7/arducopter_with_bl.hex`.
+Firmware: **Copter 4.7.0** `arducopter_with_bl.hex` for **TBS_LUCID_H7** from `https://firmware.ardupilot.org/Copter/stable-4.7.0/TBS_LUCID_H7/arducopter_with_bl.hex` (upgraded from 4.6.3 on 2026-07-27).
 
 ## Frame
 
@@ -15,7 +17,7 @@ Firmware: **Copter 4.6.3** `arducopter_with_bl.hex` for **TBS_LUCID_H7** from `h
 
 ## Serial ports
 
-Wiring: [flight-platform.md](flight-platform.md). Serial **`PROTOCOL`** / **`BAUD`** below match the last committed export.
+Values: [`inputs/20-serial.param`](https://github.com/symmatree/coordinator/blob/main/ardupilot/inputs/20-serial.param). Wiring: [flight-platform.md](flight-platform.md). The table below is the wiring map for context; the fragment is authoritative for `PROTOCOL` / `BAUD`.
 
 | Port | Parameters | Wired |
 |------|------------|--------|
@@ -29,7 +31,7 @@ Wiring: [flight-platform.md](flight-platform.md). Serial **`PROTOCOL`** / **`BAU
 | SERIAL8 | `PROTOCOL = 16` | ESC ribbon |
 | SERIAL9 | `PROTOCOL = 2`, `BAUD = 115` | Unused |
 
-*Wiring resolved 2026-07 from the recorded pigtail pads + the methodic param export (`config/rekon10-methodi.param`), which agree with the [flight-platform.md](flight-platform.md) table. An earlier plan to move the F9P to SERIAL7 was abandoned -- it stayed on SERIAL2 (the old M100 port), and SERIAL7 is unused.*
+*Wiring resolved 2026-07 from the recorded pigtail pads + the param export ([`ardupilot/`](https://github.com/symmatree/coordinator/blob/main/ardupilot/README.md) in coordinator), which agree with the [flight-platform.md](flight-platform.md) table. An earlier plan to move the F9P to SERIAL7 was abandoned -- it stayed on SERIAL2 (the old M100 port), and SERIAL7 is unused.*
 
 **SERIAL2 (F9P):** Sole GNSS on the mast -- Holybro F9P Rover Lite. `SERIAL2_BAUD = 115200` in the export; **460800** was the earlier SparkFun-breakout plan, not a promise for Rover Lite. `GPS1_COM_PORT` follows this UART.
 
@@ -60,11 +62,11 @@ NOTE: Once you remap the servo/motor mappings using SERVO1_FUNCTION - SERVO4_FUN
 | **`SERVO_BLH_AUTO`** | **1** while using the AM32 / BLHeli passthrough path; **0** for day-to-day flight once ESC settings are saved | **AUTO** gates **passthrough** to the PC; **DShot** itself comes from **`MOT_PWM_TYPE`**, not from this flag. |
 | Motor direction | **`SERVO_BLH_RVMASK`** in ArduPilot **or** direction in AM32 (not both fighting) | Same physics as BF: wrong direction means wrong torque in stabilize. Fix before props on. |
 | **Pole count** | **`SERVO_BLH_POLES`** = your **motor** pole count (export shows **14** -- confirm on the motor datasheet) | Wrong poles skew **eRPM** / telemetry and **harmonic notch** if fed from ESC RPM. |
-| RPM into ArduPilot | **Default: UART only** -- **`SERIAL8`** ESC telemetry. Keep **`SERVO_BLH_BDMASK = 0`** | **Bi-directional DShot** is an **optional** alternate RPM path on the motor wires; you do **not** need it if UART telemetry works. Avoid turning on **both** without a reason. **`INS_HNTCH_ENABLE`** is **0** in export until you have ESC RPM in logs ([IMU harmonic notch](https://ardupilot.org/copter/docs/common-imu-notch-filtering.html) is post-hover tuning). |
+| RPM into ArduPilot | **UART only** -- **`SERIAL8`** ESC telemetry. Keep **`SERVO_BLH_BDMASK = 0`** | **Bi-directional DShot** is an **optional** alternate RPM path on the motor wires; you do **not** need it if UART telemetry works. Avoid turning on **both** without a reason. The [IMU harmonic notch](https://ardupilot.org/copter/docs/common-imu-notch-filtering.html) is now **on and tuned** off this ESC-RPM feed (**`INS_HNTCH_ENABLE = 1`**, `MODE = 3`, `FREQ = 58.8`, 1st harmonic; done post-hover over the May 31 - Jun 10 notch flights below). See [`inputs/50-esc-motors-notch.param`](https://github.com/symmatree/coordinator/blob/main/ardupilot/inputs/50-esc-motors-notch.param). |
 
-**Design record:** **`MOT_PWM_TYPE`** = **DShot600** (baseline). RPM for logging / notch from **`SERIAL8`** unless you later prove UART is insufficient and switch deliberately. Re-export **`rekon10-methodi.param`** after changes.
+**Design record:** **`MOT_PWM_TYPE`** = **DShot600** (baseline). RPM for logging / notch from **`SERIAL8`** unless you later prove UART is insufficient and switch deliberately.
 
-All **`MOT_PWM_*`**, **`SERVO_BLH_*`**, **`SERIAL8_*`**, motor **`SERVO*_*`**: **[`config/rekon10-methodi.param`](config/rekon10-methodi.param)**.
+All **`MOT_PWM_*`**, **`SERVO_BLH_*`**, **`SERIAL8_*`**, motor **`SERVO*_FUNCTION`**, and the harmonic-notch set: **[`inputs/50-esc-motors-notch.param`](https://github.com/symmatree/coordinator/blob/main/ardupilot/inputs/50-esc-motors-notch.param)** (motor endpoints in [`62-radio-cal.param`](https://github.com/symmatree/coordinator/blob/main/ardupilot/inputs/62-radio-cal.param)).
 
 ## RC and FC aux mapping
 
@@ -75,21 +77,20 @@ All **`MOT_PWM_*`**, **`SERVO_BLH_*`**, **`SERIAL8_*`**, motor **`SERVO*_*`**: *
 | Channel | FC parameters |
 |---------|-----------------|
 | CH5 | **`RC5_OPTION = 153`** (arm/disarm on latch **L3**; gate and mixes in [ground-station.md](ground-station.md) / **`model01.yml`**) |
-| CH6 | **`FLTMODE_CH = 6`**. **`FLTMODE1` / `FLTMODE4` / `FLTMODE6`** = **Loiter (5) / AltHold (2) / Sport (13)** toward-to-away on **SB** ([ground-station.md](ground-station.md)). |
+| CH6 | **`FLTMODE_CH = 6`**. **`FLTMODE1` / `FLTMODE4`** = **Loiter (5) / AltHold (2)** toward-to-away on **SB** ([ground-station.md](ground-station.md)); AltHold is the preferred degraded-VIO fallback. `FLTMODE6` is currently **0 (unbound)** -- was Sport, unbound with autotune mode on 2026-06-19. |
 | CH7 | **`RC7_OPTION = 18`** (**LAND Mode** on **SD**; [aux functions](https://ardupilot.org/copter/docs/common-auxiliary-functions.html)). |
 | CH8 | **`RC8_OPTION = 30`** (*Lost vehicle sound*: **GEPRC** / FC buzzer **while CH8 is high**, i.e. while **SF** is held for the arm gate). |
-| CH9 | **`RC9_OPTION = 36`** (Relay4). **`RELAY4_PIN = 83`**, **`RELAY4_FUNCTION = 1`** (Lucid HD VTX BEC). **`RELAY4_DEFAULT = 1`** (VTX on at power-up) -- **must stay `1`**; setting it `0` to keep the VTX cold on the bench breaks the ELRS boot link (see note below). CH9 / **SA** controls it when disarmed, and the Boxer **arm gate forces CH9 high (VTX on) while armed** ([ground-station.md](ground-station.md)) -- arming powers the VTX, no manual step. |
+| CH9 | **`RC9_OPTION = 36`** (Relay4). **`RELAY4_PIN = 83`**, **`RELAY4_FUNCTION = 1`** (Lucid HD VTX BEC). **`RELAY4_DEFAULT = 0`** (VTX **cold** at power-up -- the bench-heat-friendly state; safe since the 2026-07-27 rail fix, see note below). CH9 / **SA** controls it when disarmed, and the Boxer **arm gate forces CH9 high (VTX on) while armed** ([ground-station.md](ground-station.md)) -- arming powers the VTX, no manual step. |
 
-**`RELAY4_DEFAULT` must be `1` -- ELRS boot interaction (found 2026-07):** `RELAY4_DEFAULT` is the relay's startup state (**0 = Off, 1 = On, 2 = No change**). It was briefly set to **0** so a bench power-up with **no radio** would leave the VTX cold. **That setting breaks the ELRS link at boot and must not be used:** with `RELAY4_DEFAULT = 0`, the Matek R24-TD fails to acquire the handset and drops into **WiFi / web-config mode within a few seconds** of power-up, even with the transmitter on and trying. Reverting to **1** restores the link immediately. This was cleanly isolated -- `RELAY4_DEFAULT` was the **only** variable toggled between the failing and working boots (antennas untouched between the two), so the dependence is real, not a confound. **The FC is at `RELAY4_DEFAULT = 1`, matching the committed [`config/rekon10-methodi.param`](config/rekon10-methodi.param) export (built with the methodical configurator, seeded then rebooted).**
+**`RELAY4_DEFAULT = 0` -- ELRS boot interaction, RESOLVED 2026-07-27.** `RELAY4_DEFAULT` is the relay's startup state (**0 = Off, 1 = On, 2 = No change**). `0` leaves the VTX cold at boot -- the state we want for bench heat. There *used* to be a hard blocker here: with `RELAY4_DEFAULT = 0` the Matek R24-TD would fail to acquire the handset and drop into **WiFi / web-config mode within a few seconds** of power-up. It was cleanly isolated to this one parameter (antennas untouched between failing and working boots), so it was real -- but the cause was the RX witnessing a **5 V-rail boot transient**, not the relay logic. **The fix (hardware): move the ELRS RX VCC from the 5 V rail to 4V5**, isolating it from that transient. A `RELAY4_DEFAULT = 0` boot now brings the RX up cleanly -- links, respects the VTX switch, no web-flash -- **scope/bench-verified 2026-07-27**. So `RELAY4_DEFAULT = 0` is the correct, current value and the old "must stay 1" workaround is retired. Debug ledger: `facts/claude-transcripts/2026-07-27-120208-electrical/electrical-debugging.md` ("G1 RESOLVED"); as-built rails in [flight-platform.md](flight-platform.md). Value: [`inputs/60-rc-modes-relay.param`](https://github.com/symmatree/coordinator/blob/main/ardupilot/inputs/60-rc-modes-relay.param).
 
-The arm-gate mix in [`config/MODELS/model01.yml`](config/MODELS/model01.yml) still **forces CH9 high (VTX on) whenever armed** (via the L1-L3 latch; [ground-station.md](ground-station.md)), so flight is unaffected -- arming powers the VTX and it can't drop mid-flight regardless of the default.
+The arm-gate mix in [`config/MODELS/model01.yml`](config/MODELS/model01.yml) **forces CH9 high (VTX on) whenever armed** (via the L1-L3 latch; [ground-station.md](ground-station.md)), so flight is unaffected regardless of the boot default -- arming powers the VTX and it can't drop mid-flight.
 
-Consequences of staying at `1`:
+Notes:
 
-- **Bench heat** is no longer handled by the boot default (the VTX comes up energized). Manage it as already wired: **radio on, SA toward-safe** drives Relay4 off ([ground-station.md](ground-station.md)), or put **airflow** on the VTX for longer sessions.
-- **Polarity is confirmed** (closes the earlier open item): switch off -> goggles go black, on -> VTX top gets hot, so `RELAY4_INVERTED = 0` is correct and `= 0` really does de-energize. The relay works exactly as labelled; the problem is the **side effect on ELRS**, not the relay sense.
-
-**Mechanism -- hypothesis, not yet confirmed (needs a scope):** the failure is at ELRS **RF link-acquisition**, which is architecturally independent of both the FC serial and the VTX rail, so there is no designed reason for the dependence -- the nominally "separate 5 V (ELRS) / switched 9 V (VTX)" rails must share something (ground return, or a boot transient) that this exposes. **Runtime** toggling of Relay4 does **not** disturb ELRS -- only the **boot default** does -- so it is a boot-time effect, asymmetric toward VTX-off. Working theory: through the bootloader / early-init window (~1-2 s) GPIO 83 sits in its power-on-reset state before ArduPilot asserts `RELAY4_DEFAULT`; if the BEC enable floats toward **on** during that window, the 9 V rail + VTX bulk caps start to charge and are then **dumped** when the relay is asserted **off** -- a rise-then-collapse transient landing in the RX's acquisition window, which the RX counts as rapid power-cycles and uses as its "enter WiFi" trigger (consistent with the few-seconds timing vs the ~60 s link-loss timeout). **Falsifiable crux:** what the BEC enable does while GPIO 83 is hi-Z (a pulldown on that enable would kill the theory). **Scope check:** trigger on the 9 V rail on a `= 0` boot -- expect rise-then-collapse ~1-2 s in with a **coincident dip on the 5 V / RX rail**; on `= 1`, 9 V comes up once and holds. No such transient -> it's a shared-ground noise story instead.
+- **Bench heat:** `= 0` brings the VTX up cold (the friendly bench state). When it *is* energized, **radio on, SA toward-safe** drives Relay4 off ([ground-station.md](ground-station.md)), or put **airflow** on the VTX for longer sessions.
+- **Polarity confirmed:** switch off -> goggles go black, on -> VTX top gets hot, so `RELAY4_INVERTED = 0` is correct and `= 0` really does de-energize.
+- **Mechanism (now supported).** The failure was at ELRS **RF link-acquisition** -- architecturally independent of the FC serial and the VTX rail, so the "separate" 5 V (ELRS) and switched 9 V (VTX) rails must have shared a boot transient. Runtime Relay4 toggling never disturbed ELRS; only the boot default did. Picture: through the ~1-2 s early-init window GPIO 83 sits in its power-on-reset state before ArduPilot asserts `RELAY4_DEFAULT`; the 9 V BEC caps charge then **dump** when the relay is asserted off, and the coupled **dip on the 5 V / RX rail** landed in the RX's acquisition window (counted as rapid power-cycles -> enter WiFi). Moving the RX to 4V5 took it off that rail -- which is why the rail move fixed it, consistent with the transient picture.
 
 **`RELAY2_DEFAULT` / `RELAY3_DEFAULT`** (pins 81/82) are still **1** and undocumented here -- left alone, but they also come up energized at boot.
 
@@ -106,11 +107,11 @@ Telemetry keys and screens live in **`model01.yml`** (e.g. **RSNR**, **FM**, RSS
 
 ## Battery monitoring
 
-Mission Planner **Initial Tune** (with **6S Li-ion** selected) set most **`BATT_*`** metering and voltage thresholds. Full **`BATT_*`** / **`MOT_BAT_*`** list: **[`config/rekon10-methodi.param`](config/rekon10-methodi.param)**.
+Mission Planner **Initial Tune** (with **6S Li-ion** selected) set most **`BATT_*`** metering and voltage thresholds. Full **`BATT_*`** / **`MOT_BAT_*`** set: **[`inputs/70-battery.param`](https://github.com/symmatree/coordinator/blob/main/ardupilot/inputs/70-battery.param)**. Battery monitor is **ESC telemetry (`BATT_MONITOR = 9`)** off a calibrated AM32 build (the FC analog current input is arc-blown); details in [flight-platform.md](flight-platform.md).
 
-**Failsafe actions (operator choice, not Initial Tune):** **`BATT_FS_LOW_ACT = 0`** (warn only on low pack) then **`BATT_FS_CRT_ACT = 1`** (**Land** on critical). Low uses **`BATT_LOW_VOLT`** with **`BATT_LOW_TIMER`** (**10** s hold in export) before the warning state; critical uses **`BATT_CRT_VOLT`**.
+**Failsafe actions (operator choice, not Initial Tune):** **`BATT_FS_LOW_ACT = 1`** (**Land** on low pack) and **`BATT_FS_CRT_ACT = 1`** (**Land** on critical) -- Land is the correct action under canopy (RTL is not). Low uses **`BATT_LOW_VOLT`**; critical uses **`BATT_CRT_VOLT`**. (`BATT_LOW_TIMER = 0` in the current export.)
 
-**From the current export (Initial Tune thresholds):** **`BATT_ARM_VOLT = 19.1`**, **`BATT_LOW_VOLT = 18.6`**, **`BATT_CRT_VOLT = 18`** (about **3.18 / 3.10 / 3.00 V per cell** on **6S**). Those are a **reasonable first pass** for Li-ion; **`BATT_CRT_VOLT = 18`** is toward the **low** end for sustained load on some packs. If the FC hits **critical Land** earlier than you expect under sag, raise **`BATT_CRT_VOLT`** slightly (and re-export) rather than fighting it in the air.
+**From the current export (Initial Tune thresholds):** **`BATT_ARM_VOLT = 19.2`**, **`BATT_LOW_VOLT = 18.6`**, **`BATT_CRT_VOLT = 18`** (about **3.18 / 3.10 / 3.00 V per cell** on **6S**). Those are a **reasonable first pass** for Li-ion; **`BATT_CRT_VOLT = 18`** is toward the **low** end for sustained load on some packs. If the FC hits **critical Land** earlier than you expect under sag, raise **`BATT_CRT_VOLT`** slightly (and re-export) rather than fighting it in the air.
 
 ## Rangefinder (future)
 
@@ -284,8 +285,8 @@ Verified against ArduPilot source (`AP_NavEKF3_PosVelFusion.cpp`, `AP_NavEKF_Sou
 
 **Altitude position (`EK3_SRC1_POSZ`) -- hard mutex.** `selectHeightForFusion()` is a strict `if / else if` chain that sets exactly one `activeHgtSource` per tick. Only one sensor's measurement feeds the EKF altitude correction at any moment. Options: `1` = Baro (default), `3` = GPS, `2` = RangeFinder, `6` = ExtNav/VIO. If the active source drops out (GPS timeout, range out of range, etc.) it falls back to Baro automatically. There is no "blend baro and GPS altitude based on quality" path -- pick one.
 
-**Vertical velocity (`EK3_SRC1_VELZ`) -- can fuse multiple simultaneously.** `useVelZSource()` returns true for any source that appears in any of the three source sets (SRC1/2/3) when `EK3_SRC_OPTIONS` bit 0 (`FUSE_ALL_VELOCITIES`) is set. Current config: `EK3_SRC1_VELZ = 3` (GPS), `EK3_SRC_OPTIONS = 1`. GPS vertical velocity is already fused, gated by `EK3_GPS_VACC_MAX = 0.15 m` (reject GPS VelZ when reported VACC exceeds 0.15 m).
+**Vertical velocity (`EK3_SRC1_VELZ`) -- can fuse multiple simultaneously, but currently doesn't.** `useVelZSource()` returns true for any source that appears in any of the three source sets (SRC1/2/3) **only when** `EK3_SRC_OPTIONS` bit 0 (`FUSE_ALL_VELOCITIES`) is set. **Current config: `EK3_SRC1_VELZ = 3` (GPS), `EK3_SRC_OPTIONS = 8`.** That `8` is **bit 3 (`SRC_PER_CORE`)**, not bit 0 -- bit 0 was briefly `1` but was reverted to `0` in the 4.7.0 upgrade, so multi-source VelZ fusion is presently **off** (only the active set's VelZ fuses). `SRC_PER_CORE` runs each EKF core on a different source set (core 0 = GPS/SRC1, core 1 = VIO/SRC2) so the VIO lane is computed and logged every flight without control -- the coordinator #160 counterfactual. GPS vertical velocity is fused (SRC1 = GPS), gated by `EK3_GPS_VACC_MAX = 0.15 m` (reject GPS VelZ when reported VACC exceeds 0.15 m).
 
-**To add VIO vertical velocity alongside GPS:** set `EK3_SRC2_VELZ = 6` (ExtNav). With `SRC_OPTIONS = 1` already set, both GPS VelZ and VIO VelZ will fuse simultaneously, each weighted by their noise parameters. VIO VelZ requires an active ExtNav source; if it goes stale the EKF silently drops it and continues on GPS alone.
+**To add VIO vertical velocity alongside GPS** you would need **both** `EK3_SRC2_VELZ = 6` (ExtNav) **and** `FUSE_ALL_VELOCITIES` (bit 0) set in `EK3_SRC_OPTIONS` -- with bit 0 currently off, setting `SRC2_VELZ` alone would not fuse both. SRC2 velocity is deliberately left off regardless: the VIO lane is **position-only** (velocity-only ExtNav is unsupported upstream). Full source-set config and the VISO/ExtNav tuning: [`inputs/40-ekf-vio.param`](https://github.com/symmatree/coordinator/blob/main/ardupilot/inputs/40-ekf-vio.param) and coordinator [`docs/ardupilot-extnav-fusion.md`](https://github.com/symmatree/coordinator/blob/main/docs/ardupilot-extnav-fusion.md).
 
 **Barometer propwash offset.** In-flight analysis of loiter-around (2026-06-19) shows BARO reads ~1.2 m higher than GPS-normalized altitude during hover, converging toward zero as throttle drops on descent. Cause: low-pressure region under the props inflates the barometer. The offset is systematic (not random noise) and tracks throttle, with std ~0.5 m across the flight. `EK3_ALT_M_NSE = 2.0` accommodates this within the EKF noise budget. Switching `EK3_SRC1_POSZ` to GPS would trade the propwash bias for GPS vertical noise; at RTK float/fixed quality that is likely a better trade for precision altitude work. `EK3_GPS_VACC_MAX` would then gate when GPS altitude is accepted (the same threshold already gates GPS VelZ).
