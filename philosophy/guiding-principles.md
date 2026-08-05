@@ -15,12 +15,12 @@ principle had to fall out of something it needed to explain. Where the two
 converge despite that temperature difference, the convergence is more
 trustworthy, not less.*
 
-Citations use short forms: [KB] = `facts/claude-transcripts/2026-06-24-knowledge-architecture/annotated-knowledge-and-verification.md`;
-[DEV] = `facts/claude-transcripts/2026-06-24-ssh-notebooks/annotated-interview-across-time.md`;
-[CVG] = `facts/claude-transcripts/2026-06-24-ssh-notebooks/convergence-adjudication.md`;
-[CNV2] = `facts/claude-transcripts/2026-06-24-knowledge-architecture/convergence-notes.md`;
-[DTKT] = `facts/claude-transcripts/2026-06-24-ssh-notebooks/deploy-the-toolkit-into-the-place.md`.
-Raw transcripts are at `facts/claude-transcripts/2026-06-24-*/raw-transcript.txt`.
+Citations use short forms: [KB] = `facts/claude-transcripts/2026-06/2026-06-24-knowledge-architecture/annotated-knowledge-and-verification.md`;
+[DEV] = `facts/claude-transcripts/2026-06/2026-06-24-ssh-notebooks/annotated-interview-across-time.md`;
+[CVG] = `facts/claude-transcripts/2026-06/2026-06-24-ssh-notebooks/convergence-adjudication.md`;
+[CNV2] = `facts/claude-transcripts/2026-06/2026-06-24-knowledge-architecture/convergence-notes.md`;
+[DTKT] = `facts/claude-transcripts/2026-06/2026-06-24-ssh-notebooks/deploy-the-toolkit-into-the-place.md`.
+Raw transcripts are at `facts/claude-transcripts/2026-06/2026-06-24-*/raw-transcript.txt`.
 
 ---
 
