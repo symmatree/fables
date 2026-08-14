@@ -17,12 +17,14 @@ Related: [[Tiles (proxmox)]], [[nuc-g3p-2]], [[nuc-g2p-1]], [[nuc-g2p-2]], [[all
 
 ## ⚠️ Measurement-level caveat & monitoring gaps (important)
 
+> **UPDATE 2026-08 — gap (a) is RESOLVED (#544, tiles PR #706).** The alloy LXC now bind-mounts the host's real `/proc`+`/sys` at `/host/proc`+`/host/sys` and points node_exporter there (`procfs_path=/host/proc`), so **host** `node_memory_*`/`Swap*` are now in Mimir (verified ~12/16 GB per node, not 0.537 GB). The memory blind-spot below is historical — for events after 2026-08 you *can* assess host memory from Mimir. (Host logs also now reach Loki via `{job="proxmox-journal"}` — #686.) The rest of this section is the state as investigated in 2026-06/07.
+
 The `node_exporter` for each `nuc-*` **host** runs inside that host's **alloy LXC**, not on the host. `lxcfs` virtualises `/proc/meminfo` to the container cgroup, so:
 - **LXC-level (not host):** all `node_memory_*` (MemTotal reads **0.537 GB** = the LXC cgroup), `Swap*`, network counters, likely vmstat OOM/fault counters.
 - **Host-level (genuine):** `node_cpu_*` incl. **iowait** (`/proc/stat` not namespaced), **disk** stats (`/proc/diskstats`), **hwmon temps** (sysfs).
 
 Consequence: any host memory/swap conclusion from these metrics is about the ~512 MB LXC, not the host — this invalidated an early wrong-level "memory is fine" reading. Other **monitoring gaps** — reachable on demand (`talosctl`, `pvesh`) but **not in Mimir**, so you can't alert / graph / historically correlate on them (*not* "can't see them"):
-- **(a)** host node_exporter = LXC cgroup, not host memory — **issue #544 (open)**.
+- **(a)** host node_exporter = LXC cgroup, not host memory — **issue #544 (RESOLVED 2026-08, tiles PR #706)**; host memory/swap now in Mimir.
 - **(b)** etcd metrics **intentionally dropped** — none reach Mimir (revisitable choice, not an accident; minimal re-add set filed as **#568**).
 - **(c)** a wedged/crashlooping guest goes **dark in Mimir during its own event** (its exporter stops), so the worst window is the least-observed.
 - **(d)** **Grafana runs on wk-2**, so when a g2 box is stressed the dashboards 503 — observability degrades exactly under the stress it monitors.
