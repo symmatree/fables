@@ -1,6 +1,6 @@
 # rekon-rx
 
-**Matek ELRS R24-TD** on the Rekon 10 airframe. Canonical wiring and integration: [`Drones/rekon10/flight-platform.md`](../Drones/rekon10/flight-platform.md) in this repo. ExpressLRS **3.6.3** on the receiver.
+**Matek ELRS R24-TD** on the Rekon 10 airframe. Canonical wiring and integration: [`docs/rekon10/flight-platform.md`](https://github.com/symmatree/coordinator/blob/main/docs/rekon10/flight-platform.md) in the `coordinator` repo. ExpressLRS **3.6.3** on the receiver.
 
 Network index: [`device-by-ip`](network-devices/device-by-ip.md) and [`things`](things.md).
 
