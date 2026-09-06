@@ -20,9 +20,9 @@ Target: FLWO/FLYWOOF405S_AIO(STM32F405)
 
 ## EdgeTX model and channel mapping
 
-EdgeTX model file: [`../rekon10/config/MODELS/model02.yml`](../rekon10/config/MODELS/model02.yml), ELRS Receiver Number **16**, Link Mode **Normal (CRSF)**. Boxer-wide settings (e.g. stick calibration, `currModel`): [`../rekon10/config/RADIO/radio.yml`](../rekon10/config/RADIO/radio.yml).
+EdgeTX model file: [`config/MODELS/model02.yml`](https://github.com/symmatree/coordinator/blob/main/docs/rekon10/config/MODELS/model02.yml), ELRS Receiver Number **16**, Link Mode **Normal (CRSF)**. Boxer-wide settings (e.g. stick calibration, `currModel`): [`config/RADIO/radio.yml`](https://github.com/symmatree/coordinator/blob/main/docs/rekon10/config/RADIO/radio.yml).
 
-The Firefly16 and Rekon10 share a common switch layout on the Boxer. See the [ground-station docs](../rekon10/ground-station.md) for the multi-model management overview (binding phrase, Receiver Number, Model Match).
+The Firefly16 and Rekon10 share a common switch layout on the Boxer. See the [ground-station docs](https://github.com/symmatree/coordinator/blob/main/docs/rekon10/ground-station.md) for the multi-model management overview (binding phrase, Receiver Number, Model Match).
 
 **ELRS profile (Receiver Number 16, configured via Lua script on the Boxer):**
 
@@ -86,7 +86,7 @@ ACRO is the default when no angle/horizon mode is active (SB away, no mode range
 * **Motor DShot beacon** -- already configured (`beacon RX_LOST` / `RX_SET`, `beeper_dshot_beacon_tone = 3`): radio off, or the BEEPER switch, chirps the motors while the pack is connected. Free, no weight -- try first. Limits: needs the pack still connected and FC alive; muffled by grass.
 * **Self-powered finder buzzer** (own cell, ~100 dB, auto-alarms when it loses main power) for the browns-out / pack-off case the motor beacon can't cover. Needs a `BZ-` + 5V pad -- confirm against *this* board's wiring sticker before soldering.
 
-Contrast [rekon10/ardupilot.md](../rekon10/ardupilot.md): the Lucid board *does* have a relay-switched VTX BEC (`RELAY4`) -- but on rekon10 the 2026-07 finding is that `RELAY4_DEFAULT` must **stay 1**: flipping it to off-at-boot breaks the ELRS boot link (a BEC-enable / GPIO interaction), so it cannot "simply" be defaulted off there.
+Contrast [rekon10/ardupilot.md](https://github.com/symmatree/coordinator/blob/main/docs/rekon10/ardupilot.md): the Lucid board *does* have a relay-switched VTX BEC (`RELAY4`) -- but on rekon10 the 2026-07 finding is that `RELAY4_DEFAULT` must **stay 1**: flipping it to off-at-boot breaks the ELRS boot link (a BEC-enable / GPIO interaction), so it cannot "simply" be defaulted off there.
 
 ### Ports tab
 
@@ -109,4 +109,4 @@ Decode if needed:
 
 ### Receiver tab
 
-Protocol: **CRSF** with **Serial-based receiver**. Physical link: **UART3** to the onboard **ELRS** (UART, not SPI). Module **ELRS 3.x**; Boxer **3.6.3** per [ground-station docs](../rekon10/ground-station.md).
+Protocol: **CRSF** with **Serial-based receiver**. Physical link: **UART3** to the onboard **ELRS** (UART, not SPI). Module **ELRS 3.x**; Boxer **3.6.3** per [ground-station docs](https://github.com/symmatree/coordinator/blob/main/docs/rekon10/ground-station.md).
