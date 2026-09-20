@@ -18,7 +18,7 @@ Built from
 
 ### Qualitative
 The cutline was too tight, both tactically and strategically. Tactically, I cut off the front of the spa so it had to infer degenerate geometry that would fit inside that box, and that corner got very weird.
-Strategically, the camera positions are pretty bad: ![[Pasted image 20260227144222.png]] 
+Strategically, the camera positions are pretty bad: ![[Pasted image 20260227144222.png]]
 particularly on the north side.
 In the model, the north wall of the house is insane and also has twigs:
 ![[Pasted image 20260227144553.png]]
@@ -28,13 +28,13 @@ In the model, the north wall of the house is insane and also has twigs:
 - TIGHT crop around the house itself
 - Notable settings changes
 	- Feature quality "ultra" (from high)
-	- pc-quality "high" (from medium), 
+	- pc-quality "high" (from medium),
 	- use-3d-mesh: true (recommended by Gemini for the twigs)
 
 446 images, up from 380 with previous grid+orbit run
 
 ```
-  
+
 dem-resolution:1, dsm:true, dtm:true, feature-quality:ultra, mesh-octree-depth:12, mesh-size:2000000, orthophoto-resolution:1, pc-classify:true, pc-quality:high, use-3dmesh:true, crop:0, boundary:geojson
 ```
 

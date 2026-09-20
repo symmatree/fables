@@ -1,4 +1,4 @@
-Successor to  [[Tales (cluster)]]. 
+Successor to  [[Tales (cluster)]].
 [[Tiles-Repo]] holds the code
 [[Tiles (proxmox)]] provisions most of the nodes
 * [[nuc-g3p-1]]

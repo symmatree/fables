@@ -20,12 +20,12 @@ Certificate management for Kubernetes; issues and renews TLS certificates. Deplo
 
 ## Logs
 
-- **Grafana (Loki)**  
-  - All cert-manager logs: `{namespace="cert-manager"}`  
-  - Controller only: `{namespace="cert-manager", app_kubernetes_io_name="cert-manager"}`  
-  - Webhook: `{namespace="cert-manager", app_kubernetes_io_name="webhook"}`  
-  - CA injector: `{namespace="cert-manager", app_kubernetes_io_name="cainjector"}`  
-  - Trust manager: `{namespace="cert-manager", app_kubernetes_io_name="trust-manager"}`  
+- **Grafana (Loki)**
+  - All cert-manager logs: `{namespace="cert-manager"}`
+  - Controller only: `{namespace="cert-manager", app_kubernetes_io_name="cert-manager"}`
+  - Webhook: `{namespace="cert-manager", app_kubernetes_io_name="webhook"}`
+  - CA injector: `{namespace="cert-manager", app_kubernetes_io_name="cainjector"}`
+  - Trust manager: `{namespace="cert-manager", app_kubernetes_io_name="trust-manager"}`
   See [[tiles-software-logs]] for how to run queries in Grafana.
 
 - **kubectl** (trailing 50 lines; run against the target cluster):
@@ -42,7 +42,7 @@ Certificate management for Kubernetes; issues and renews TLS certificates. Deplo
   - **CA injector**: Last 50 lines are mostly "unable to fetch certificate that owns the secret" / "Certificate ... not found" for secrets in `cilium-secrets` (apprise-tls, hubble-ui-tls, grafana-tls, argocd-server-tls, webodm-tls, otlp-tls). The Certificate CRs live in the app namespaces; cainjector sees the copied secrets in cilium-secrets and logs when it can't find a Certificate there. A few "Updated object" lines for webhook configs. So: these "Certificate not found" messages are expected for the cilium-secrets copy pattern; they have been present on collection and are not by themselves a sign of a new failure.
   - **Trust-manager**: Startup from 2026-02-13: package load, webhook registration, server and leader election, EventSources and Controller started. One past ERROR: "Failed to update lock optimistically... Client.Timeout exceeded... falling back to slow path" during a lease renewal--transient API timeout, not ongoing.
 
-**Why the CA injector logs "Certificate not found" for cilium-secrets:**  
+**Why the CA injector logs "Certificate not found" for cilium-secrets:**
 The CA injector provides CA data for **webhook** and **CRD** `caBundle` fields (so the API server can verify webhook TLS), not for regular pods. It is driven by metadata: Secrets carrying an annotation like `cert-manager.io/certificate-name` are treated as certificate-backed, and the injector looks up the referenced Certificate in the **same namespace** to prepare injection. Cilium copies TLS secrets into **cilium-secrets** for ingress, including that ownership annotation, but the **Certificate** resources stay in the app namespaces. So the injector sees the copied secrets, looks for the Certificate in cilium-secrets, doesn't find it, and logs--expected. Cert-manager has no option to restrict or ignore namespaces, so this log noise is normal.
 
 *Logs section follows [[tiles-software-logs]]. Update the trailing-lines summary when running the process.*

@@ -6,7 +6,7 @@ The intent is to take advantage of lessons and experience from working on the Re
 
 ## Major components
 
-* The chassis is a [Axial SXC10 III Early Ford Bronco 4x4 RTR](https://www.axialadventure.com/product/1-10-scx10-iii-early-ford-bronco-4x4-rtr/AXI03014.html) (not the exact body style as in the link but close). It is stripped to the level shown in the oblique and overhead shots, with a pegboard top deck mounted to hardpoints fore and aft. The pegboard is 5.5" wide (to short of the slot holes in the tops of the fenders) and 18" long; it clears to top of the fender so it could be wider. The factory receiver/ESC, servos, motor and battery all fit in the "basement" well between the front and back fenders. 
+* The chassis is a [Axial SXC10 III Early Ford Bronco 4x4 RTR](https://www.axialadventure.com/product/1-10-scx10-iii-early-ford-bronco-4x4-rtr/AXI03014.html) (not the exact body style as in the link but close). It is stripped to the level shown in the oblique and overhead shots, with a pegboard top deck mounted to hardpoints fore and aft. The pegboard is 5.5" wide (to short of the slot holes in the tops of the fenders) and 18" long; it clears to top of the fender so it could be wider. The factory receiver/ESC, servos, motor and battery all fit in the "basement" well between the front and back fenders.
 
 * Axial 35T Electric Motor
 * Steering: Spektrum S614 Waterproof Metal Gear Surface Servo, 23T

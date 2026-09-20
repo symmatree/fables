@@ -25,8 +25,8 @@ DEM has great detail for downed logs and things. But I think we need a better cl
 ## Dataset Summary
 Date 16/02/2026 at 22:01:12
 Area Covered 0.015927 km²
-Processing Time 56.0m:2.0s 
-Capture Start 16/02/2026 at 12:53:04 
+Processing Time 56.0m:2.0s
+Capture Start 16/02/2026 at 12:53:04
 Capture End 16/02/2026 at 13:24:42
 [[fables/Datasets/odm-maps-bond_ave-2026-02-16/report.pdf]]
 ## benchmarks

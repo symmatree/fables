@@ -187,4 +187,3 @@ Additional integrations can be enabled via chart values as needed.
 ### Dashboards and rules (Tanka)
 
 **Grafana alloy-mixin** is deployed as an Argo CD Application (**`alloy-mixin`**, tanka **`TK_ENV=alloy-mixin`**, namespace **`alloy`**), same pattern as other mixins. **`_config.filterSelector`** targets **`job="integrations/alloy"`** so panels align with the integration scrape path.
-

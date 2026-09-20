@@ -30,10 +30,10 @@ One ArduPilot-based 10" quad: **Rekon 10 Pro** frame, large XING motors, 2-blade
 
   **What you get for the weight:** Stiffer, quieter platform (triangular structure); better camera protection (CNC front); vertical ELRS antenna mounting without DIY; O4-ready if you ever switch. **Do we want it?** For this build (ArduPilot, WalkSnail, payload): stiffness and clean antenna mounting are pluses; the extra ~170 g costs payload or flight time. We don't need O4. So it's a real trade: lighter and simpler (455 mm variant) vs stiffer and more integrated (V2). If you don't know which frame you were looking at in past evaluations, the table above is the place to line them up -- same row = same dimension so you can see the difference at a glance.
 - **Frame reinforcement bars (optional):** Some Rekon 10 Pro frame kits (455 mm variant product listings and part lists) include **2x 2 mm rack protection / reinforcement bars** that run parallel to the body between the motor mounts. They appear in some product photos and part lists but not others; inclusion may vary by retailer or batch. Installation is likely **optional** -- add for stiffness and arm protection, omit for weight or clearance. Confirm kit contents when ordering; decide fit vs payload/antenna layout.
-- **Antenna mounting (455 mm, our plan):**  
-  - **WalkSnail (FPV) -- 2× VTX antennas:** Put the **two** WalkSnail VTX antennas in the **angled TPU mounts at the stern** that Rekon provides (same stern area as air unit mount A/B).  
-  - **ELRS (telemetry/control) -- 2× R24-TD antennas:** **Matek R24-TD** (true diversity, 2.4 GHz, still under ~$50; gives better chance of getting a control signal through in an emergency). Mount the two ELRS antennas on **zip-tie "tails" with heatshrink tubing**: **one antenna out to the side**, **one straight up**. **Compatible with RadioMaster Boxer** (or any 2.4 GHz ELRS transmitter): true diversity is receiver-side only (two antennas on the craft); the handset needs no special support.  
-  - **RTK helical** stays on the mast (center/top), not at the stern.  
+- **Antenna mounting (455 mm, our plan):**
+  - **WalkSnail (FPV) -- 2× VTX antennas:** Put the **two** WalkSnail VTX antennas in the **angled TPU mounts at the stern** that Rekon provides (same stern area as air unit mount A/B).
+  - **ELRS (telemetry/control) -- 2× R24-TD antennas:** **Matek R24-TD** (true diversity, 2.4 GHz, still under ~$50; gives better chance of getting a control signal through in an emergency). Mount the two ELRS antennas on **zip-tie "tails" with heatshrink tubing**: **one antenna out to the side**, **one straight up**. **Compatible with RadioMaster Boxer** (or any 2.4 GHz ELRS transmitter): true diversity is receiver-side only (two antennas on the craft); the handset needs no special support.
+  - **RTK helical** stays on the mast (center/top), not at the stern.
   - **V2 variant:** Has integrated detachable vertical antenna mounts (ELRS style); we're on 455 mm with the above plan.
 - **Battery (6S, single pack):** **Chosen -- iFlight Fullsend 6S 8000 mAh Li-ion** (not LiPo; matches other iFlight components). **Specs:** 42×64×147 mm (W×D×L), ~840 g, 6S2P EVE INR21700-40PL, 17.5C, XT60H-F, 177.6 Wh. Frame supports **dual battery (top and bottom)**; design can take two packs **end to end** along the body. **Top deck fit with Pi 5 + OAK-D at front:** Frame overall **476×298 mm** (body length × width); kit includes 20×250 mm straps. One 8000 mAh pack is **147 mm** along its long axis, so a single pack on top uses ~147 mm of the 476 mm length, leaving **~330 mm** along the body for stack (center) and payload at the front -- **Pi 5 + OAK-D at the front should fit with the 8 Ah pack on top**. Two 8000 mAh packs end-to-end would be 294 mm; that fits within 476 mm but may need a longer strap or different strap layout than the supplied 250 mm; for now we run **one pack on top**. Verify at build: pack orientation (147 mm along body), strap placement, and clearance to mast/Pi 5/OAK-D. Belly pod + second pack later = open item.
 - **Motors / props:** Large **XING** motors (3110/3314 class), **2-blade** 10x4.5 (e.g. HQProp 10x4.5 or Gemfan 1050 bi-blade).
@@ -47,7 +47,7 @@ One ArduPilot-based 10" quad: **Rekon 10 Pro** frame, large XING motors, 2-blade
 
 **GCS (ground control station)** = the software (e.g. Mission Planner, QGroundControl) and the device it runs on (laptop, tablet). Used for mission planning, parameters, and telemetry; it can also send MAVLink commands when connected. The "physical box" for GCS is a laptop or tablet -- separate from the handset.
 
-**Architecture we want (and why)**  
+**Architecture we want (and why)**
 One link. Sticks and telemetry on the **same** link. You do **not** buy another radio for the GCS. The **handset is the only ground-side radio**. It carries (1) your stick/switch input to the vehicle and (2) MAVLink (telemetry and commands) on that single RF link. If you want to see telemetry on a laptop or tablet (GCS), you connect the GCS to the **handset** (USB or the handset's WiFi backpack) -- the GCS is just a client of the handset, no extra radio. One radio on the vehicle (ELRS receiver), one radio on the ground (the handset). Reasons: minimize radios and antennas, one link for the most critical traffic, no separate "telemetry radio" to buy or mount.
 
 **How we get that:** **ELRS in MAVLink mode**. One ELRS receiver on the craft, one ELRS transmitter in the handset (Boxer). Same RF link carries RC and MAVLink. GCS (laptop/tablet) connects to the handset via USB or Backpack WiFi to display telemetry and send MAVLink commands -- no second link, no second radio.
@@ -97,31 +97,31 @@ Handset data (sticks, switches) can go over MAVLink (e.g. MANUAL_CONTROL); ELRS 
 
 Summary of the criteria and tradeoffs so you can choose or sanity-check parts.
 
-**Stator size (3110)**  
-- Format **XXYY** = stator outer diameter (mm) x stator length (mm). So **3110** = 31 mm diameter x 10 mm length.  
-- This size class can spin 10" props without overloading: enough torque and thermal mass for 10" at moderate RPM. Smaller (e.g. 2814) can work but 3110 is a common match for 7-10" long-range/cinelifter.  
+**Stator size (3110)**
+- Format **XXYY** = stator outer diameter (mm) x stator length (mm). So **3110** = 31 mm diameter x 10 mm length.
+- This size class can spin 10" props without overloading: enough torque and thermal mass for 10" at moderate RPM. Smaller (e.g. 2814) can work but 3110 is a common match for 7-10" long-range/cinelifter.
 - Bigger stator diameter = more torque for the same KV; longer stator = more copper and power handling. 3110 is in the "sweet spot" for 10" on 6S.
 
-**KV (900-1100)**  
-- **KV = RPM per volt** (no-load). So at 6S nominal 22.2 V: 900 KV → ~20k RPM, 1100 KV → ~24.4k RPM.  
-- **Lower KV** = lower no-load RPM, **higher torque per amp**. For a given prop, lower KV draws less current at the same thrust (and runs cooler). Too low and you may lack headroom for climb or wind.  
-- **Higher KV** = more RPM, more current for the same thrust, more heat. 900-1100 on 6S with 10" keeps the system in a range where efficiency is good (often best around 40-60% throttle) and you are not constantly at max current.  
+**KV (900-1100)**
+- **KV = RPM per volt** (no-load). So at 6S nominal 22.2 V: 900 KV → ~20k RPM, 1100 KV → ~24.4k RPM.
+- **Lower KV** = lower no-load RPM, **higher torque per amp**. For a given prop, lower KV draws less current at the same thrust (and runs cooler). Too low and you may lack headroom for climb or wind.
+- **Higher KV** = more RPM, more current for the same thrust, more heat. 900-1100 on 6S with 10" keeps the system in a range where efficiency is good (often best around 40-60% throttle) and you are not constantly at max current.
 - Rule of thumb: same *power* with higher voltage needs lower KV. So 6S uses lower KV than 4S for the same prop size.
 
-**Battery: what "S" is, and 4S vs 6S vs 8S**  
-- **S = cells in series.** Each LiPo cell is ~3.7 V nominal (~4.2 V full). So: **4S** ≈ 14.8 V nominal, **6S** ≈ 22.2 V, **8S** ≈ 29.6 V.  
-- **Same power** at higher voltage = **lower current** (P = V × I). So 6S draws less current than 4S for the same thrust; 8S draws less than 6S.  
-- **4S:** Lower voltage. To spin a 10" prop at useful RPM you need **higher KV** motors (e.g. 1400-1700 KV). That means **higher current** for the same thrust → more voltage sag, hotter motors/ESCs, and you need a higher C-rating pack. Lighter pack for same capacity (fewer cells) but the system runs at higher amps. Common for smaller quads; for 10" LR it's the exception.  
-- **6S:** Sweet spot for 10" LR. **Lower KV** (900-1100) keeps current down, less sag, cooler run, and the 3110 + 10x4.5 combo is well matched. Huge choice of 6S packs and ESCs. This is the standard for your class.  
-- **8S:** Higher voltage → **even lower KV** (e.g. 700-800) and lower current for the same power. Theoretically more efficient and easier on the pack, but: (1) pack is heavier (more cells) for the same capacity; (2) many ESCs/FCs are 6S‑max unless you pick 8S‑rated parts; (3) less common for 10" so fewer off‑the‑shelf motor recommendations. Makes more sense for very heavy lifts or 12"+ where you want to minimize current.  
+**Battery: what "S" is, and 4S vs 6S vs 8S**
+- **S = cells in series.** Each LiPo cell is ~3.7 V nominal (~4.2 V full). So: **4S** ≈ 14.8 V nominal, **6S** ≈ 22.2 V, **8S** ≈ 29.6 V.
+- **Same power** at higher voltage = **lower current** (P = V × I). So 6S draws less current than 4S for the same thrust; 8S draws less than 6S.
+- **4S:** Lower voltage. To spin a 10" prop at useful RPM you need **higher KV** motors (e.g. 1400-1700 KV). That means **higher current** for the same thrust → more voltage sag, hotter motors/ESCs, and you need a higher C-rating pack. Lighter pack for same capacity (fewer cells) but the system runs at higher amps. Common for smaller quads; for 10" LR it's the exception.
+- **6S:** Sweet spot for 10" LR. **Lower KV** (900-1100) keeps current down, less sag, cooler run, and the 3110 + 10x4.5 combo is well matched. Huge choice of 6S packs and ESCs. This is the standard for your class.
+- **8S:** Higher voltage → **even lower KV** (e.g. 700-800) and lower current for the same power. Theoretically more efficient and easier on the pack, but: (1) pack is heavier (more cells) for the same capacity; (2) many ESCs/FCs are 6S‑max unless you pick 8S‑rated parts; (3) less common for 10" so fewer off‑the‑shelf motor recommendations. Makes more sense for very heavy lifts or 12"+ where you want to minimize current.
 - **Flight time** depends on **total energy (Wh)**, not S. A 6S 5000 mAh pack (111 Wh) has the same energy as a 4S 7500 mAh (111 Wh); the benefit of 6S is *how* that energy is delivered (lower current, less sag, often better efficiency in the mid-throttle band), not more Wh per cell.
 
-**Low pitch (4.5)**  
-- Lower pitch loads the motor less at a given RPM than high pitch: less thrust per revolution but also **lower current** and less risk of overcurrent. So 10x4.5 limits peak and cruise current compared to e.g. 10x5 or 10x6.  
-- Softer, "woosh" sound comes from lower tip speed and less aggressive bite.  
+**Low pitch (4.5)**
+- Lower pitch loads the motor less at a given RPM than high pitch: less thrust per revolution but also **lower current** and less risk of overcurrent. So 10x4.5 limits peak and cruise current compared to e.g. 10x5 or 10x6.
+- Softer, "woosh" sound comes from lower tip speed and less aggressive bite.
 - Tradeoff: for pure cruise at one speed, a higher pitch can sometimes be more efficient (same thrust at lower RPM); but for a versatile waypoint platform with climb and margin, 4.5 is a good compromise and keeps the system within a comfortable current envelope.
 
-**Practical takeaway**  
+**Practical takeaway**
 - **3110 900-1100 KV, 6S, 10x4.5 bi-blade** = enough thrust for 10" + payload, good efficiency in the mid-throttle range, limited current draw, and a quiet profile. Lock exact motor model and prop (HQProp 10x4.5 vs Gemfan 1050 bi-blade) after checking availability and any test data.
 
 ---
@@ -131,9 +131,9 @@ Summary of the criteria and tradeoffs so you can choose or sanity-check parts.
 ### 1) Upper-side positioning package (RTK + OAK-D, always on)
 
 - **Role:** RTK GNSS for precise position (clear sky view) and **visual odometry** to the FC; VO is useful even in the far field. **F9P + OAK-D hard-mounted together** (same rigid reference) so RTK and VO don't fight when both feed the FC. Color + depth from OAK-D for stitching and under-canopy mapping.
-- **Contents:**  
-  - **RTK:** F9P on SparkFun breakout (ZED-F9P, 7 g), **helical antenna** on mast, PCB ground plane under antenna. **Power:** F9P from payload UBEC -- 5V and GND to breakout VCC/GND (SparkFun ZED-F9P accepts 3.3-5.5 V; use same 5 V rail as Pi 5/OAK-D or a small 3.3 V regulator if required by your breakout). **Connection:** F9P → FC on UART (SERIAL3) for nav; **F9P → Pi 5 on Qwiic/I2C** for fine-grained GPS status/telemetry (signal strengths, lock quality, etc.) that the Pi 5 logs and/or forwards. F9P message sets per interface so UART and I2C streams don't collide. See "GPS (F9P), FC, and Pi 5" under Onboard communications.  
-  - **Mast:** ~10 cm rigid mount (no fold). **TPU + epoxy** to secure to base board; top piece to mate **ground plane** and **helical antenna**. Always mounted. **Ground plane:** PCB, est. 30 g; mounts at top of mast. **Antenna:** **SparkFun GNSS L1/L2/L5 Helical (Locking SMA)** (25 g, GPS-30249). **ANN-MB-00** (ceramic, 173 g) only if needed for debugging.  
+- **Contents:**
+  - **RTK:** F9P on SparkFun breakout (ZED-F9P, 7 g), **helical antenna** on mast, PCB ground plane under antenna. **Power:** F9P from payload UBEC -- 5V and GND to breakout VCC/GND (SparkFun ZED-F9P accepts 3.3-5.5 V; use same 5 V rail as Pi 5/OAK-D or a small 3.3 V regulator if required by your breakout). **Connection:** F9P → FC on UART (SERIAL3) for nav; **F9P → Pi 5 on Qwiic/I2C** for fine-grained GPS status/telemetry (signal strengths, lock quality, etc.) that the Pi 5 logs and/or forwards. F9P message sets per interface so UART and I2C streams don't collide. See "GPS (F9P), FC, and Pi 5" under Onboard communications.
+  - **Mast:** ~10 cm rigid mount (no fold). **TPU + epoxy** to secure to base board; top piece to mate **ground plane** and **helical antenna**. Always mounted. **Ground plane:** PCB, est. 30 g; mounts at top of mast. **Antenna:** **SparkFun GNSS L1/L2/L5 Helical (Locking SMA)** (25 g, GPS-30249). **ANN-MB-00** (ceramic, 173 g) only if needed for debugging.
   - **OAK-D:** Camera/processor; VO to FC via Pi 5 (see [ArduPilot OAK-D VIO guide](https://ardupilot.org/copter/docs/common-vio-oak-d.html)); color/depth for off-board processing. Est. 115 g.
 - **Rekon TPU GPS mount (stern):** The frame kit can include a **TPU GPS mount at the stern**, angled **slightly below horizontal**. We **don't use it for RTK** here because **co-location**: the stern is far from the OAK-D (payload area); RTK and VO need to be on the same rigid reference. We **stick with the mast** (antenna up, F9P/antenna/ground plane in one assembly near the OAK-D).
 
@@ -207,8 +207,8 @@ Weights are estimates; verify with actual parts. **Terms:** **Platform** = frame
   - **Goggles:** WalkSnail **Avatar HD Goggles L** (single 4.5" 1080p60, 75° FOV) or **Avatar HD Goggles X** (premium). Receiver is built in; no separate VRX.
   - **Screen:** WalkSnail **Avatar VRX** (standalone receiver, HDMI out). Power the VRX (7-25.2 V), plug HDMI into any monitor or small screen. No goggles required.
 - Add air unit + antennas to the weight budget when fitting; ground receiver is not on the craft BoM.
-- **FPV mounting compatibility (Rekon 10 Pro 455 mm variant):**  
-  - **Camera:** Frame has a **20×20 mm** camera mount on the front/nose (per retailer specs and product pages). WalkSnail Avatar HD Pro uses a **Micro Camera Pro** (19×19×24 mm, M2 screws); 20×20 nose mounts are standard for this class, so the camera **should mount directly** on the frame nose.  
+- **FPV mounting compatibility (Rekon 10 Pro 455 mm variant):**
+  - **Camera:** Frame has a **20×20 mm** camera mount on the front/nose (per retailer specs and product pages). WalkSnail Avatar HD Pro uses a **Micro Camera Pro** (19×19×24 mm, M2 screws); 20×20 nose mounts are standard for this class, so the camera **should mount directly** on the frame nose.
   - **VTX:** By Rekon design the air unit (VTX) mounts in the **air unit mount A and B** at the **stern** (rear), not on top of the stack. DJI O3 air unit uses **25.5 mm** mounting holes (per multiple sources). WalkSnail Avatar HD Pro VTX is **33×33×10.5 mm** with **20×20 and 25.5×25.5** hole patterns -- confirm whether the Rekon stern mounts match one of these or need an adapter. **Mount method open:** use the frame's TPU mounts (if supplied), hard-mount to carbon, or print an adapter; decide at build time. **Cable length:** Camera at nose, VTX at stern; the included camera-VTX MIPI cable is ~12-14 cm. Nose-to-stern on the 455 mm frame may exceed that; builders using a rear air unit on this frame have used a **longer MIPI cable** (e.g. 200 mm for DJI O3). Confirm WalkSnail cable options or extension for nose-stern run at build time.
 
 ### Example totals
@@ -340,11 +340,11 @@ Accumulating list of components. Bundled vs bought separately not distinguished;
 **Cables and connectors**
 - **Battery → ESC:** Pack is **iFlight Fullsend 6S 8000 mAh**, **XT60H-F** (female on pack). Blitz E80 Pro **G2 bundle** supplies **XT90 10AWG** on the ESC lead (male plug into battery side). **Mismatch:** Use an **XT60 male to XT90 female adapter** (plug adapter's XT60 male into the battery; ESC lead's XT90 male plugs into adapter's XT90 female). Widely available (e.g. Rotor Riot, RC Accessory, ~$3-6). **Current:** XT60 and the adapter are ~60 A continuous; E80 can draw 80 A. Without protection, the 60 A segment could be overloaded and overheat (same idea as 14 AWG on a 20 A circuit). **Required:** **Fuse the main battery→ESC path** at or below the rating of the weak link (e.g. **60 A**, or 55 A for margin). Place fuse in the high-current path so it opens before the XT60/adapter/Y leg sees sustained overcurrent. Use a slow-blow or blade fuse that allows short bursts (takeoff, climb) but protects against sustained overload. If you use an XT60 Y, the Y and adapter are both in the 60 A segment -- fuse protects the whole segment. Re-terminate to XT90 (pack or lead) if you want to remove the 60 A limit and fuse at 80 A.
 - **UBEC tap:** From same pack: use an **XT60 Y cable** (one female for battery, two male legs) -- one leg to the XT60→XT90 adapter then ESC, other leg to UBEC input (solder XT60 male or appropriate connector to UBEC input wires). Or single adapter plus a separate parallel lead for UBEC; confirm UBEC input connector and pack polarity.
-- **UART / serial (FC to peripherals):**  
-  - **SERIAL2:** ELRS receiver (CRSF) → FC; cable often included with R24-TD; else 4-pin JST-GH or equivalent to Matek serial pad.  
-  - **SERIAL3:** F9P (UART TX/RX/GND) → FC; Dupont or JST from F9P breakout to FC SERIAL3 pins; confirm pinout.  
-  - **SERIAL4:** Pi 5 (companion MAVLink) ↔ FC; UART from Pi 5 40-pin header to FC SERIAL4; connector and pinout TBD.  
-  - **SERIAL5:** WalkSnail OSD (MSP DisplayPort) ← FC; cable from FC SERIAL5 to WalkSnail OSD port; confirm WalkSnail pinout and ArduPilot protocol.  
+- **UART / serial (FC to peripherals):**
+  - **SERIAL2:** ELRS receiver (CRSF) → FC; cable often included with R24-TD; else 4-pin JST-GH or equivalent to Matek serial pad.
+  - **SERIAL3:** F9P (UART TX/RX/GND) → FC; Dupont or JST from F9P breakout to FC SERIAL3 pins; confirm pinout.
+  - **SERIAL4:** Pi 5 (companion MAVLink) ↔ FC; UART from Pi 5 40-pin header to FC SERIAL4; connector and pinout TBD.
+  - **SERIAL5:** WalkSnail OSD (MSP DisplayPort) ← FC; cable from FC SERIAL5 to WalkSnail OSD port; confirm WalkSnail pinout and ArduPilot protocol.
 - **F9P power:** 5 V and GND from UBEC to F9P breakout VCC/GND (Dupont or small lead). Confirm breakout input voltage (many ZED-F9P breakouts accept 3.3-5.5 V on VCC). Do not rely on USB or Qwiic for in-flight power unless the breakout is explicitly powered from the Qwiic bus (Pi 5 3.3 V).
 - **F9P → Pi 5:** Qwiic cable (I2C) for GPS status/telemetry; SparkFun Qwiic to Pi 5 I2C on 40-pin header.
 - **OAK-D:** USB to Pi 5 (usually included with OAK-D); power via UBEC barrel (see above).
@@ -359,9 +359,9 @@ Accumulating list of components. Bundled vs bought separately not distinguished;
 - RadioMaster Boxer ELRS (transmitter; internal ELRS is 2.4 GHz only; for 915 MHz RC use external module e.g. Bandit Micro 915 MHz)
 - **Matek R24-TD** ExpressLRS receiver (on craft, 2.4 GHz, true diversity; same link = RC + MAVLink). See **ELRS receiver (chosen)** below.
 
-**ELRS receiver (chosen: Matek R24-TD)**  
-- **Onboard:** **Matek R24-TD** (2.4 GHz, **true diversity**, two antennas; still under ~$50; better hope of getting a control signal through in an emergency). **Antenna mount:** zip-tie "tails" with heatshrink tubing -- **one antenna out to the side, one straight up**. WalkSnail's 2× VTX antennas go in the angled TPU mounts at the stern; ELRS antennas stay clear of those and the RTK mast.  
-- **MAVLink mode:** ELRS 3.5+; set RX serial protocol and TX link mode to MAVLink. ESP-based (Boxer + R24-TD). Connect RX to FC over CRSF (one UART).  
+**ELRS receiver (chosen: Matek R24-TD)**
+- **Onboard:** **Matek R24-TD** (2.4 GHz, **true diversity**, two antennas; still under ~$50; better hope of getting a control signal through in an emergency). **Antenna mount:** zip-tie "tails" with heatshrink tubing -- **one antenna out to the side, one straight up**. WalkSnail's 2× VTX antennas go in the angled TPU mounts at the stern; ELRS antennas stay clear of those and the RTK mast.
+- **MAVLink mode:** ELRS 3.5+; set RX serial protocol and TX link mode to MAVLink. ESP-based (Boxer + R24-TD). Connect RX to FC over CRSF (one UART).
 - **Other options (reference):** BetaFPV SuperD, Happymodel EP1 Dual, Namimno Flash Diversity, Radiomaster RP3. Confirm receiver in the [ELRS Configurator](https://expresslrs.org/quick-start/configuration/) for MAVLink firmware.
 
 **Control feedback (WalkSnail Avatar HD Pro)**

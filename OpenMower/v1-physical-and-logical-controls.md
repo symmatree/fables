@@ -43,8 +43,8 @@ For GPS testing: wait until the mainboard LED is **green or green/red** (i.e. RO
 So to query state of charge from software you need:
 
 1. **ROS running** and the **openmower container** (or at least the part that runs mower_comms) **up**. With your current crash loop, the container exits before any node runs, so there is **no** software way to read voltage until the crash is fixed.
-2. After fixing the crash (e.g. set `ROS_MASTER_URI` in the service or in `mower_config.txt`), start the service and then, from a shell that can see ROS (e.g. inside the container or with `ROS_MASTER_URI` set):  
-   `rostopic echo /ll/power`  
+2. After fixing the crash (e.g. set `ROS_MASTER_URI` in the service or in `mower_config.txt`), start the service and then, from a shell that can see ROS (e.g. inside the container or with `ROS_MASTER_URI` set):
+   `rostopic echo /ll/power`
    You will see `v_battery` (e.g. 24-29 V for a typical 7S pack). The params use ~28.5 V as "full" and ~24 V as "empty" for YardForce 500.
 
 **Without ROS:** There is no other daemon or API that reads the mainboard. The only way to check voltage without bringing up the stack is **hardware**: multimeter on the **charging contacts** (with the mower on or in the dock). Same 24-29 V range; ~28 V+ is well charged, &lt;25 V is low.

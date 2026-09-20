@@ -54,15 +54,15 @@ Product information is collected from the [UniFi Device Models JSON](https://gis
 4. **Add Product Info section**: Create a table in each device document with the extracted information, excluding FCC compliance data.
 
 5. **Technical Specifications Collection**: Technical specifications are collected from `techspecs.ui.com` pages using the Python script at `polisher/unifi/extract_tech_specs.py`:
-   - **URL Pattern**: 
+   - **URL Pattern**:
      - Access Points: `https://techspecs.ui.com/unifi/wifi/{sku}`
      - Switches: `https://techspecs.ui.com/unifi/switching/{sku}` or `https://techspecs.ui.com/unifi/other/{sku}`
    - **Method**: The script fetches the page HTML using Python's `urllib.request`, extracts the embedded `__NEXT_DATA__` JSON from the `<script id="__NEXT_DATA__" type="application/json">` tag, and parses the technical specification data. The data is server-rendered in the initial HTML response, so no browser automation or JavaScript execution is needed.
-   - **Usage**: 
+   - **Usage**:
      ```bash
      # Get JSON output
      python3 polisher/unifi/extract_tech_specs.py "https://techspecs.ui.com/unifi/wifi/uap-ac-pro" --json
-     
+
      # Get Markdown output (default)
      python3 polisher/unifi/extract_tech_specs.py "https://techspecs.ui.com/unifi/wifi/uap-ac-pro"
      ```
@@ -144,7 +144,7 @@ To update device information:
 
 ### Technical Specifications Scraping
 
-1. **Direct `web_search` for store.ui.com content**: 
+1. **Direct `web_search` for store.ui.com content**:
    - **Tried**: Using `web_search` tool to search for product pages
    - **Ruled Out**: Failed to retrieve JavaScript-rendered "Technical" tab content. The search results don't provide access to dynamically loaded content.
 
@@ -156,7 +156,7 @@ To update device information:
    - **Tried**: Using browser automation tools to navigate to pages and capture snapshots
    - **Ruled Out**: Accessibility snapshots capture page structure but not the actual rendered content values. The snapshot format shows element structure but not the data values displayed in tables.
 
-4. **Final Solution**: 
+4. **Final Solution**:
    - **Method**: Use the Python script `polisher/unifi/extract_tech_specs.py` to fetch `techspecs.ui.com` pages and extract the embedded `__NEXT_DATA__` JSON data
    - **Why it works**: The `techspecs.ui.com` pages embed all technical specification data in a JSON object within a `<script id="__NEXT_DATA__">` tag, which is available in the initial HTML response and doesn't require JavaScript execution or browser automation
    - **Implementation**: The script uses Python's `urllib.request` to fetch the HTML, regex to extract the JSON from the script tag, and Python's `json` module to parse and extract the technical specification sections. The script handles nested feature groups and formats the output as Markdown suitable for documentation

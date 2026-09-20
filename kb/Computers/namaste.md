@@ -104,12 +104,11 @@ Page File Space	5.50 GB
 Page File	C:\pagefile.sys
 Kernel DMA Protection	Off
 Virtualization-based security	Running
-Virtualization-based security Required Security Properties	
+Virtualization-based security Required Security Properties
 Virtualization-based security Available Security Properties	Base Virtualization Support, Secure Boot, DMA Protection, UEFI Code Readonly, SMM Security Mitigations 1.0, Mode Based Execution Control
 Virtualization-based security Services Configured	Hypervisor enforced Code Integrity
 Virtualization-based security Services Running	Hypervisor enforced Code Integrity
 App Control for Business policy	Enforced
 App Control for Business user mode policy	Off
 Automatic Device Encryption Support	Elevation Required to View
-A hypervisor has been detected. Features required for Hyper-V will not be displayed.	
-
+A hypervisor has been detected. Features required for Hyper-V will not be displayed.
