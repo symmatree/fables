@@ -18,7 +18,7 @@ This is the oldest node, currently in the attic
 
 ## Hardware
 
-1x AceMagic "Mini PC Intel 12th Gen N95(up to 3.40Ghz) 8GB DDR4 256GB M.2 SSD Mini Desktop Computer Windows 11 Pro Mini Computers Support 4K Dual Display/BT 4.2/ WiFi 5/USB 3.0/ Auto Power On"  https://www.amazon.com/dp/B0BS9VXH1N (dead link) which looks like [this Newegg link](https://www.newegg.com/p/1VK-0294-00407) 
+1x AceMagic "Mini PC Intel 12th Gen N95(up to 3.40Ghz) 8GB DDR4 256GB M.2 SSD Mini Desktop Computer Windows 11 Pro Mini Computers Support 4K Dual Display/BT 4.2/ WiFi 5/USB 3.0/ Auto Power On"  https://www.amazon.com/dp/B0BS9VXH1N (dead link) which looks like [this Newegg link](https://www.newegg.com/p/1VK-0294-00407)
 
 Under Windows it reports:
 * 64 GB used of 238 GB "Storage"

@@ -5,7 +5,7 @@ Swapped battery, executed that mission with auto camera settings, 2s interval, 5
 * [[imagesets-bond_ave-2026-02-21-house-close-orbit]]
 * [[imagesets-bond_ave-2026-02-21-orbit]]
 * [[imagesets-bond_ave-2026-02-21-grid]]
-* 
+*
 ### Process changes
 I remembered I hadn't changed the autofocus settings in the web UI and couldn't find them in the app, so I enabled tap to focus and tried to pick spots where the ground was steadily in view. Possibly this was wildly destructive, we'll see. 
 ### Conditions and Camera Settings

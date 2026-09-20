@@ -17,4 +17,3 @@ This directory holds the first data-gathering wave for understanding the v1 Open
 2026-06-14 - imaged the SD Card to openmower latest. raspi-config set the hostname to kikuyu.
 
 Access under WSL with "ssh.exe openmower@kikuyu.local.symmatree.com" and it will use the OnePKey from 1Password.
-

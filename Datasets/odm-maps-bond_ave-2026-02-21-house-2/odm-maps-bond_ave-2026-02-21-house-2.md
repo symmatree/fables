@@ -19,8 +19,8 @@ Built from
 ## Commentary
 
 Variant of the 2026-02-21 house run with a **looser lasso** around the house (compared to [[odm-maps-bond_ave-2026-02-21-house]]). Same imagery and similar ODM settings; different boundary/crop.
-Textured model is MUCH better than [[odm-maps-bond_ave-2026-02-16]] - this is basically usable (the house itself) except that one wall looks icky. 
-I think I've been calling it the eastern wall but it's the North wall that ends up with the corner about 2m from the actual corner, and some wild brush and twigs projected onto it. 
+Textured model is MUCH better than [[odm-maps-bond_ave-2026-02-16]] - this is basically usable (the house itself) except that one wall looks icky.
+I think I've been calling it the eastern wall but it's the North wall that ends up with the corner about 2m from the actual corner, and some wild brush and twigs projected onto it.
 
 ![[Pasted image 20260228130932.png]]
 

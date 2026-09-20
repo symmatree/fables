@@ -87,12 +87,12 @@ Gathered on device per onboard-instructions.md. No changes were made; this is in
 
 **Suggested order of action (no changes made; for your approval):**
 
-1. **Serial forwarder for u-center (first step):**  
-   - Stop openmower.service so the container is not repeatedly starting and exiting (and so it is not holding `/dev/ttyAMA1` if it ever did).  
+1. **Serial forwarder for u-center (first step):**
+   - Stop openmower.service so the container is not repeatedly starting and exiting (and so it is not holding `/dev/ttyAMA1` if it ever did).
    - Fix `/etc/ser2net.yaml`: put every `connector:` value on a single line (e.g. `connector: serialdev,/dev/ttyAMA1,921600n81,local` for the ublox block). Restart ser2net and test from Windows: connect to `kikuyu:8900` with u-center (raw TCP). That gives "sky as seen by that GPS" without needing the full stack.
 
-2. **Stable stack (after you're ready):**  
-   - Set `ROS_MASTER_URI` for the openmower container (e.g. `ROS_MASTER_URI=http://localhost:11311` in the systemd service or in the image entrypoint) so the launch script does not hit "unbound variable" and the container can stay up.  
+2. **Stable stack (after you're ready):**
+   - Set `ROS_MASTER_URI` for the openmower container (e.g. `ROS_MASTER_URI=http://localhost:11311` in the systemd service or in the image entrypoint) so the launch script does not hit "unbound variable" and the container can stay up.
    - Then re-assess: try lock with current stack; if that works, you can defer upgrades. If not, consider updating images/params or moving to OpenMowerOS as in the discovery docs.
 
 3. **Upgrade path:** The discovery docs (openmower-architecture.md etc.) describe the newer OpenMowerOS and `/opt/stacks/openmower/`. Getting there would mean reflashing or a larger migration; that's a separate decision once the current state is stable and GPS is observable via u-center.

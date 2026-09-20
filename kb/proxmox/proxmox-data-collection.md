@@ -29,7 +29,7 @@ Node data is collected via the Proxmox REST API using the following steps:
    - `maxcpu`: Maximum CPU cores available
    - `status`: Node status (e.g., "online")
 
-   **Note on additional endpoints**: 
+   **Note on additional endpoints**:
    - The `proxmox.nodes(node_name).status.get()` endpoint is available if additional status information is needed beyond what `nodes.get()` provides.
    - The `proxmox.nodes(node_name).report.get()` endpoint is available and provides comprehensive system information, but it is relatively slow and produces voluminous output. It's useful for debugging but overkill for regular data collection.
 

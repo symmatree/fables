@@ -78,7 +78,7 @@ Uses `templates/laserjet.yaml`: password from 1Password item referenced by OnePa
 
 Fill in **Deploy target**, **Procedure**, and **Automation** as you decide each host's workflow.
 
-### raconteur 
+### raconteur
 
 - **Certs:**
   - `raconteur.ad.local.symmatree.com`

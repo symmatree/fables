@@ -8,7 +8,7 @@ Onboard 4in1 ESC. 5A continuous, 8A peak
 
 ## Firmware
 
-ESC firmware	
+ESC firmware
 O_H_5_48KHz_V0.19.hex Bluejay firmware
 
 
