@@ -1,0 +1,24 @@
+name: "pre-commit"
+# No `paths:` filter: a workflow skipped by path filtering never reports a
+# check, so it could not be required.
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 7 * * *" # Daily at 0700 UTC, to see if it is still green.
+
+jobs:
+  pre-commit:
+    runs-on: "ubuntu-latest"
+    permissions:
+      contents: "read"
+    steps:
+      - uses: "actions/checkout@v6"
+      - uses: pre-commit/action@v3.0.1
+        env:
+          # Fails when run --all-files against main, which is what CI does.
+          SKIP: "no-commit-to-branch"
+        with:
+          extra_args: "--color=never --all-files"

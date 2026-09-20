@@ -1,0 +1,78 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+# Device and tool exports, kept byte-faithful: Betaflight CLI dumps, EdgeTX
+# model files, ArduPilot parameter dumps and CAD exports are all written by
+# something else, and normalizing whitespace or line endings rewrites them
+# wholesale for no gain -- the CAD pair alone is 374k lines of pure CRLF churn.
+exclude: "^(Drones/.*/config/.*|kb/oak-d/.*\\.(step|stp|stl))$"
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # general text file...stuff.
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args:
+          - --fix=lf
+
+      # git repo defense
+      - id: check-added-large-files
+        # This repository stores manuals, datasets and flight logs; the largest
+        # committed file is 59.4 MB. The guard that is still worth having is
+        # against a push GitHub itself would refuse at 100 MB.
+        args:
+          - --maxkb=65536
+      - id: check-merge-conflict
+        args:
+          - --assume-in-merge
+      # Also checked by github but prevent locally.
+      - id: no-commit-to-branch
+
+      # filesystem checks
+      # not a strong position but I'd like to think about it.
+      - id: check-illegal-windows-names
+      - id: check-case-conflict
+      - id: check-symlinks
+
+      # Leaks and stuff
+      - id: detect-private-key
+
+      # Language specific
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+        args:
+          - --allow-multiple-documents
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.2
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.11.0-1
+    hooks:
+      - id: shfmt # prebuilt upstream executable
+
+  # Local because the alternative,
+  # https://github.com/koalaman/shellcheck-precommit requires docker.
+  - repo: local
+    hooks:
+      # Requires apt-get install shellcheck
+      - id: shellcheck
+        name: shellcheck
+        description: Test shell scripts with shellcheck
+        entry: shellcheck
+        language: python
+        types: [shell]
+        require_serial: true # shellcheck can detect sourcing this way
