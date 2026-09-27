@@ -20,6 +20,10 @@ Citations use short forms: [KB] = `facts/claude-transcripts/2026-06/2026-06-24-k
 [CVG] = `facts/claude-transcripts/2026-06/2026-06-24-ssh-notebooks/convergence-adjudication.md`;
 [CNV2] = `facts/claude-transcripts/2026-06/2026-06-24-knowledge-architecture/convergence-notes.md`;
 [DTKT] = `facts/claude-transcripts/2026-06/2026-06-24-ssh-notebooks/deploy-the-toolkit-into-the-place.md`.
+[IQ] = a live 2026-09 investigation in the `coordinator` repo into why the rekon10's in-flight
+stills are unusable (`analysis/image-quality-experiments.md`, `docs/rekon10/vibration-testing.md`).
+Unlike the citations above this is a working session, not an annotated and cross-adjudicated
+transcript, so anything resting on it sits in the proposed tier.
 Raw transcripts are at `facts/claude-transcripts/2026-06/2026-06-24-*/raw-transcript.txt`.
 
 ---
@@ -632,6 +636,68 @@ in the verification domain's relationship to its own analysis. Has not been
 independently converged in the dev domain, and resisting that merge is an
 instance of the principle itself. Keep as a named failure mode for the KB
 context; do not promote.
+
+**What the confirmed/disproven structure is FOR [IQ].** P7 names the mechanism in passing --
+"the confirmed/disproven structure removes the smooth manifold the conversation used to slide
+along" -- but not the discipline it serves, which came out sharply in a live investigation into
+why a drone's stills are unusable. Three parts, none of them individually novel, but the
+combination is what the structure exists to support:
+
+- **A design is *supposed* to assume things, documented, on arguments good enough to proceed on.**
+  That is not the failure mode, and treating it as one was this observer's error. The vibration
+  assumption on that airframe -- a hard-mounted camera cannot move much, and whole-body motion
+  large enough to matter would be obvious -- was legitimate design practice, and most of the
+  design's other assumptions held. Writing an assumption down is not a hedge against being wrong;
+  it is what makes being wrong **recoverable**, because when the empirical result finally
+  disagrees you can go find the premise again.
+- **An empirical result that contradicts the model means something believed true is false**, and
+  the investigation's whole job is to locate *which*. Learned from debugging code: if you were
+  right, it would work. This is the trigger that moves you into P7's heavy mode, and it is
+  sharper than "the feedback is slow" because it says what you are looking for.
+- **When no candidate is obvious, stop reasoning about the same data and go establish that a
+  subsystem does what you think it does** -- which usually means gathering more data, not thinking
+  harder. Re-analysing the same capture goes in circles; P5's active perturbation is *how* to test
+  a subsystem once chosen, and this is the rule for what to test when you have no hypothesis at
+  all. Being opportunistic first (likely candidates, cheap fixes, even fixes without full
+  analysis) is legitimate; subsystem verification is the fallback that always has a next step.
+
+Two corollaries that the grading tiers exist to protect. **"Confirmed" and "evidence" both mean
+*stop interrogating this*,** so they are earned late and cheaply claimed early -- and the cost of
+burying an assumption is asymmetric: buried-and-right costs nothing, buried-and-wrong costs
+everything downstream, silently, because you do not get an error, you get a line of inquiry that
+never starts. **An open question is not debt.** Some will never be answered because they stop
+mattering, and that is a success, not an outstanding balance: the entry is a marker saying *if
+this premise is the one that failed, come back here*.
+
+Not promoted: single domain, and sourced from a working session rather than an annotated and
+cross-adjudicated transcript, so it has none of the evidential discipline the confirmed
+principles above were held to. It is also arguably the union of P5 and P7 seen from inside an
+investigation rather than a principle of its own. Worth revisiting if it survives a second domain.
+
+**Envelope control bounds the investigation [IQ].** The counterpart to the above, and the part
+that says when you may stop. The goal is not to explain every observation or make every output
+good -- it is to find **a region of operating conditions that reliably produces acceptable
+results**, which is usually enough for the mission, and which then makes every subsequent
+experiment a narrow diff against the edges of that region rather than an open-ended search.
+Stated in that investigation as: not every picture off the drone has to be sharp; an island that
+reliably produces usable images is sufficient, and at minimum it converts a vague question into
+edge-testing.
+
+This reframes what the analysis is for, and it changes which questions matter. "Why is this blurry"
+is unbounded; "is there any configuration in which it is sharp, and where are that island's edges"
+terminates. It also supplies the cheapest useful experiment in a stuck investigation: establish
+that the sensor works *somewhere* -- at rest, on a bench, at a known distance -- before
+investigating the conditions under which it does not. On that airframe the equivalent step had been
+taken for one camera (its stills at rest on the ground were fine, which is what pointed the
+investigation at motion and vibration) and had *not* been taken for the other, whose camera could
+not at that point be shown to work at all.
+
+Relationship to the confirmed set: this is close to P7's "know which mode you are in", extended
+with a stopping condition, and it presupposes the fidelity-tier thinking of P1 in that an
+acceptable-result region is defined on observables rather than on internals. Not promoted for the
+same reasons as the entry above -- single domain, working-session provenance -- and because the
+claim that a bounded envelope is *sufficient* is a judgement about a particular mission rather
+than something demonstrated.
 
 **The full notebook/provenance tooling comparison** (`comparison-placement-schemes.md`,
 `design-intent.md`). Good design docs -- point-to-point configs, computed layout
