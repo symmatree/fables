@@ -2,6 +2,11 @@
 
 Hardware: [[GMKtec Nucbox G3 Plus N150 16GB]]
 
+**Storage caveat:** this is the host whose NVMe write latency collapsed under
+sustained write volume from 2026-09-24, wedging the box twice. See
+[[GMKtec Nucbox G3 Plus N150 16GB]] for the measurements and the hypothesis, and
+tiles#816.
+
 Proxmox Web UI: https://nuc-g3p-2.local.symmatree.com:8006 (no valid cert)
 
 ## Network Information
