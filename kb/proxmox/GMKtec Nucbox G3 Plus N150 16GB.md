@@ -90,7 +90,20 @@ that has trained down.
 with its own etcd plus a worker holding the write-heavy tier of a full LGTM stack
 (Mimir ingester WAL, the `mimir-kafka` ingest buffer, the compactor, and Loki's
 WAL, all on node-local `local-path` volumes). On the production cluster those same
-components are spread across three workers on three disks. Concentrating them is
-what took this box from the quietest in the fleet to the busiest.
+components are spread across three workers on three disks, and no production host
+carries both a control plane and that storage tier.
+
+It is the combination that matters, not any single component: `tiles-wk-2` holds
+the Mimir compactor, `mimir-kafka` and an ingester today and writes 23.8 GiB/day
+without trouble. What `nuc-g3p-2` had was the whole set *plus* a control plane with
+its own etcd, which took it from the quietest host in the fleet to the busiest.
+
+Per-VM measurement, 2026-10-15, from the guests' own node_exporter (GiB/day): the
+three production control planes write 31.9 / 28.8 / 20.9 -- clustered, because they
+are three members of one etcd cluster fsyncing the same raft entries -- while the
+workers scatter 23.8 / 9.5 / 6.9 according to what happens to live on them. Those
+reconstruct the host totals to within a consistent ~3.2 GiB/day of Proxmox itself
+plus the Alloy CT. So a host's write floor is set by having an etcd member, and a
+worker-only host skips it.
 
 Tracked in tiles#816.
