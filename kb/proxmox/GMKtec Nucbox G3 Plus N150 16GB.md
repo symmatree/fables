@@ -54,13 +54,36 @@ host dropped off the network and out of the Proxmox cluster), both with
 `nvme nvme0: I/O tag ... timeout, aborting req_op:WRITE` in the host journal.
 
 As of 2026-10-15, degraded again: write 8.2 ms and **read 48.8 ms**, against
-`nuc-g3p-1` at 0.52 ms and 0.21 ms on identical hardware.
+`nuc-g3p-1` at 0.52 ms and 0.21 ms.
+
+**The two drives are not the same model**, which weakens that comparison. From
+`node_nvme_info`:
+
+| host | model | serial | firmware |
+|---|---|---|---|
+| nuc-g3p-1 | `TWSC TSC3AN512E6-F2T60S` | TTSMA253SX05660 | SN13076 |
+| nuc-g3p-2 | `TWSC TSC3AN512-F2T60S` | TTSMA254AX18375 | SN13076 |
+
+Same firmware, an `E6` suffix on the healthy one, and serial prefixes from
+different batches. So "identical hardware, one sick one healthy" is not available
+as a control -- anything that differs per model (TMT thresholds, cache sizing,
+NAND bin) is unexcluded.
 
 ### What this is not
 
-- **Not thermal.** At 16x the write latency of its sibling, the NVMe sensors read
-  45.85 / 45.85 / 46.85 C against the healthy box's 44.85 / 44.85 / 46.85, and CPU
-  72 C against 73 C.
+- **Not thermal *by sensor temperature*, which is weaker than it sounds.** At 16x
+  the write latency of its sibling the NVMe sensors read 45.85 / 45.85 / 46.85 C
+  against the healthy box's 44.85 / 44.85 / 46.85, and CPU 72 C against 73 C. But
+  the drive's own thermal-management counters are very active: `smartctl -x` on
+  2026-10-07 showed **Thermal Temp. 1: 958,337 transitions over 142.1 h** and
+  **Thermal Temp. 2: 208,967 over 32.7 h**, with zero time at the Warning (90 C) or
+  Critical (95 C) composite thresholds. TMT1/TMT2 are separate, lower and
+  host-configurable, so the controller has been entering a reduced-performance
+  state constantly at temperatures the hwmon sensor reports as unremarkable.
+  Sampled twice 94 minutes apart, TMT2 was accumulating at ~3.6x its lifetime rate
+  at 45-46 C with the drive only 3.7% busy. **`nuc-g3p-1`'s TMT counters have never
+  been read**, and that one comparison would settle whether equal sensor
+  temperatures mean equal thermal behaviour.
 - **Not instantaneous load.** Latency moved about 40x while throughput stayed
   inside 0.2 - 1.3 MiB/s with no correlation.
 - **Not the kernel.** Both boxes ran 7.0.6-2-pve throughout the degradation;
@@ -78,11 +101,35 @@ Read latency being as bad as write latency does not by itself argue against a
 write-side mechanism: `read_time / reads_completed` includes queueing, so reads
 sitting behind very slow writes look slow without the read path being impaired.
 
-**What would settle it:** `nvme smart-log /dev/nvme0` on the host.
-`percentage_used` and `media_and_data_integrity_errors` low means cache/GC
-behaviour rather than a failing device; `data_units_written` gives lifetime volume
-to compare against `nuc-g3p-1`. `lspci -vv` would separately rule out a PCIe link
-that has trained down.
+**SMART says the device does not consider itself to be failing** (`smartctl -x`,
+2026-10-07, full output on tiles#816):
+
+```
+Percentage Used:                 10%
+Available Spare:                 100%   (threshold 1%)
+Media and Data Integrity Errors: 0
+Error Information Log Entries:   0      ("No Errors Logged")
+Critical Warning:                0x00
+Data Units Written:              26,151,611 [13.3 TB]
+Power On Hours:                  9,033
+Unsafe Shutdowns:                17 of 38 power cycles
+```
+
+Zero media errors, no spare consumed, nothing in the 64-entry error log, 10%
+endurance used. Notably the FLUSH/WRITE timeouts in the host journal produced **no
+device-side error entries at all** -- the commands did not fail, they did not
+complete in time. That is the signature of a slow drive rather than a broken one,
+and it supports the cache/GC reading over device failure.
+
+It also quantifies the load change: 13.3 TB over 9,033 power-on hours is a lifetime
+average of **~35 GB/day**, against the 49-100 GiB/day this host has run since
+2026-09-16. The recent load is several times what the drive has averaged across its
+life.
+
+**What is still unmeasured:** `nuc-g3p-1`'s TMT transition counters (same
+`smartctl -x`, no extra tooling) to test whether the two models throttle at
+different thresholds; and `lspci -vv` to rule out a PCIe link that has trained
+down.
 
 ### Why that host had an unusual profile
 
