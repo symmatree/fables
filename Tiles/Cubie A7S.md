@@ -138,8 +138,9 @@ three repos, each pinned by commit:
   prebuilt image because of blob licensing, so you build it yourself.
   `docs/benchmarks.md` has sbc-bench results.
 
-Talos 1.13 (tiles' current version) runs kernel 6.18.y, the same LTS line DockSeed
-tracks.
+Talos 1.13 and 1.14 are both on the 6.18 LTS line: the
+[v1.14.5 release notes](https://github.com/siderolabs/talos/releases/tag/v1.14.5) list
+Linux 6.18.58, one patch release behind DockSeed's 6.18.59 pin.
 
 **opentina-org**: Allwinner-community forks for the A733.
 [linux](https://github.com/opentina-org/linux) branch `tina-dev` is 6.18.14 with
