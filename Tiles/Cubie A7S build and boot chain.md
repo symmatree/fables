@@ -106,8 +106,47 @@ cd ~/a7s-build
 nohup setsid ./build.sh > ~/a7s-build.log 2>&1 < /dev/null &
 ```
 
-Started 2026-11-09 02:37 UTC. The first step builds the builder container from
-snapshot.debian.org.
+Ran 2026-11-09 02:37-03:06 UTC (29 min), all stages done. What each stage did at
+this commit:
+
+| Stage | What happened |
+|---|---|
+| builder | builder container built from snapshot.debian.org (pinned 2026-11-01) |
+| bootchain | **built from source** on the board: `u-boot-sunxi-with-spl.bin`, 1214141 B, sha256 `4d60771167ca9da247b29a5945be68485b6b87dc844332e36b293c40da9819e8`, radxa/u-boot `9da4b3e8` + series |
+| kernel | **downloaded, not built**: DockSeed release [`v6.18.62-R1`](https://github.com/DockSeed/a7s-linux-lts/releases/tag/v6.18.62-R1) (`linux-image-6.18.62-r1`, headers, `a7s-kernel-hook`), sha256-pinned, recipe `d1176934016f` |
+| wifi | AIC8800 DKMS package + 7 firmware files |
+| gpu-firmware | `rogue_36.56.104.183_v1.fw` + `LICENSE.powervr` |
+| orc, rootfs, image | Debian trixie minimal, 1792 MiB image, ext4 root at 16 MiB, boot chain at 128 KiB |
+| compress | single-threaded xz, about 14 min |
+
+Output: `~/a7s-build/out/a7s-trixie-minimal.img.xz`, 206912540 B, sha256
+`6a94253c44e13f6e581febf027861aa0c31c08e1b46daf40a866db654749d73b`. It contains
+non-redistributable vendor firmware, so it stays private.
+
+The kernel stage downloading a prebuilt release is new since the October docs, which
+described a source build on 6.18.59. Building the A733 kernel from source has not been
+exercised on the board yet. Talos needs that, through its own kernel build.
+
+### Temperatures under the build (heatsink + fan, vendor kernel)
+
+Five-minute samples:
+
+| UTC | Load | `cpub` / `cpul` C | cpufreq state (A55 / A76) | Caps MHz (A55 / A76) | Stage |
+|---|---|---|---|---|---|
+| 02:37 | 1.8 | 43.6 / 44.8 | 0 / 0 | 1794 / 2002 | builder |
+| 02:43 | 6.5 | 60.6 / 62.1 | 3/8 / 3/11 | 1508 / 1794 | bootchain compile |
+| 02:48 | 1.9 | 39.2 / 39.1 | 0 / 0 | 1794 / 2002 | rootfs |
+| 02:54-03:04 | 1.0-5.2 | 44.6-48.9 | 0 / 0 | 1794 / 2002 | image, compress |
+
+With all cores busy, the vendor kernel throttles at its 60 C passive trip even with
+cooling. DockSeed's kernel puts the passive trip at 90 C.
+
+### First boot of the DockSeed image
+
+Login is `a7s` with an empty password that must be changed at the first login, which
+happens on tty1 (display) or the serial console. SSH accepts logins only once a
+password is set (DockSeed README). Under this boot chain, the MAC comes from U-Boot's
+`ethaddr`, and with none stored it is random per boot.
 
 ## Building elsewhere
 
