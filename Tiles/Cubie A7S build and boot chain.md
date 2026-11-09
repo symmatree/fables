@@ -273,6 +273,42 @@ Run 1, 2026-11-09 09:39-13:53 UTC (4 h 13 min), failed:
 - Temperatures through the compile: 59-62.6 C, the vendor kernel's 60 C passive trip.
   A55 at 1404-1508 MHz (max 1794), A76 mostly 1508 (max 2002), load about 8.5.
 
+Run 2, 2026-11-09 14:41-22:44 UTC (8 h 03 min), succeeded, with an 8 GiB swapfile
+added (not in fstab, so gone at reboot):
+
+```sh
+sudo fallocate -l 8G /swapfile && sudo chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon -p 10 /swapfile
+```
+
+| Phase | UTC | Notes |
+|---|---|---|
+| compile | 14:42-18:29 | same pace as run 1; 59-63.5 C, same caps |
+| `pahole -J -j8` on `.tmp_vmlinux1` | 18:29-21:31 | 5.9 GB RSS, 13 GB virtual; zram full, up to 7.6 GB swap; CPU 73-79% idle, 10-18% iowait, swap-in 7-16 MB/s; single-threaded and in `D` state for most of it |
+| `vmlinux`, `Image`, modules + module BTF, dtbs | 21:31-22:36 | back to 8 cores at the trip point |
+| `kernel` stage (`modules_install`, export) | 22:36-22:44 | |
+
+The vendor kernel has no `/proc/pressure`, so the I/O numbers are from `vmstat` and
+`ps`.
+
+Output (`~/pkgs/_out/kernel`, 243 MB; copy in
+`datasets/cubie-a7s/talos-kernel/build-6.18.58-talos-a733-r1/` with the build and
+temperature logs):
+
+- `boot/vmlinuz`: `6.18.58-talos`, arm64 EFI-stub image, sha256
+  `b70b75e8a2d264be06f472b3dd908f1cf48b9a5bc35d03df0122b41d59d7d7a8`.
+- `dtb/allwinner/sun60i-a733-cubie-a7s.dtb`, sha256
+  `37a76a375d310edf142106b3b4f1b196857db058689d57e33bb0f9b088d7079c`.
+- `usr/lib/modules/6.18.58-talos/`: 424 modules, signed (`Module signature appended`).
+  `certs/` in the output is empty: the signing key stays in the BuildKit cache of the
+  `kernel-build` stage.
+- `System.map` has the fragment's built-in drivers: `axp20x_i2c`, MaxIO PHY,
+  `sun20i_ppu`, `sun60i_iommu`, `sun60i_a733_pcie`, the A733 USB2 / combo / PCIe PHYs,
+  `a733_pwm`, `sun60i_a733_dsu`. `tcpci`, `tcpci_rt1711h`, `onboard_usb_dev` are
+  modules.
+
+Nothing has booted this kernel yet.
+
 ## Building elsewhere
 
 - **The tiles JupyterHub pod cannot build it.** It has no container daemon. Rootless
