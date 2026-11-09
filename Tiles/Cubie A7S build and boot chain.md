@@ -148,6 +148,35 @@ happens on tty1 (display) or the serial console. SSH accepts logins only once a
 password is set (DockSeed README). Under this boot chain, the MAC comes from U-Boot's
 `ethaddr`, and with none stored it is random per boot.
 
+## Talos kernel: patch-series check
+
+Talos builds its kernel in [siderolabs/pkgs](https://github.com/siderolabs/pkgs):
+`kernel/prepare` fetches the kernel.org tarball, `kernel/build` applies every
+`kernel/build/patches/*.patch` in sorted order (`patch -p1`, default fuzz) and builds
+with `config-arm64`. Talos 1.14.5 is pkgs `f4bda77`: Linux 6.18.58, 15 patches.
+
+Checked 2026-11-09 by applying DockSeed's series (`a7s-linux-lts` `d1176934016f`, 264
+patches, written for 6.18.62) with `patch -p1 --fuzz=0`. Apply only; nothing was
+compiled.
+
+| Tree | Result |
+|---|---|
+| 6.18.62 (DockSeed's base) | 264 apply exactly |
+| 6.18.58 | 264 apply at fuzz 0; 7 at a line offset |
+| 6.18.58 + Talos's 15 patches first, then DockSeed's 264 | Talos's 15 apply; DockSeed's 264 apply at fuzz 0, the same 7 at an offset |
+
+The 7 offset patches are #5 `pinctrl-sunxi-fix-irq-bank-numbering-without-bank-a`,
+#137/#138 the stmmac MSI / channels-IRQ backports, #142
+`net-stmmac-retry-a-failed-rx-refill-from-a-timer`, #148
+`bluetooth-btusb-request-the-reset-gpio-only-where-a-handler-uses-it`, and #230/#231
+the PCI root-port error-reset / link-down backports. DockSeed's own policy treats
+an offset as "regenerate the patch". `patch` applies them with every context line
+matching.
+
+Still needed for a Talos kernel: the A733 / A7S options in Talos's `config-arm64`
+(DockSeed's defconfig is `kernel/6.18/config`) and a compile. The pkgs build runs in
+docker buildx, which this pod cannot run (no daemon).
+
 ## Building elsewhere
 
 - **The tiles JupyterHub pod cannot build it.** It has no container daemon. Rootless
