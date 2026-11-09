@@ -238,6 +238,41 @@ is a scheduler policy choice.
   `metal-arm64` image and installer. image-factory cannot take a custom kernel, so
   the installer is served from our own registry.
 
+## Talos kernel build (board)
+
+Docker from Debian trixie (`docker.io` / `docker-cli` 26.1.5, `docker-buildx` 0.13.1;
+the install adds `containerd`, `runc`, `tini` and nothing else):
+
+```sh
+sudo apt-get install -y --no-install-recommends docker.io docker-cli docker-buildx
+sudo usermod -aG docker radxa
+# the default `docker` driver fails with "requested experimental feature mergeop has
+# been disabled ... only enabled with containerd image store backend"
+docker buildx create --name local --use
+```
+
+pkgs tree: DockSeed's series renamed `1001-a733-*` .. `1264-a733-*` so it sorts after
+Talos's 15, and `config-arm64` replaced by the merged config:
+
+```sh
+git clone https://github.com/siderolabs/pkgs ~/pkgs && cd ~/pkgs && git checkout f4bda77
+# copy the renamed patches into kernel/build/patches/, the config to kernel/build/config-arm64
+nohup bash -c 'time make local-kernel PLATFORM=linux/arm64 DEST=_out/kernel PROGRESS=plain' \
+  > ~/talos-kernel.log 2>&1 < /dev/null &
+```
+
+Run 1, 2026-11-09 09:39-13:53 UTC (4 h 13 min), failed:
+
+- All 279 patches applied; the hardening check passed; compile started 09:57.
+- `vmlinux.o` linked at 13:08. `pahole -J -j8` (BTF for `.tmp_vmlinux1`) was
+  OOM-killed at 13:47: 6.1 GB RSS, 10.9 GB virtual. The board has 7.7 GiB RAM and
+  4 GiB of swap, all of it zram. The link went on without BTF and `resolve_btfids`
+  failed with `load BTF from vmlinux.unstripped: Invalid argument`.
+- The failed step is one BuildKit `RUN`, so the objects compiled before it are not
+  cached for a rerun.
+- Temperatures through the compile: 59-62.6 C, the vendor kernel's 60 C passive trip.
+  A55 at 1404-1508 MHz (max 1794), A76 mostly 1508 (max 2002), load about 8.5.
+
 ## Building elsewhere
 
 - **The tiles JupyterHub pod cannot build it.** It has no container daemon. Rootless
