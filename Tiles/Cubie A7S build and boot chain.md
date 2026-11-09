@@ -173,9 +173,70 @@ the PCI root-port error-reset / link-down backports. DockSeed's own policy treat
 an offset as "regenerate the patch". `patch` applies them with every context line
 matching.
 
-Still needed for a Talos kernel: the A733 / A7S options in Talos's `config-arm64`
-(DockSeed's defconfig is `kernel/6.18/config`) and a compile. The pkgs build runs in
-docker buildx, which this pod cannot run (no daemon).
+## Talos kernel: config
+
+Files are in `datasets/cubie-a7s/talos-kernel/`:
+
+- `a733-cubie-a7s.fragment`: the options added to Talos's config, with a comment
+  per group.
+- `config-arm64`: Talos's `config-arm64` (pkgs `f4bda77`) plus the fragment,
+  expanded with `merge_config.sh` + `olddefconfig` in the patched 6.18.58 tree
+  (Talos's 15 patches, then DockSeed's 264).
+- `config-arm64.diff-vs-talos-f4bda77`: the diff against Talos's file.
+- `apply-series.sh`: applies a `series` file at fuzz 0 and reports exact / offset /
+  fail per patch.
+
+How it was chosen: the options set (`y`/`m`) in DockSeed's expanded config but not in
+Talos's number 244, mostly distro choices (filesystems, Bluetooth, sound, media, debug).
+Talos already has the generic Allwinner drivers this board uses: `MMC_SUNXI`,
+`STMMAC_ETH` + `DWMAC_SUN55I`/`SUN8I`/`SUNXI`, `MFD_AXP20X`, `REGULATOR_AXP20X`,
+`RTC_DRV_SUN6I`, `SUN8I_THERMAL`, `SUNXI_WATCHDOG`, `NVMEM_SUNXI_SID`,
+`ARM_ALLWINNER_SUN50I_CPUFREQ_NVMEM`, `BLK_DEV_NVME`, `USB_DWC3`, `PCIE_DW_HOST`.
+The fragment adds what a headless node needs from the rest:
+
+| Area | Options |
+|---|---|
+| PMIC on I2C (AXP318W) | `MFD_AXP20X_I2C` |
+| Power domains, IOMMU | `SUN20I_PPU`, `SUN60I_IOMMU` |
+| GbE PHY (MaxIO MAE0621A) | `MAXIO_PHY` |
+| PCIe / NVMe | `PCIE_SUN60I_A733`, `PHY_SUN60I_A733_PCIE_COMBO` |
+| USB | `PHY_SUN60I_A733_USB2`, `PHY_SUN60I_A733_COMBO`, `USB_ONBOARD_DEV` (m, CH334 hub), `TYPEC_TCPM`/`TCPCI`/`RT1711H` (m) |
+| Fan PWM | `PWM_SUN60I_A733` |
+| Thermal | `IDLE_INJECT`, `CPU_IDLE_THERMAL` (idle-injection cooling on the CPU zones; the zones use `step_wise`) |
+| DSU frequency | `ARM_SUN60I_A733_DSU_DEVFREQ` |
+
+The A733 clock and pinctrl drivers from the series (`SUN60I_A733_*CCU`,
+`PINCTRL_SUN60I_A733`, `_R`) and `MMC_HSQ` default to `y` with Talos's config.
+The result differs from Talos's file only in the options above and the toolchain
+version lines (this run used conda-forge clang 23.1.4 and Ubuntu pahole 1.25;
+Talos's toolchain has clang 22.1.8 and pahole 1.31). pkgs' `make kernel-olddefconfig`
+rewrites those lines in Talos's own toolchain.
+
+Not added: display / GPU / NPU (`DRM_SUN60I_*`, `DRM_POWERVR`, `DRM_ETNAVIV`), sound,
+camera, IR, Wi-Fi (AIC8800 is out of tree), `SPI_SUN6I`. Also left at Talos's default
+is `ENERGY_MODEL`. DockSeed enables it, with a measured `dynamic-power-coefficient` in
+the device tree, so that Energy Aware Scheduling runs across the A55 / A76 split. It
+is a scheduler policy choice.
+
+`arch/arm64/boot/dts/allwinner/Makefile` in the patched tree has
+`dtb-$(CONFIG_ARCH_SUNXI) += sun60i-a733-cubie-a7s.dtb`. Talos builds dtbs for arm64
+(`make dtbs`), so the board's dtb comes out of the Talos kernel build.
+
+## Talos build: what it looks like
+
+- **Kernel** (siderolabs/pkgs, `make kernel`): `docker buildx` with the `bldr`
+  frontend (`# syntax = ghcr.io/siderolabs/bldr:...`). That needs BuildKit, so
+  docker + buildx, not podman. `kernel/build/pkg.yaml` takes `ARCH` from the build
+  platform and sets `LLVM=1` with no `CROSS_COMPILE`, so an arm64 kernel builds in an
+  arm64 container. On an arm64 host that is native. On an x86 host buildx runs the
+  arm64 stages under qemu-user emulation. The stage runs `make`, `make modules`,
+  `make dtbs`, and a `kernel-hardening-checker` pass over the config.
+- **Overlay**: Go, cross-compiles on any host. Modeled on `sbc-allwinner`'s Pine64
+  installer: write `u-boot-sunxi-with-spl.bin` at 128 KiB, copy the dtb, set kernel
+  args, and set a partition offset past the end of the boot chain (1314 KiB).
+- **Image** (Talos imager): assembles the kernel, the overlay and Talos into a
+  `metal-arm64` image and installer. image-factory cannot take a custom kernel, so
+  the installer is served from our own registry.
 
 ## Building elsewhere
 
