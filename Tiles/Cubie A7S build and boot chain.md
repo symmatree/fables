@@ -316,7 +316,7 @@ in `datasets/cubie-a7s/talos-kernel/build-6.18.58-talos-a733-r1/provenance/`.
 |---|---|
 | Build host OS | Radxa `radxa-a733_trixie_cli_t6` (`rsdk-t6` release), vendor kernel 6.6.98-5-aw2511, on microSD; its manifest, config and sha512sums are in `provenance/` |
 | Host packages added | `podman` 5.4.2 (DockSeed build only); `docker.io` + `docker-cli` 26.1.5+dfsg1-9+deb13u1, `docker-buildx` 0.13.1+ds1-3, pulling in `containerd` 1.7.24~ds1-6+deb13u1, `runc` 1.1.15+ds1-2+b4, `tini` 0.19.0-3+b8 (Debian trixie / trixie-security; no upgrade run) |
-| BuildKit | `docker buildx create --name local --use`, image `moby/buildkit:buildx-stable-1`, pulled 2026-11-09; digest not yet recorded (it is in the Radxa card's docker store) |
+| BuildKit | `docker buildx create --name local --use`, image `moby/buildkit:buildx-stable-1` pulled 2026-11-09 = `moby/buildkit@sha256:c5f8862f52499773af85bc07695b2379ef08e8002352b0df2c4864c91d78dabe`, buildkitd v0.34.2 (`8c579433`) |
 | Host memory | 7.7 GiB RAM, 4 GiB zram, plus an 8 GiB swapfile added for run 2 |
 | pkgs | `siderolabs/pkgs` `f4bda77` (Talos 1.14.5), unmodified except the two below; toolchain and bldr images as pinned there |
 | `kernel/build/patches/` | Talos's 15, plus DockSeed `a7s-linux-lts` `d1176934016f` `kernel/6.18/series` (264) renamed `1001-a733-*`..`1264-a733-*` by `stage-patches.sh`; per-file sha256 in `patches-renamed.sha256` |
@@ -416,6 +416,56 @@ reboot: the service succeeds and REG7 reads 0.
 On a Talos disk the counter has no effect: per DockSeed's safe-mode patch, past the
 limit U-Boot reruns its normal scan and boots `extlinux-fallback.conf` only on a disk
 that has one; a disk without it boots normally.
+
+## Talos image (v1.14.5, r1)
+
+Built 2026-11-10 on the Radxa build card (same host as kernel build r1). Sources are
+in dotfiles-symm `cubie-a7s/`; outputs, profile and logs in
+`datasets/cubie-a7s/talos-image-v1.14.5-r1/`.
+
+1. **Kernel image.** Build r1's output (`kernel.tar.zst`) packaged as an OCI layout
+   with `FROM scratch` / `COPY kernel/ /` (`docker buildx build --platform linux/arm64
+   --output type=oci,dest=~/cubie-kernel-oci,tar=false`). Manifest
+   `sha256:53978d4b6d224a7c52eae4ca7aebe83ae8bda927b81d9e8ed50d209facb3765f`. No
+   recompile.
+2. **Initramfs.** `siderolabs/talos` `v1.14.5` (`dad8d3e`), unmodified:
+
+   ```sh
+   make initramfs PLATFORM=linux/arm64 PKG_KERNEL=cubie-kernel PROGRESS=plain \
+     TARGET_ARGS="--build-context cubie-kernel=oci-layout:///home/radxa/cubie-kernel-oci@sha256:53978d4b..."
+   ```
+
+   42 min, 12:41-13:23 UTC; board stayed at 36-38 C. `initramfs-arm64.xz` (zstd
+   despite the name), sha256
+   `6bf1b909fb4103ee34e767d01d69cb25cc7b93c7d49bd76f051f0fced361dcf8`. Its root has
+   327 modules under `6.18.58-talos` (the ones `hack/modules-arm64.txt` lists);
+   `dwmac-sun55i.ko` is byte-identical to build r1's. Not in the list, so not in the
+   initramfs: `onboard_usb_dev`, `tcpm`, `tcpci`, `tcpci_rt1711h`.
+3. **Overlay.** `cubie_a7s` from dotfiles-symm `cubie-a7s/talos-overlay/`, with
+   DockSeed's `u-boot-sunxi-with-spl.bin` (sha256 `4d607711...`) and build r1's dtb.
+   OCI manifest `sha256:ae136783494abebde5c0abba8eff943deef68fced3e78349693724b383423df9`.
+4. **Disk image.** Sidero's imager, unmodified:
+   `ghcr.io/siderolabs/imager@sha256:ef33373986bb0765132f0558ea43c9f8fee2c3839f1d1a4232693b77092d7350`
+   (`v1.14.5`), run `--privileged -v /dev:/dev` with `profile.yaml` on stdin (kernel,
+   initramfs and overlay from local paths, base installer
+   `ghcr.io/siderolabs/installer-base:v1.14.5`, GRUB, raw `.xz`). 4 min.
+
+`metal-arm64.raw.xz`: 107299476 B, sha256
+`7cd1e8b988e698e29cd4626c585423dc7a04e3709b20310bdc21c9cc3dc9c274`, 2370830336 B
+raw (the imager raised the profile's disk size for 1.14's 2 GB BOOT partition).
+Checked in the raw image:
+
+- U-Boot at sector 256 is byte-identical to DockSeed's file.
+- GPT: EFI (100 MiB) from sector 34816 (17 MiB), BIOS (1 MiB), BOOT (2 GB xfs), META
+  (1 MiB). STATE and EPHEMERAL are created at first boot.
+- EFI partition: GRUB at `EFI/boot/BOOTAA64.efi`, dtb at
+  `dtb/allwinner/sun60i-a733-cubie-a7s.dtb` (build r1's).
+- Kernel command line: `talos.platform=metal console=ttyS0,115200
+  sysctl.kernel.kexec_load_disabled=1 talos.dashboard.disabled=1` plus Talos's
+  defaults (`module.sig_enforce=1` among them).
+
+The BOOT xfs does not mount under the vendor 6.6 kernel (made with Talos's
+`lts_6.18` mkfs options). Not booted yet.
 
 ## Building elsewhere
 
