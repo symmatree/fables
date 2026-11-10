@@ -382,6 +382,18 @@ hardware guidance asks for p99 WAL fsync under 10 ms.
 not cleared on these boots, so after the boot limit U-Boot boots
 `extlinux-fallback.conf`. A boot of the DockSeed kernel clears it.
 
+The RTC driver exposes the eight GP_DATA registers as nvmem
+(`/sys/devices/platform/soc/7090000.rtc/nvmem0/nvmem`, 32 bytes, "Battery backed");
+REG7 is at offset 28 and read `0xb0010001` (magic `0xB001`, count 1) on the first
+Talos-kernel boot. On the test card a drop-in,
+`/etc/systemd/system/a7s-boot-good.service.d/10-nvmem.conf`, runs DockSeed's
+`devmem` command and otherwise writes 4 zero bytes there with `dd`. Checked across a
+reboot: the service succeeds and REG7 reads 0.
+
+On a Talos disk the counter has no effect: per DockSeed's safe-mode patch, past the
+limit U-Boot reruns its normal scan and boots `extlinux-fallback.conf` only on a disk
+that has one; a disk without it boots normally.
+
 ## Building elsewhere
 
 - **The tiles JupyterHub pod cannot build it.** It has no container daemon. Rootless
