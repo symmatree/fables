@@ -467,6 +467,46 @@ Checked in the raw image:
 The BOOT xfs does not mount under the vendor 6.6 kernel (made with Talos's
 `lts_6.18` mkfs options). Not booted yet.
 
+### Per-board image: cubie-1
+
+The same build with the board's address in the kernel arguments (tiles
+`docs/bare-metal-nodes.md#cubie-a7s-static-address`): `profile-cubie-1.yaml` is
+`profile.yaml` plus
+
+```yaml
+customization:
+  extraKernelArgs:
+    - net.ifnames=0
+    - ip=10.0.128.61::10.0.0.1:255.255.0.0:cubie-1:eth0:off:10.0.99.1::10.0.99.1
+```
+
+Same imager, kernel, initramfs and overlay as above. Output in
+`datasets/cubie-a7s/talos-image-v1.14.5-r1-cubie-1/`: `metal-arm64.raw.xz` 107299536 B,
+sha256 `c005806e728bb35b5335516815747a13247874610826eae494ed9e1a44659dc5`; GRUB's
+`linux` line ends `... proc_mem.force_override=never net.ifnames=0 ip=10.0.128.61::...`.
+Not booted yet.
+
+## Vendor-kernel benchmarks (2026-11-10)
+
+Radxa build card, vendor kernel 6.6.98-5-aw2511, heatsink and fan, idle otherwise.
+Packages added for this (not used by any build): `7zip` 25.01+dfsg-1~deb13u2,
+`sysbench` 1.0.20+ds-7+b1. Script and log: `~/bench.sh`, `~/bench-vendor.log` on the
+card. Core pinning with `taskset`: A55 = cpu0-5, A76 = cpu6-7.
+
+| Test | Result (7-Zip: total rating, MIPS) |
+|---|---|
+| `7z b`, all 8 cores | 14569 (compress 9288, decompress 19849) |
+| `7z b`, 2x A76 | 6668 |
+| `7z b`, 6x A55 | 10683 |
+| `7z b -mmt1`, 1x A76 | 3283 |
+| `7z b -mmt1`, 1x A55 | 2023 |
+| sysbench cpu, 1x A76 / 1x A55 / all | 2222.54 / 904.48 / 9736.31 events/s |
+| sysbench memory, 1 thread / 8 threads | 10170.58 / 31570.76 MiB/s |
+
+Peak SoC sensor readings during the runs: 53.7 C. These are 7-Zip 25.01 figures;
+sbc-bench's published Cubie A7S numbers (7-Zip MT ~11300, ST 2480-2604) come from
+its own 7-Zip build, so the two are not the same measurement.
+
 ## Building elsewhere
 
 - **The tiles JupyterHub pod cannot build it.** It has no container daemon. Rootless
