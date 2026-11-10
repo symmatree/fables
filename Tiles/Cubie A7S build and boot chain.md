@@ -309,6 +309,35 @@ temperature logs):
 
 Nothing has booted this kernel yet.
 
+## Test card: DockSeed image + Talos kernel
+
+`vmlinuz` from pkgs is an EFI zboot image (`CONFIG_EFI_ZBOOT`, zstd payload), which
+U-Boot's extlinux `booti` cannot boot. The raw `Image` is the payload: the zboot
+header has `zimg` at offset 4, the payload offset and size as le32 at 8 and 12, and
+the compression name at 24. Extracted, it is 75563008 B with the arm64 `ARMd` magic;
+U-Boot's `kernel_addr_r` (0x40080000) plus that size ends below `fdt_addr_r`
+(0x4FA00000). DockSeed's U-Boot binary also carries `bootefi` and `bootmeth_efi`
+(from its strings; not exercised).
+
+`a7s-tiles-test.img.xz` in `datasets/cubie-a7s/` (260746040 B, sha256
+`2743469df359544b33e699cefb9e7cf0f32d78dbf652fd69956d08b395060ebd`) is
+`a7s-trixie-minimal.img.xz` with, on the root partition (loop-mounted on the board,
+changes made with `chroot`):
+
+- `a7s`: the session's `cubie_ed25519` public key in `authorized_keys`, password
+  field `*` (key-only, no console login), expiry cleared, `NOPASSWD` sudo in
+  `/etc/sudoers.d/90-a7s-tiles-test`. This replaces DockSeed's expired empty password.
+- `/etc/systemd/network/10-cubie-mac.link`: `OriginalName=eth0` gets
+  `40:fe:0d:00:08:03`, with `99-default.link`'s naming policies. NetworkManager
+  keeps the udev-set MAC by default.
+- `/boot/Image-6.18.58-talos`, `/boot/sun60i-a733-cubie-a7s-6.18.58-talos.dtb`,
+  `/usr/lib/modules/6.18.58-talos` (`depmod` run), and an extlinux label `talos`.
+  The default label stays DockSeed's `a7s`; `extlinux-fallback.conf` is untouched.
+
+Switching to the Talos kernel is changing `default a7s` to `default talos`. After
+three failed boots U-Boot's `altbootcmd` boots `extlinux-fallback.conf`, which is
+DockSeed's kernel.
+
 ## Building elsewhere
 
 - **The tiles JupyterHub pod cannot build it.** It has no container daemon. Rootless
