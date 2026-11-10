@@ -307,6 +307,28 @@ temperature logs):
   `a733_pwm`, `sun60i_a733_dsu`. `tcpci`, `tcpci_rt1711h`, `onboard_usb_dev` are
   modules.
 
+### Provenance of build r1
+
+Everything that went into `build-6.18.58-talos-a733-r1`. Scripts and checksums are
+in `datasets/cubie-a7s/talos-kernel/build-6.18.58-talos-a733-r1/provenance/`.
+
+| Input | Identity |
+|---|---|
+| Build host OS | Radxa `radxa-a733_trixie_cli_t6` (`rsdk-t6` release), vendor kernel 6.6.98-5-aw2511, on microSD; its manifest, config and sha512sums are in `provenance/` |
+| Host packages added | `podman` 5.4.2 (DockSeed build only); `docker.io` + `docker-cli` 26.1.5+dfsg1-9+deb13u1, `docker-buildx` 0.13.1+ds1-3, pulling in `containerd` 1.7.24~ds1-6+deb13u1, `runc` 1.1.15+ds1-2+b4, `tini` 0.19.0-3+b8 (Debian trixie / trixie-security; no upgrade run) |
+| BuildKit | `docker buildx create --name local --use`, image `moby/buildkit:buildx-stable-1`, pulled 2026-11-09; digest not yet recorded (it is in the Radxa card's docker store) |
+| Host memory | 7.7 GiB RAM, 4 GiB zram, plus an 8 GiB swapfile added for run 2 |
+| pkgs | `siderolabs/pkgs` `f4bda77` (Talos 1.14.5), unmodified except the two below; toolchain and bldr images as pinned there |
+| `kernel/build/patches/` | Talos's 15, plus DockSeed `a7s-linux-lts` `d1176934016f` `kernel/6.18/series` (264) renamed `1001-a733-*`..`1264-a733-*` by `stage-patches.sh`; per-file sha256 in `patches-renamed.sha256` |
+| `kernel/build/config-arm64` | `datasets/cubie-a7s/talos-kernel/config-arm64`, sha256 `4927b4317e4d44c90fd8b5ff12eb50c463cdedee4cdd436074f07ac035e06c81`; made by `make-config.sh` from Talos's file (sha256 `4c7fb4e8...7109587`) and the fragment (sha256 `77db57d9...b1e2bd0`) on the pod with conda-forge clang 23.1.4 and Ubuntu pahole 1.25. The build's own `make` re-syncs it against Talos's clang 22.1.8 / pahole 1.31 |
+| Command | `make local-kernel PLATFORM=linux/arm64 DEST=_out/kernel PROGRESS=plain` |
+| Output | `kernel.tar.zst` of `_out/kernel`, sha256 in `kernel.tar.zst.sha256` |
+
+Manual steps on the host, in order: `apt-get update`; installs above; `usermod -aG
+docker radxa`; `buildx create`; clone pkgs and checkout; scp patches and config;
+run 1; `fallocate`/`mkswap`/`swapon` 8 GiB `/swapfile`; run 2. The module signing
+key exists only in that BuildKit cache.
+
 Nothing has booted this kernel yet.
 
 ## Test card: DockSeed image + Talos kernel
@@ -322,7 +344,8 @@ U-Boot's `kernel_addr_r` (0x40080000) plus that size ends below `fdt_addr_r`
 `a7s-tiles-test.img.xz` in `datasets/cubie-a7s/` (260746040 B, sha256
 `2743469df359544b33e699cefb9e7cf0f32d78dbf652fd69956d08b395060ebd`) is
 `a7s-trixie-minimal.img.xz` with, on the root partition (loop-mounted on the board,
-changes made with `chroot`):
+changes made with `chroot`, by `provenance/test-card-mkimg.sh`; compressed with
+`xz -T0 -6`):
 
 - `a7s`: the session's `cubie_ed25519` public key in `authorized_keys`, password
   field `*` (key-only, no console login), expiry cleared, `NOPASSWD` sudo in
