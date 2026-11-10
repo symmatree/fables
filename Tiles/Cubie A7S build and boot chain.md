@@ -356,6 +356,27 @@ Talos kernel (`6.18.58-talos`), `default talos`: up in about 2 minutes.
 | Other | PCIe root port `0000:00:00.0`, `sunxi-wdt`, `dsu` devfreq, `pwmchip0`, `rtc0`; xHCI / EHCI / OHCI, `onboard_usb_dev`, `tcpci_rt1711h` loaded |
 | Not there | no `/dev/mem` (Talos config); no `binfmt_misc`; no `zram` module (zram-generator fails, so no swap) |
 
+### microSD fsync (etcd-style fio)
+
+Talos kernel, the test card (`SD64G`, manfid `0x000027`, oemid `0x5048`, date
+06/2026, SDR104), ext4 `noatime`, board idle. fio 3.39 from Debian:
+
+```sh
+fio --rw=write --ioengine=sync --fdatasync=1 --directory=. --size=22m --bs=2300 --name=etcd
+```
+
+| Run | p50 | p90 | p99 | p99.9 | max | IOPS |
+|---|---|---|---|---|---|---|
+| 1 | 3.75 ms | 5.7 ms | 16.2 ms | 61 ms | 2429 ms | 241 |
+| 2 | 3.69 ms | 5.9 ms | 16.5 ms | 52 ms | 107 ms | |
+| 3 | 3.52 ms | 5.5 ms | 16.5 ms | 52 ms | 63 ms | |
+
+For comparison, tiles' etcd `etcd_disk_wal_fsync_duration_seconds` over the day
+to 2026-11-10 12:04 UTC (Mimir, `histogram_quantile` over 1 d rates): p50 1.5 /
+1.0 / 2.3 ms and p99 63 / 278 / 7.9 ms for `tiles-cp-1` / `-2` / `-3`. fio on an
+idle board and etcd's own WAL under cluster load are different workloads. etcd's
+hardware guidance asks for p99 WAL fsync under 10 ms.
+
 `a7s-boot-good.service` fails under the Talos kernel: it clears U-Boot's boot counter
 (RTC `GP_DATA_REG7`) with `busybox devmem`, and there is no `/dev/mem`. The counter is
 not cleared on these boots, so after the boot limit U-Boot boots
