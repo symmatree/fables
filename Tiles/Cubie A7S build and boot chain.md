@@ -338,6 +338,29 @@ Switching to the Talos kernel is changing `default a7s` to `default talos`. Afte
 three failed boots U-Boot's `altbootcmd` boots `extlinux-fallback.conf`, which is
 DockSeed's kernel.
 
+### First boots (2026-11-10)
+
+DockSeed kernel (`6.18.62-r1`), first boot: up in about a minute at 10.0.7.226 (the
+MAC pin held), key login and sudo work, root grown to 58 GB, no failed units. First
+boot rewrites the disk ID (`a7s-root-identity`) and the `root=PARTUUID=` of every
+extlinux label, the added `talos` one included (`a7530001` became `f68f3d29`).
+
+Talos kernel (`6.18.58-talos`), `default talos`: up in about 2 minutes.
+
+| Area | Under the Talos kernel |
+|---|---|
+| Ethernet | `end0`, `dwmac-sun55i` (module), 1000/full, pinned MAC |
+| SD | `SD64G`, SDR104 at 200 MHz |
+| CPU | 8 cores; `cpufreq-dt` with all OPPs (A55 to 1794, A76 to 2002 MHz); `psci_idle`, 3 states |
+| Thermal | 5 zones, `step_wise`; trips 60 active (fan), 90 / 100 passive, 110 critical; cooling devices `cpufreq-cpu0/6`, `idle-cpu2..7`, `pwm-fan` |
+| Other | PCIe root port `0000:00:00.0`, `sunxi-wdt`, `dsu` devfreq, `pwmchip0`, `rtc0`; xHCI / EHCI / OHCI, `onboard_usb_dev`, `tcpci_rt1711h` loaded |
+| Not there | no `/dev/mem` (Talos config); no `binfmt_misc`; no `zram` module (zram-generator fails, so no swap) |
+
+`a7s-boot-good.service` fails under the Talos kernel: it clears U-Boot's boot counter
+(RTC `GP_DATA_REG7`) with `busybox devmem`, and there is no `/dev/mem`. The counter is
+not cleared on these boots, so after the boot limit U-Boot boots
+`extlinux-fallback.conf`. A boot of the DockSeed kernel clears it.
+
 ## Building elsewhere
 
 - **The tiles JupyterHub pod cannot build it.** It has no container daemon. Rootless
