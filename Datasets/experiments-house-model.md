@@ -33,6 +33,9 @@ One row per run. Fill in blanks from map docs and memory; question marks where w
 | [[odm-maps-bond_ave-2026-02-21-house]] | [[imagesets-bond_ave-2026-02-21-grid]], [[imagesets-bond_ave-2026-02-21-orbit]], [[imagesets-bond_ave-2026-02-21-house-close-orbit]] | Same plan as 02-16 (25 m, 20/10 km/h). Close-orbit: manual waypoints within tree line, 5 km/h. See [[imagesets-bond_ave-2026-02-21-flight]]. GSD 1.0 cm | Tight crop; feature-quality ultra, pc-quality high, use-3dmesh true | Tight cutline -> degenerate spa geometry; north wall insane + twigs projected; camera positions poor on north side |
 | [[odm-maps-bond_ave-2026-02-21-house-2]] | Same as house | Same | Looser lasso + min_num_features: 30000 (vs default 10000 in house); bad camera poses still outside this boundary | **Best result so far.** Basically usable except north wall: corner ~2m off, twigs projected on texture. Orthophoto a little soupy, waviness near water feature. 3x more features -> 2.6x more points, 21 more shots reconstructed (400 vs 379) |
 | [[odm-maps-bond_ave-2026-02-21-uncrop/odm-maps-bond_ave-2026-02-21-uncrop]] | Same as house | Same | auto_boundary: true (no manual boundary); min_num_features: 30000; dem_gapfill_steps: 0; dtm: false. Otherwise same as house-2 | **Worse than house-2 on every metric.** 392/446 shots (vs 400), GPS ce90 2.43 (vs 1.57), track length 3.35. Auto-boundary was 4x larger than house-2 but reconstructed less area (13947 vs 14959 m2). Many images well-placed in house-2 had 14-38 m displacements in uncrop. Wider boundary introduced noise, not stability. |
+| `bond-2026-02-21-house-2-odm362` (cluster, `mapping-sim/runs/` on the datasets share) | Same as house | Same | house-2's options on ODM 3.6.2 (house-2 was 3.5.6), via the tiles `mapping-sim-imageset` workflow; `opensfm/` kept | 394/446 shots; median horizontal displacement 1.42 m (house-2: 0.85 m); GPS avg error 3.04 m. Grid DJI_0010-0019 placed 17-44 m and 35-73 deg off, as a group, resected last with 11-32 inliers; the grid east of E 40 m bent down (median dz -3.2 m). See Reconstruction quality. |
+| `bond-2026-02-21-house-2-odm362-prune0009-0020` | The above minus grid DJI_0009-0020 (434 images) | Same | Same | 381/434 shots; median / p90 horizontal displacement 0.59 / 1.04 m; GPS avg error 1.11 m; east-side bend gone. New outliers 7-25 m off, all placed with 10-39 inliers: DJI_0819-0821, 0841, 0859, 0939, 0990, 0008. |
+| `bond-2026-02-21-house-2-odm362-prune-min40` | Same 434, with every match to close-orbit DJI_0635/0636 removed | Same | Features and matches reused from the run above; `resection_min_inliers: 40` in `opensfm/config.yaml` | Running (Argo `mapping-sim-imageset-744mb`, 2026-11-14). |
 
 *Mission params: 02-21 grid/orbit used the same DroneLink plan as 02-16. Key collection differences were autofocus change mid-flight and camera settings; see [[imagesets-bond_ave-2026-02-21-flight]]. We still want structured mission params from DroneLink recorded locally (see issue #343).*
 
@@ -77,7 +80,7 @@ Each topic tracks confirmed findings, current theories, disproven ideas, and nex
 **Confirmed:**
 
 - **Autofocus locks onto treetops, not ground.** Spot-check of NE/north-wall images confirms focus is consistently on the tops of trees (twigs = highest-frequency signal in frame) rather than the ground. Ground features -- including human-made structures visible in orbit and some grid images -- are slightly soft. One orbit image (DJI_0044 area) also shows possible extra blur in the top-right corner, possibly contamination on the lens. Autofocus changed mid-flight (tap-to-focus, manually picked spots). Confirmed across SE, NW, and NE images from both grid and orbit.
-- **High-displacement survivors are net-negative and likely pulling the corner.** DJI_0820/0821 were dropped in house but recovered in house-2 with 14-18 m displacements, landing right near the north wall. Uncrop made them worse (22-26 m). The mechanism is understood: low `resection_min_inliers` (10) lets poorly anchored images through. Interventional test (exclude images or raise threshold) not yet run, but observational evidence is strong across three runs.
+- **High-displacement survivors are net-negative and likely pulling the corner.** DJI_0820/0821 were dropped in house but recovered in house-2 with 14-18 m displacements, landing right near the north wall. Uncrop made them worse (22-26 m). The mechanism is understood: low `resection_min_inliers` (10) lets poorly anchored images through. Interventional tests on ODM 3.6.2: excluding one bad group (`-prune0009-0020`) cut median displacement from 1.42 to 0.59 m, but 0819-0821 came back 19-22 m off with 13-18 inliers; the threshold test (`-prune-min40`) is running. The corner itself has not been measured in either run.
 
 **Current theories:**
 
@@ -174,6 +177,60 @@ Each topic tracks confirmed findings, current theories, disproven ideas, and nex
 - [ ] **Raise `min_track_length` (cheapest test of nearfield parallax theory).** Reprocess 02-21 with house-2 boundary + `min_track_length: 4` or `5` (default 2) in OpenSfM config. If the nearfield parallax theory is correct, this should preferentially keep ground features (long tracks) and drop twig features (short tracks), improving matching stability especially in the SE and NE. Combine with existing `min_num_features: 30000` to ensure enough candidates survive the filter. Compare track length distribution, displacement stats, and dropped images to house-2 baseline. This is the **cheapest possible test** of the nearfield parallax theory -- no new flight, no code changes, just a config parameter.
 - [ ] **Geometric priors in bundle adjustment (research).** Investigate adding soft geometric constraints to OpenSfM's Ceres-based bundle adjustment: (a) DEM ground-plane prior, (b) SketchUp house extrusion as shape prior, (c) bootstrapped reconstruction prior from earlier runs. Key research question: how to set covariance weights relative to GPS and optical terms. Start by reading OpenSfM's reconstruction code to understand the existing cost function structure and where point-to-surface terms could be added.
 
+### Weak resections on ODM 3.6.2 (2026-11 cluster runs)
+
+Runs are under `mapping-sim/runs/` on the datasets share, each with `opensfm/` kept. Displacement here is horizontal distance from the EXIF GPS position.
+
+**Confirmed:**
+
+- **Removing one bad group moves the failure to other weakly placed images.** The `-odm362` baseline placed grid DJI_0010-0019 17-44 m off. Their matches to each other agree with the EXIF poses, but their links to the rest of the grid mostly do not. Without 0009-0020 the run's median displacement fell from 1.42 to 0.59 m, and the grid east of E 40 m went from 3.2 m off and 3.2 m low to 0.9 m off and 0.3 m high. But eight other grid images were placed 7-25 m off, each with 10-39 resection inliers: 0819-0821, 0841, 0859, 0939, 0990, 0008. Every image more than 7 m off is among the 32 placed with fewer than 40 inliers.
+- **The weak images are not short of features or candidate pairs.** All 434 images hit the 30,000-feature cap. The weak grid images had 16-25 candidate pairs (grid median 20). They kept 1-9 partners after robust matching (median 9), and 107-772 of their features had a surviving match (median 1,756). All ten are frame-filling bare canopy over leaf litter. They are 11-26 m inside the grid edge (grid median 22 m), in four clusters over the woods, not on the perimeter.
+- **The close-orbit wall frames recover once the rest of the solve is right.** DJI_0629-0634 were 16-86 deg off the EXIF prior in the baseline and 3-9 deg off in the pruned run. DJI_0635 (bare brick) and DJI_0636 (the wall corner against sky) stay 95-97 deg off.
+
+**Current theories:**
+
+- **Matches that survive the full-image ratio test are scarce on canopy frames, not wrong in kind.** In repetitive branch and leaf texture, a feature's best and second-best candidates in the whole other image look alike, so the ratio test rejects the match. Among features that did match, the share rises with feature scale: the largest-scale sixth holds 22% of matched features grid-wide and 30% on the weak images. My inference is that raising the 30,000 cap would mostly add fine-scale features, which match worst here. Untested.
+
+**Next steps:**
+
+- [ ] Compare `-prune-min40` with `-prune0009-0020`: which images it leaves out, displacement, the east-side grid, and the close orbit.
+
+### Anchored localization of hard frames (second pass)
+
+A concrete form of frozen-skeleton localization (Reconstruction quality, theory (d)), for frames the main solve rejects or places badly: canopy and leaf-litter grid frames, and bare-wall close-ups. Goal: texture and depth for the woods floor and the house walls, from frames that cannot carry their own weight in the joint solve.
+
+**Mechanism:**
+
+1. **Anchors.** Take a reconstruction whose shots pass the gates (within 3 m of GPS and 15 deg of the EXIF prior), and keep only 3D points with plausible locations. Plausible means height above the run's DTM (-0.5 m to 20 m), tracks seen by several shots, and a small reprojection error. Tie points like the roof edge and foundation perimeter should come out of this filter automatically, without being labelled.
+2. **Prior pose for each hard frame.** GPS position, with heading and pitch from DJI XMP. The camera points about 13-15 deg below `GimbalPitchDegree` on every set, and its azimuth follows `FlightYawDegree`, not `GimbalYawDegree`. With a fixed camera-side rotation fitted on good shots, the prior is within a median 5.4 deg (p90 11.8 deg) of the solved attitude.
+3. **Pose-guided matching against the anchors.** Project each anchor point into the frame from the prior pose. Match its descriptor only against the frame's features inside a window sized to the prior's error, instead of against the whole image. Then fit the pose with outlier rejection, narrow the window, and repeat.
+4. **The anchors do not move.** Only the frame's pose is solved. A frame is accepted if enough inliers agree to within a pixel or two, and its acceptance and evidence are recorded.
+5. **Into the map.** Accepted poses are added to `reconstruction.json`, and ODM is restarted from the dense stage. Whether the frames add usable surface in the woods or noise shows in the dense cloud and the DTM.
+
+**What exists in the stack:**
+
+- OpenSfM's resection (`reconstruction.resect`) is a RANSAC absolute-pose fit against points already in the reconstruction. An accepted image then joins the reconstruction and every later bundle adjustment. No mode holds the existing reconstruction fixed while placing new images.
+- Upstream OpenSfM has a pairwise guided matcher (`matching._match_descriptors_guided_impl`). Given a relative pose, it brute-force matches only feature pairs within `guided_matching_threshold` of each other's epipolar line. GitHub code search found no caller that supplies the pose, and ODM exposes no option for it. The ODM 3.6.2 OpenSfM config has the `guided_*` parameters.
+- So the pass is our code. Matching image-to-anchor-point by reprojection constrains each candidate to a window around a point, which is tighter than a line.
+
+**Why the bricks may work this way:** 0635/0636 failed on relative pose, where a flat wall cannot fix two cameras against each other. Placing one camera against known 3D points on a plane does not have that problem.
+
+**Chaining forward:** accepted frames could triangulate new points that anchor another layer of frames. Each layer is a separate pass with its own gates and review, and points from a layer are marked with the layer that made them. A layer is only used if it passes its gates.
+
+**External priors:** the house walls are close to flat and straight, and the building's overall size is known. These can be used first as checks (do anchor points on a wall fit a plane? do the corners match the footprint?), and later as constraints if we choose. The footprint measurement for the north-wall corner is still open.
+
+**Reproducibility:** fully declarative is too much for one-off heuristics, but thresholds with no trace cannot be recomputed or tuned. Proposed middle ground:
+
+- The pass is a script in a repo. Its parameters live in a small file next to it. Every threshold is either a named constant with a reason, or derived from the data by a stated rule (e.g. the match window is the p95 of prior-vs-solved angle on gated shots), with the derived value recorded.
+- Each pass writes a manifest into its output directory. It records the code commit, the anchor reconstruction's path and SHA-256, the parameters, the derived values, and per frame the decision with its evidence (inliers, residual, offset from the prior, which gate it passed or failed).
+- Manual review is an overrides file (image, accept/reject, reason) that the pass reads, so a hand decision is visible and survives a rerun.
+- A manifest whose anchor hash no longer matches its input is stale. That is the signal to recompute.
+
+**Next steps:**
+
+- [ ] Build the pass on the anchors from `-prune-min40` once it finishes; first targets are the frames it leaves out, plus 0635/0636.
+- [ ] Dense restart with the accepted frames added; compare the dense cloud and DTM in the woods and on the walls against the run without them.
+
 ### Seasonal canopy leaf-in and collection viability
 
 **Confirmed:**
@@ -259,7 +316,8 @@ Prioritized checklist. Details and rationale in Open issues above.
 - [x] **(a) Wider boundary** (uncrop). Result: worse on every metric.
 - [x] **(b) Spot-check** problem images for focus/blur/exposure. **Done.** Autofocus locks on treetops; ground features soft. Snow + diffuse lighting on 02-16 explain its superior matching. Three distinct failure modes by area (SE, NW, NE). See Learnings.
 - [ ] **(c) texturing-data-term: area** run (Twig texture)
-- [ ] **(e/g) Cleaner image set** -- exclude bad images or raise resection_min_inliers (North wall geometry, Reconstruction quality)
+- [ ] **(e/g) Cleaner image set** -- exclude bad images or raise resection_min_inliers (North wall geometry, Reconstruction quality). Exclusion run done (`-prune0009-0020`); threshold run `-prune-min40` running.
+- [ ] **Anchored localization of hard frames** -- place rejected canopy and wall frames against a fixed, gated reconstruction by pose-guided matching (Processing, see open issue)
 - [ ] **Post-crash recovery:** replace blades, buy spares, calibration check flight (Immediate)
 - [ ] **Short close-orbit-only test flight** as first post-crash mission -- tests camera/gimbal health and produces useful comparison data (Immediate / Collection)
 - [ ] **Establish barometric equilibration protocol** for future flights (Collection)
@@ -447,14 +505,16 @@ Run `polisher/.venv/bin/python polisher/facts/collect_odm_run_record.py` on each
 - **`--cameras` lets us reuse calibration.** Important for post-crash verification and for ensuring consistency across runs.
 - **The config-edit workflow is explicitly supported.** `--end-with opensfm` + edit config + `--rerun-from opensfm` is the documented approach for parameters not exposed in ODM CLI.
 - **We do NOT need to leave WebODM entirely.** For standard runs, WebODM is fine. For experimental runs with custom OpenSfM config, we need ODM CLI (via Docker). The two can coexist.
-- **Forking OpenSfM is only needed for geometric priors in BA** (the Ceres cost function changes). Everything else -- min_track_length, resection_min_inliers, texturing-data-term, align, cameras, matching params -- is reachable without forking.
+- **Forking OpenSfM is only needed for geometric priors in BA** (the Ceres cost function changes). Everything else -- min_track_length, resection_min_inliers, texturing-data-term, align, cameras, matching params -- is reachable without forking. Placing new cameras against a fixed reconstruction does not need a fork either; it can be a separate pass whose output is added to `reconstruction.json` (see Anchored localization).
+- **`--rerun-from opensfm` deletes `opensfm/`.** In ODM 3.6.2 the opensfm stage calls `OSFMContext.setup(..., rerun=self.rerun())`, which removes the project directory when rerun is set, so an edited `config.yaml` is lost.
+- **ODM skips each OpenSfM step whose output exists.** Setup (which writes `config.yaml`) is skipped if `image_list.txt` exists, and features if `features/` exists. Matches are skipped if `matches/` exists, `create_tracks` if `tracks.csv` exists, and `reconstruct` if `reconstruction.json` exists (`opendm/osfm.py`).
 
 ### Practical workflow for experiments
 
-1. Run via ODM CLI in Docker (not WebODM) with `--end-with opensfm` and desired ODM-level flags.
-2. Edit `<output>/opensfm/config.yaml` to set `min_track_length`, `resection_min_inliers`, etc.
-3. Run `--rerun-from opensfm` to complete processing with modified config.
-4. For the `min_track_length` test: this means we can do the cheapest experiment (Phase A) using Docker on lancer right now, no cluster needed.
+1. Run ODM to the end of OpenSfM or further, keeping `opensfm/`.
+2. For a config or match change: make a new run directory and copy in `images/`, `images.json`, and `opensfm/{exif, features, image_list.txt, camera_models.json, reference_lla.json, camera_mappings.npz, config.yaml}`. Fix the paths in `image_list.txt`. Edit `config.yaml`, and copy `matches/`, filtered if needed. Do not copy `options.json`, `tracks.csv`, `reconstruction.json`, or anything downstream.
+3. Run ODM on the new directory without `--rerun-from`. It skips setup, features and matches, and recomputes tracks, the reconstruction and everything after. `-prune-min40` was made this way; its log confirms the skips and the edited `config.yaml` survives.
+4. These runs go to the cluster (tiles `mapping-sim-imageset` WorkflowTemplate on lancer), not Docker on a shared host.
 
 ---
 
