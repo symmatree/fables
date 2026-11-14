@@ -197,6 +197,13 @@ Runs are under `mapping-sim/runs/` on the datasets share, each with `opensfm/` k
   - 78 images not reconstructed (50 before).
   - Over the 342 shots in both runs' final files, a similarity fit (scale 0.9995, 0.68 deg) leaves median 0.14 m (grid), 0.11 m (orbit), 0.12 m (close orbit); the fit absorbs the partials' GPS placement, so it does not separate shape change from regrouping.
 
+- **`-prune-min40`'s connected model, on its own, is consistent with GPS, the attitude prior, and a rectilinear house.** The 270 shots of its main reconstruction, and the 486,478 sparse points seen only by them (1,204 more are shared with partials and left out):
+  - Camera centres against EXIF GPS (topocentric, same flat-earth conversion as OpenSfM's): horizontal median / p90 / max 0.50 / 0.80 / 1.88 m (grid, 164), 0.54 / 0.93 / 1.59 m (close orbit, 64), 0.38 / 0.49 / 0.54 m (orbit, 42). A similarity fit to GPS gives scale 0.9998 and 0.01 deg.
+  - Attitude against the DJI prior (`C @ prior_R(yaw, pitch, 0)`, whose own error against solved poses was median 5.4 deg): median / max 3.5 / 13.4 deg (grid), 4.3 / 14.5 (close orbit), 4.9 / 7.1 (orbit).
+  - Grid cameras in the model span E -47..39 m, N -52..53 m.
+  - Points 1-4 m above the run's DTM outline the house. Its walls run at azimuths 30.3 and 120.3 deg; line fits on wall segments give 1.2-2.6 cm rms, perpendicular to 0.2 deg. In those axes the NNE wall (u = 9.42 m, 9.5 m long, 326 points) has 1 m bin medians within 5.4 cm of each other and tilts 0.07 deg; the SSW wall (u = -12.33 m) within 0.7 cm. NNE to SSW wall: 21.75 m. These are internal checks; the footprint has not been measured.
+  - Plots: `min40-core.png`, `min40-house-axes.png` (not committed).
+
 **Next steps:**
 
 - [x] Compare `-prune-min40` with `-prune0009-0020`: which images it leaves out, displacement, the east-side grid, and the close orbit. See the finding above.
