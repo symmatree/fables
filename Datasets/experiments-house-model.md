@@ -203,6 +203,7 @@ Runs are under `mapping-sim/runs/` on the datasets share, each with `opensfm/` k
   - Grid cameras in the model span E -47..39 m, N -52..53 m.
   - Points 1-4 m above the run's DTM outline the house. Its walls run at azimuths 30.3 and 120.3 deg; line fits on wall segments give 1.2-2.6 cm rms, perpendicular to 0.2 deg. In those axes the NNE wall (u = 9.42 m, 9.5 m long, 326 points) has 1 m bin medians within 5.4 cm of each other and tilts 0.07 deg; the SSW wall (u = -12.33 m) within 0.7 cm. NNE to SSW wall: 21.75 m. These are internal checks; the footprint has not been measured.
   - Plots: `min40-core.png`, `min40-house-axes.png` (not committed).
+  - **Decision (2026-11-14): this connected model is the initial baseline geography** for the house. The perimeter is rectilinear and closed. What a geolocated house model gets from it depends on densification and on later fixed-anchor fitting of the left-out frames.
 
 **Next steps:**
 
