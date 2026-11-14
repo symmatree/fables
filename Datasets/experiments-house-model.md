@@ -35,7 +35,7 @@ One row per run. Fill in blanks from map docs and memory; question marks where w
 | [[odm-maps-bond_ave-2026-02-21-uncrop/odm-maps-bond_ave-2026-02-21-uncrop]] | Same as house | Same | auto_boundary: true (no manual boundary); min_num_features: 30000; dem_gapfill_steps: 0; dtm: false. Otherwise same as house-2 | **Worse than house-2 on every metric.** 392/446 shots (vs 400), GPS ce90 2.43 (vs 1.57), track length 3.35. Auto-boundary was 4x larger than house-2 but reconstructed less area (13947 vs 14959 m2). Many images well-placed in house-2 had 14-38 m displacements in uncrop. Wider boundary introduced noise, not stability. |
 | `bond-2026-02-21-house-2-odm362` (cluster, `mapping-sim/runs/` on the datasets share) | Same as house | Same | house-2's options on ODM 3.6.2 (house-2 was 3.5.6), via the tiles `mapping-sim-imageset` workflow; `opensfm/` kept | 394/446 shots; median horizontal displacement 1.42 m (house-2: 0.85 m); GPS avg error 3.04 m. Grid DJI_0010-0019 placed 17-44 m and 35-73 deg off, as a group, resected last with 11-32 inliers; the grid east of E 40 m bent down (median dz -3.2 m). See Reconstruction quality. |
 | `bond-2026-02-21-house-2-odm362-prune0009-0020` | The above minus grid DJI_0009-0020 (434 images) | Same | Same | 381/434 shots; median / p90 horizontal displacement 0.59 / 1.04 m; GPS avg error 1.11 m; east-side bend gone. New outliers 7-25 m off, all placed with 10-39 inliers: DJI_0819-0821, 0841, 0859, 0939, 0990, 0008. |
-| `bond-2026-02-21-house-2-odm362-prune-min40` | Same 434, with every match to close-orbit DJI_0635/0636 removed | Same | Features and matches reused from the run above; `resection_min_inliers: 40` in `opensfm/config.yaml` | Running (Argo `mapping-sim-imageset-744mb`, 2026-11-14). |
+| `bond-2026-02-21-house-2-odm362-prune-min40` | Same 434, with every match to close-orbit DJI_0635/0636 removed | Same | Features and matches reused from the run above; `resection_min_inliers: 40` in `opensfm/config.yaml` | 351/434 shots; median / p90 horizontal displacement 0.44 / 0.80 m, none over 7 m; GPS avg error 0.56 m. The connected model is 270 shots (164 grid, 64 close orbit, 42 orbit); the other 81 are in 21 partial reconstructions of 2-29 shots that ODM merged in by GPS, mostly the grid east of E 35 m. Argo `mapping-sim-imageset-744mb`. |
 
 *Mission params: 02-21 grid/orbit used the same DroneLink plan as 02-16. Key collection differences were autofocus change mid-flight and camera settings; see [[imagesets-bond_ave-2026-02-21-flight]]. We still want structured mission params from DroneLink recorded locally (see issue #343).*
 
@@ -80,7 +80,7 @@ Each topic tracks confirmed findings, current theories, disproven ideas, and nex
 **Confirmed:**
 
 - **Autofocus locks onto treetops, not ground.** Spot-check of NE/north-wall images confirms focus is consistently on the tops of trees (twigs = highest-frequency signal in frame) rather than the ground. Ground features -- including human-made structures visible in orbit and some grid images -- are slightly soft. One orbit image (DJI_0044 area) also shows possible extra blur in the top-right corner, possibly contamination on the lens. Autofocus changed mid-flight (tap-to-focus, manually picked spots). Confirmed across SE, NW, and NE images from both grid and orbit.
-- **High-displacement survivors are net-negative and likely pulling the corner.** DJI_0820/0821 were dropped in house but recovered in house-2 with 14-18 m displacements, landing right near the north wall. Uncrop made them worse (22-26 m). The mechanism is understood: low `resection_min_inliers` (10) lets poorly anchored images through. Interventional tests on ODM 3.6.2: excluding one bad group (`-prune0009-0020`) cut median displacement from 1.42 to 0.59 m, but 0819-0821 came back 19-22 m off with 13-18 inliers; the threshold test (`-prune-min40`) is running. The corner itself has not been measured in either run.
+- **High-displacement survivors are net-negative and likely pulling the corner.** DJI_0820/0821 were dropped in house but recovered in house-2 with 14-18 m displacements, landing right near the north wall. Uncrop made them worse (22-26 m). The mechanism is understood: low `resection_min_inliers` (10) lets poorly anchored images through. Interventional tests on ODM 3.6.2: excluding one bad group (`-prune0009-0020`) cut median displacement from 1.42 to 0.59 m, but 0819-0821 came back 19-22 m off with 13-18 inliers; at 40 inliers (`-prune-min40`) none is over 7 m off, but the east grid and close-orbit 0629-0634 fall out of the main model into GPS-placed pieces. The corner itself has not been measured in either run.
 
 **Current theories:**
 
@@ -191,9 +191,15 @@ Runs are under `mapping-sim/runs/` on the datasets share, each with `opensfm/` k
 
 - **Matches that survive the full-image ratio test are scarce on canopy frames, not wrong in kind.** In repetitive branch and leaf texture, a feature's best and second-best candidates in the whole other image look alike, so the ratio test rejects the match. Among features that did match, the share rises with feature scale: the largest-scale sixth holds 22% of matched features grid-wide and 30% on the weak images. My inference is that raising the 30,000 cap would mostly add fine-scale features, which match worst here. Untested.
 
+- **At 40 inliers the misplaced images stop joining the model, and the east grid comes apart.** `-prune-min40` against `-prune0009-0020`:
+  - All eight images that were 7-25 m off are now within 1 m of their GPS. 0840, 0841, 0859 and 0939 resected with 41-108 inliers, but into partial reconstructions, not the main one. 0819/0820, 0842/0843 and 0959/0990 are two-image partials.
+  - OpenSfM made 22 partial reconstructions (6 before). The main one has 270 shots against 344. The rest are 81 shots in 21 pieces of 2-29, in the same frame only through each piece's GPS: the grid east of E 35 m (0823-0872, 0897-0903, 0934-0941, 0972-0979), a few western pairs (0715/0716, 0954/0955, 0881/0886, 0960/0989), and close-orbit 0629-0634.
+  - 78 images not reconstructed (50 before).
+  - Over the 342 shots in both runs' final files, a similarity fit (scale 0.9995, 0.68 deg) leaves median 0.14 m (grid), 0.11 m (orbit), 0.12 m (close orbit); the fit absorbs the partials' GPS placement, so it does not separate shape change from regrouping.
+
 **Next steps:**
 
-- [ ] Compare `-prune-min40` with `-prune0009-0020`: which images it leaves out, displacement, the east-side grid, and the close orbit.
+- [x] Compare `-prune-min40` with `-prune0009-0020`: which images it leaves out, displacement, the east-side grid, and the close orbit. See the finding above.
 
 ### Anchored localization of hard frames (second pass)
 
@@ -228,7 +234,7 @@ A concrete form of frozen-skeleton localization (Reconstruction quality, theory 
 
 **Next steps:**
 
-- [ ] Build the pass on the anchors from `-prune-min40` once it finishes; first targets are the frames it leaves out, plus 0635/0636.
+- [ ] Build the pass on the anchors from `-prune-min40`'s 270-shot connected model (its GPS-placed partials are not anchors); first targets are the 78 frames it leaves out, the 81 in partials, and 0635/0636.
 - [ ] Dense restart with the accepted frames added; compare the dense cloud and DTM in the woods and on the walls against the run without them.
 
 ### Seasonal canopy leaf-in and collection viability
@@ -316,7 +322,7 @@ Prioritized checklist. Details and rationale in Open issues above.
 - [x] **(a) Wider boundary** (uncrop). Result: worse on every metric.
 - [x] **(b) Spot-check** problem images for focus/blur/exposure. **Done.** Autofocus locks on treetops; ground features soft. Snow + diffuse lighting on 02-16 explain its superior matching. Three distinct failure modes by area (SE, NW, NE). See Learnings.
 - [ ] **(c) texturing-data-term: area** run (Twig texture)
-- [ ] **(e/g) Cleaner image set** -- exclude bad images or raise resection_min_inliers (North wall geometry, Reconstruction quality). Exclusion run done (`-prune0009-0020`); threshold run `-prune-min40` running.
+- [ ] **(e/g) Cleaner image set** -- exclude bad images or raise resection_min_inliers (North wall geometry, Reconstruction quality). Exclusion run done (`-prune0009-0020`); threshold run `-prune-min40` done (Weak resections on ODM 3.6.2).
 - [ ] **Anchored localization of hard frames** -- place rejected canopy and wall frames against a fixed, gated reconstruction by pose-guided matching (Processing, see open issue)
 - [ ] **Post-crash recovery:** replace blades, buy spares, calibration check flight (Immediate)
 - [ ] **Short close-orbit-only test flight** as first post-crash mission -- tests camera/gimbal health and produces useful comparison data (Immediate / Collection)
