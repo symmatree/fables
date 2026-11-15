@@ -248,6 +248,7 @@ A concrete form of frozen-skeleton localization (Reconstruction quality, theory 
 **Next steps:**
 
 - [ ] Build the pass on the anchors from `-prune-min40`'s 270-shot connected model (its GPS-placed partials are not anchors); first targets are the 78 frames it leaves out, the 81 in partials, and 0635/0636.
+  - Targets are chosen by what they add, not all of them: frames that see a gap in the core's coverage, or that would bridge to such a frame in a later layer of the iterated fixed-position expansion. Running every candidate once is optional.
 - [ ] Dense restart with the accepted frames added; compare the dense cloud and DTM in the woods and on the walls against the run without them.
 
 ### Seasonal canopy leaf-in and collection viability
