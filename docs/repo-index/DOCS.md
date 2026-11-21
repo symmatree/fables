@@ -51,7 +51,7 @@ coverage maps), and ODM reconstruction run records with drop-image logs.
 | `Drones/coordinator/virtualization-study.md` | Architecture analysis comparing bare-metal, Docker Compose, Proxmox/Talos, and K3s for the payload coordinator (Pi 4B running VIO + NTP + USB networking) | [virtualization-study.md](https://github.com/symmatree/fables/blob/main/Drones/coordinator/virtualization-study.md) |
 | `Drones/dji-mini-pro-3/` | DJI Mini 3 Pro notes: control modes (Cine/Normal/Sport), camera settings, DroneLink capture process | [dji-mini-pro-3/](https://github.com/symmatree/fables/blob/main/Drones/dji-mini-pro-3/) |
 | `Drones/flywoo-firefly16/` | Flywoo Firefly 16 FPV quad notes: build record, Gemini VTX power | [flywoo-firefly16/](https://github.com/symmatree/fables/blob/main/Drones/flywoo-firefly16/) |
-| `Drones/johnny/rover-design.md` | Ground rover design notes | [rover-design.md](https://github.com/symmatree/fables/blob/main/Drones/johnny/rover-design.md) |
+| `Drones/johnny/` | **Moved to `coordinator`.** Johnny ground rover design notes, camera layout study, ArduRover params and EdgeTX model. Only `attachments/` (vendor manuals) stays here. | [docs/johnny/](https://github.com/symmatree/coordinator/blob/main/docs/johnny/README.md) |
 
 ---
 
