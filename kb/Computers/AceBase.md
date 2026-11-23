@@ -4,7 +4,16 @@ This is the oldest node, currently in the attic
 
 *Network data collected via UniFi MCP API on 2026-03-15. See [Client Data Collection Process](network-devices/client-data-collection) for update instructions.*
 
-- **IP Address**: 10.0.99.14
+- **IP Address**: 10.0.128.52 (moved into the cluster allocation 2026-10-01)
+  - **Previously 10.0.99.14**, from when this was a standalone Windows box in the
+    range used for machines reached directly. After the reflash to Talos it stayed
+    there, which left it the only cluster node outside `10.0.128.0/18` -- and so
+    outside every Synology NFS export rule, since those are written per cluster
+    CIDR. Any NFS mount from acebase was refused with `access denied by server`;
+    that is what took the RTK base station down for 25h (tiles#805). If something
+    still cannot reach acebase, a stale `10.0.99.14` configured somewhere is the
+    first thing to check -- the SparkFun Facet or a saved u-center profile being
+    the likely candidates.
 - **MAC Address**: 00:e0:4c:5f:3d:71
 - **Hostname**: AceBase.local.symmatree.com
 - **Connection Type**: Wired
